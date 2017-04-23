@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmn.cmn.batch">
+  <update id="updateBatchAddLog" parameterType="HashMap">
+    UPDATE cmn_batch_exe_hst cbeh
+    SET    cbeh.batch_proc_log_report = CONCAT(CASE WHEN cbeh.batch_proc_log_report IS NULL
+                                                    THEN ''
+                                                    ELSE CONCAT(cbeh.batch_proc_log_report, '\n')
+                                               END, #{proc_log})
+         , cbeh.audit_dtm = NOW()
+    WHERE  cbeh.batch_num = #{batch_num}
+    AND    cbeh.exe_dtm = #{exe_dtm}
+    AND    cbeh.batch_exe_state = 1
+  </update>
+  <insert id="insertMemoryInfo" parameterType="HashMap">
+    INSERT INTO cmn_memory
+    (datetime,
+     ap_num,
+     container_num,
+     audit_id,
+     audit_dtm,
+     free_memory,
+     total_memory
+    ) VALUES (
+     #{datetime},
+     #{ap_num},
+     #{container_num},
+     #{user_num},
+     NOW(),
+     #{free_memory},
+     #{total_memory}
+    )
+  </insert>
+  <insert id="insertCPUShareInfo" parameterType="HashMap">
+    INSERT INTO cmn_cpu_share_info
+    (datetime,
+     ap_num,
+     core_num,
+     audit_id,
+     audit_dtm,
+     cpu_share
+    )
+    SELECT #{datetime} AS datetime
+         , #{ap_num} AS ap_num
+         , #{core_num} AS core_num
+         , #{user_num} AS audit_id
+         , NOW() AS audit_dtm
+         , #{cpu_share} AS cpu_share
+    FROM   DUAL
+    WHERE  NOT EXISTS (SELECT *
+                       FROM   cmn_cpu_share_info ccsi
+                       WHERE  ccsi.datetime = #{datetime}
+                       AND    ccsi.ap_num = #{ap_num}
+                       AND    ccsi.core_num = #{core_num}
+                      )
+  </insert>
+  <select id="getCPUCnt" parameterType="HashMap" resultType="HashMap">
+    SELECT CAST(ccd.cd_seq_name AS INTEGER) AS cpu_cnt
+    FROM   cmn_cd_dtl ccd
+    WHERE  ccd.cd_num = 26
+    AND    NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
+  </select>
+</mapper>
