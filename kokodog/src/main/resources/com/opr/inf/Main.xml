@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.opr.inf.main">
+  <select id="getAppLogList" parameterType="HashMap" resultType="HashMap">
+    SELECT cal.seq AS seq
+         , cal.datetime AS datetime
+         , cal.millisec AS millisec
+         , cal.log_typ AS log_typ
+         , cal.class_nm AS class_nm
+         , cal.method_nm AS method_nm
+         , cal.log_msg AS log_msg
+    FROM   cmn_app_log cal
+    WHERE  cal.datetime BETWEEN #{from_datetime} AND #{to_datetime}
+    AND    (#{log_typ} IS NULL
+            OR #{log_typ} = ''
+            OR cal.log_typ IN
+               (SELECT ccd.cd_seq_name AS cd_seq_name
+                FROM   cmn_cd_dtl ccd
+                WHERE  NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
+                AND    ccd.cd_num = 27
+                AND    ccd.cd_seq &gt;= #{log_typ}
+               ) 
+           )
+    AND    (cal.log_msg LIKE CONCAT('%', CONCAT(#{filter_txt},'%'))
+            OR cal.class_nm LIKE CONCAT('%', CONCAT(#{filter_txt},'%'))
+           )
+    AND    (#{start_seq} IS NULL
+            OR cal.seq &gt;= #{start_seq}
+           )
+    AND    ((#{log_level_fatal} = true
+            AND cal.log_typ = 'FATAL'
+            ) OR (#{log_level_error} = true
+            AND cal.log_typ = 'ERROR'
+            ) OR (#{log_level_warn} = true
+            AND cal.log_typ = 'WARN'
+            ) OR (#{log_level_info} = true
+            AND cal.log_typ = 'INFO'
+            ) OR (#{log_level_debug} = true
+            AND cal.log_typ = 'DEBUG'
+            ) OR (#{log_level_trace} = true
+            AND cal.log_typ = 'TRACE'
+            )
+           )
+    ORDER BY cal.seq
+  </select>
+  <select id="getAppLogListCnt" parameterType="HashMap" resultType="HashMap">
+    SELECT COUNT(*) AS cnt
+    FROM   cmn_app_log cal
+    WHERE  cal.datetime BETWEEN #{from_datetime} AND #{to_datetime}
+    AND    (#{log_typ} IS NULL
+            OR #{log_typ} = ''
+            OR cal.log_typ IN
+               (SELECT ccd.cd_seq_name AS cd_seq_name
+                FROM   cmn_cd_dtl ccd
+                WHERE  NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
+                AND    ccd.cd_num = 27
+                AND    ccd.cd_seq &gt;= #{log_typ}
+               ) 
+           )
+    AND    (cal.log_msg LIKE CONCAT('%', CONCAT(#{filter_txt},'%'))
+            OR cal.class_nm LIKE CONCAT('%', CONCAT(#{filter_txt},'%'))
+           )
+    AND    (#{start_seq} IS NULL
+            OR cal.seq &gt;= #{start_seq}
+           )
+    AND    ((#{log_level_fatal} = true
+            AND cal.log_typ = 'FATAL'
+            ) OR (#{log_level_error} = true
+            AND cal.log_typ = 'ERROR'
+            ) OR (#{log_level_warn} = true
+            AND cal.log_typ = 'WARN'
+            ) OR (#{log_level_info} = true
+            AND cal.log_typ = 'INFO'
+            ) OR (#{log_level_debug} = true
+            AND cal.log_typ = 'DEBUG'
+            ) OR (#{log_level_trace} = true
+            AND cal.log_typ = 'TRACE'
+            )
+           )
+  </select>
+  <select id="getMemoryUsed" parameterType="HashMap" resultType="HashMap">
+    SELECT cm2.ap_num AS ap_num
+         , cm2.container_num AS container_num
+         , SUM(cm2.memory_used) * 100 / COUNT(*) AS memory_used
+         , CAST(#{from_datetime} AS DATETIME) + INTERVAL (diff * TIMESTAMPDIFF(SECOND, #{from_datetime}, #{to_datetime}) / #{cnt}) SECOND AS from_time
+         , CAST(#{from_datetime} AS DATETIME) + INTERVAL ((diff + 1) * TIMESTAMPDIFF(SECOND, #{from_datetime}, #{to_datetime}) / #{cnt}) SECOND AS to_time
+    FROM (
+          SELECT (cm.total_memory - cm.free_memory) / cm.total_memory AS memory_used
+               , ROUND((TIMESTAMPDIFF(SECOND, #{from_datetime}, cm.datetime) / TIMESTAMPDIFF(SECOND, #{from_datetime}, #{to_datetime})) * (${cnt} - 1)) AS diff
+               , cm.datetime
+               , cm.ap_num
+               , cm.container_num
+          FROM   cmn_memory cm
+          WHERE  cm.datetime BETWEEN #{from_datetime} AND #{to_datetime}
+          AND    (cm.ap_num, cm.container_num) IN (SELECT CAST(ccd1.cd_seq_name AS INTEGER) AS ap_num
+                                                        , CAST(ccd2.cd_seq_name AS INTEGER) AS container_num
+                                                   FROM   cmn_cd_dtl ccd1
+                                                        , cmn_cd_dtl ccd2
+                                                   WHERE  ccd1.cd_num = 23
+                                                   AND    NOW() BETWEEN ccd1.eff_sta_dtm AND ccd1.eff_end_dtm
+                                                   AND    ccd2.cd_num = 24
+                                                   AND    ccd1.cd_seq = ccd2.cd_seq
+                                                   AND    NOW() BETWEEN ccd2.eff_sta_dtm AND ccd2.eff_end_dtm
+                                                  )
+         ) cm2
+    GROUP BY cm2.diff, cm2.ap_num, cm2.container_num
+    ORDER BY from_time, cm2.ap_num, cm2.container_num
+  </select>
+  <select id="getBatchExecList" parameterType="HashMap" resultType="HashMap">
+    SELECT cb.batch_num AS batch_num
+         , cb.batch_nm
+         , cbeh.exe_dtm AS exe_dtm
+         , cbeh.real_exe_dtm AS real_exe_dtm
+         , cbeh.real_end_dtm AS real_end_dtm
+         , cbeh.batch_exe_state AS batch_exe_state
+         , ccd.cd_seq_name AS batch_exe_state_nm
+    FROM   cmn_batch_exe_hst cbeh
+         , cmn_batch cb
+         , cmn_cd_dtl ccd
+    WHERE  cbeh.real_exe_dtm BETWEEN #{from_datetime} AND #{to_datetime}
+    AND    cb.batch_num = cbeh.batch_num
+    AND    cbeh.real_exe_dtm BETWEEN cb.eff_sta_dtm AND cb.eff_end_dtm
+    AND    ccd.cd_num = 28
+    AND    ccd.cd_seq = cbeh.batch_exe_state
+    AND    NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
+    ORDER BY cbeh.real_exe_dtm desc
+  </select>
+  <select id="getCpuUsed" parameterType="HashMap" resultType="HashMap">
+    SELECT ccsi2.ap_num AS ap_num
+         , ccsi2.core_num AS core_num
+         , SUM(ccsi2.cpu_share) / COUNT(*) AS cpu_used
+         , CAST(#{from_datetime} AS DATETIME) + INTERVAL (diff * TIMESTAMPDIFF(SECOND, #{from_datetime}, #{to_datetime}) / #{cnt}) SECOND AS from_time
+         , CAST(#{from_datetime} AS DATETIME) + INTERVAL ((diff + 1) * TIMESTAMPDIFF(SECOND, #{from_datetime}, #{to_datetime}) / #{cnt}) SECOND AS to_time
+    FROM (
+          SELECT ccsi.cpu_share AS cpu_share
+               , ROUND((TIMESTAMPDIFF(SECOND, #{from_datetime}, ccsi.datetime) / TIMESTAMPDIFF(SECOND, #{from_datetime}, #{to_datetime})) * (${cnt} - 1)) AS diff
+               , ccsi.datetime
+               , ccsi.ap_num
+               , ccsi.core_num
+          FROM   cmn_cpu_share_info ccsi
+          WHERE  ccsi.datetime BETWEEN #{from_datetime} AND #{to_datetime}
+         ) ccsi2
+    GROUP BY ccsi2.diff, ccsi2.ap_num, ccsi2.core_num
+    ORDER BY from_time, ccsi2.ap_num, ccsi2.core_num
+  </select>
+</mapper>
