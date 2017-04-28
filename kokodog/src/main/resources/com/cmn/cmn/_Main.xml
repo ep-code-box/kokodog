@@ -8,7 +8,7 @@
     AND    NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
   </select>
   <select id="getServerTime" resultType="HashMap">
-    SELECT NOW() AS datetime
+    SELECT NOW(3) AS datetime
   </select>
   <update id="updateAllBatchExeError" parameterType="HashMap">
     UPDATE cmn_batch_exe_hst
@@ -416,5 +416,175 @@
     AND    NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
     AND    ccd.cd_num = #{cd_num}
     AND    ccs.cd_num = ccd.cd_num
+  </select>
+  <select id="getErrMessageByMessageNum" parameterType="HashMap" resultType="HashMap">
+    SELECT cm.msg_txt AS msg
+         , cm.err_typ AS err_typ
+    FROM   cmn_msg cm
+    WHERE  cm.msg_num = #{msg_num}
+    AND    NOW() BETWEEN cm.eff_sta_dtm AND cm.eff_end_dtm
+  </select>
+  <select id="getIsAccessTokenExist" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS (SELECT *
+                             FROM   cmn_access_token cat
+                             WHERE  cat.user_num = #{user_num}
+                             AND    NOW() BETWEEN cat.eff_sta_dtm AND (cat.expire_dtm - INTERVAL 1 SECOND)
+                            )
+                THEN 'Y'
+                ELSE 'N'
+            END AS is_access_token_exist
+  </select>
+  <select id="getRequestTokenByUserNum" parameterType="HashMap" resultType="HashMap">
+    SELECT crt.refresh_token
+    FROM   cmn_refresh_token crt
+    WHERE  crt.user_num = #{user_num}
+    AND    NOW() BETWEEN crt.eff_sta_dtm AND crt.eff_end_dtm
+  </select>
+  <select id="getIsLoginAuth" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS (SELECT *
+                             FROM   cmn_pgm cp1
+                                  , cmn_task ct
+                                  , cmn_page cp2
+                                  , cmn_page_auth cpa
+                             WHERE  cp1.pgm_abb = #{pgm_abb}
+                             AND    NOW() BETWEEN cp1.eff_sta_dtm AND cp1.eff_end_dtm
+                             AND    ct.pgm_num = cp1.pgm_num
+                             AND    ct.task_abb = #{task_abb}
+                             AND    NOW() BETWEEN ct.eff_sta_dtm AND ct.eff_end_dtm
+                             AND    cp2.pgm_num = cp1.pgm_num
+                             AND    cp2.task_num = ct.task_num
+                             AND    cp2.page_abb = #{page_abb}
+                             AND    NOW() BETWEEN cp2.eff_sta_dtm AND cp2.eff_end_dtm
+                             AND    cpa.page_num = cp2.page_num
+                             AND    cpa.task_num = ct.task_num
+                             AND    cpa.pgm_num = cp1.pgm_num
+                             AND    NOW() BETWEEN cpa.eff_sta_dtm AND cpa.eff_end_dtm
+                             AND    (cpa.auth_num = 0
+                                     OR EXISTS (SELECT *
+                                                FROM   cmn_user_auth cua
+                                                     , cmn_user cu
+                                                     , cmn_auth ca
+                                                WHERE  cu.user_num = #{user_num}
+                                                AND    NOW() BETWEEN cu.eff_sta_dtm AND cu.eff_end_dtm
+                                                AND    cua.user_num = cu.user_num
+                                                AND    NOW() BETWEEN cua.eff_sta_dtm AND cua.eff_end_dtm
+                                                AND    cpa.auth_num = ca.auth_num
+                                                AND    NOW() BETWEEN ca.eff_sta_dtm AND ca.eff_end_dtm
+                                                AND    cua.auth_num = ca.auth_num
+                                               )
+                                    )
+                            )
+                THEN 'Y'
+                ELSE 'N'
+           END AS is_auth
+  </select>
+  <select id="getIsMobilePageExist" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS (SELECT *
+                             FROM   cmn_pgm cp1
+                                  , cmn_task ct
+                                  , cmn_page cp2
+                             WHERE  cp1.pgm_abb = #{pgm_abb}
+                             AND    NOW() BETWEEN cp1.eff_sta_dtm AND cp2.eff_end_dtm
+                             AND    ct.pgm_num = cp1.pgm_num
+                             AND    ct.task_abb = #{task_abb}
+                             AND    NOW() BETWEEN ct.eff_sta_dtm AND ct.eff_end_dtm
+                             AND    cp2.page_abb = #{page_abb}
+                             AND    cp2.pgm_num = ct.pgm_num
+                             AND    cp2.task_num = ct.task_num
+                             AND    cp2.mobile_yn = 'Y'
+                            )
+                THEN 'Y'
+                ELSE 'N'
+           END AS is_exist
+  </select>
+  <insert id="insertConnLog" parameterType="HashMap">
+    INSERT INTO cmn_conn_log
+    (
+     time,
+     millisecond,
+     seq,
+     audit_id,
+     audit_dtm,
+     ip,
+     url,
+     query_string,
+     user_num,
+     method,
+     ap_num,
+     container_num
+    )
+    SELECT #{now_dtm} AS time
+         , #{millisec} AS millisecond
+         , IFNULL(MAX(ccl.seq) + 1, 1) AS seq
+         , #{user_num} AS audit_id
+         , NOW() AS audit_dtm
+         , #{ip} AS ip
+         , #{url} AS url
+         , #{query_string} AS query_string
+         , #{user_num} AS user_num
+         , #{method} AS method
+         , #{ap_num} AS ap_num
+         , #{container_num} AS container_num
+    FROM   cmn_conn_log ccl
+    WHERE  ccl.time = #{now_dtm}
+    AND    ccl.millisecond = #{millisec}
+  </insert>
+  <select id="getLastSeqConnLog" parameterType="HashMap" resultType="HashMap">
+    SELECT MAX(ccl.seq) AS seq
+    FROM   cmn_conn_log ccl
+    WHERE  ccl.time = #{now_dtm}
+    AND    ccl.millisecond = #{millisec}
+  </select>
+  <update id="updateConnEndLog" parameterType="HashMap">
+    UPDATE cmn_conn_log
+    SET    end_dtm = #{end_dtm}
+         , end_millisec = #{end_millisec}
+         , response_num = #{response_num}
+         , error_msg = #{error_msg}
+         , audit_id = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  time = #{now_dtm}
+    AND    millisecond = #{millisec}
+    AND    seq = #{seq}
+  </update>
+  <select id="getFileInfo" parameterType="HashMap" resultType="HashMap">
+    SELECT cf.file_num AS file_num
+         , cf.file_nm AS file_nm
+         , (SELECT count(*)
+            FROM   cmn_file_content cfc
+            WHERE  cfc.file_num = cf.file_num
+           ) AS content_cnt
+         , (SELECT sum(length(cfc.content))
+            FROM   cmn_file_content cfc
+            WHERE  cfc.file_num = cf.file_num
+           ) AS file_length
+    FROM   cmn_file cf
+    WHERE  cf.file_key = #{file_key}
+    AND    NOW() BETWEEN cf.eff_sta_dtm AND cf.eff_end_dtm
+  </select>
+  <select id="getFileContent" parameterType="HashMap" resultType="HashMap">
+    SELECT cfc.content AS content
+    FROM   cmn_file_content cfc
+    WHERE  cfc.file_num = #{file_num}
+    AND    cfc.seq = #{seq}
+  </select>
+  <select id="getIsPageExist" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS (SELECT *
+                             FROM   cmn_pgm cp1
+                                  , cmn_task ct
+                                  , cmn_page cp2
+                             WHERE  cp1.pgm_abb = #{pgm_abb}
+                             AND    NOW() BETWEEN cp1.eff_sta_dtm AND cp1.eff_end_dtm
+                             AND    ct.pgm_num = cp1.pgm_num
+                             AND    ct.task_abb = #{task_abb}
+                             AND    NOW() BETWEEN ct.eff_sta_dtm AND ct.eff_end_dtm
+                             AND    cp2.pgm_num = cp1.pgm_num
+                             AND    cp2.task_num = ct.task_num
+                             AND    cp2.page_abb = #{page_abb}
+                             AND    NOW() BETWEEN cp2.eff_sta_dtm AND cp2.eff_end_dtm
+                            )
+                THEN 'Y'
+                ELSE 'N'
+           END AS is_page_exists
   </select>
 </mapper>

@@ -8,11 +8,11 @@
     <param name="password" value="ZF4tq#LYo!"/>
     <param name="sql" value="INSERT INTO cmn_app_log(datetime, millisec, log_typ, class_nm, method_nm, log_msg) VALUES('%d{yyyy-MM-dd HH:mm:ss}', '%d{SSS}', '%p','%C','%M','%m')"/>
   </appender>
-  <logger name="debug">
-    <level value="warn"/>
+  <logger name="com">
+    <level value="debug"/>
   </logger>
   <root>
-    <level value="debug"/>
+    <level value="warn"/>
     <appender-ref ref="db"/>
   </root>     
 </log4j:configuration>

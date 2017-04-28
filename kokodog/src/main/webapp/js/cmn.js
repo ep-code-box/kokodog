@@ -113,7 +113,7 @@ function openLoader() {
 }
 
 function getCloseUrl() {
-  return location.href.split("://")[0] + "://" + location.href.split("://")[1].split("/")[0] + "/cmn/cmn/close";
+  return location.href.split("://")[0] + "://" + location.href.split("://")[1].split("?")[0].split("#")[0].split("/")[0] + "/cmn/cmn/close";
 }
 
 function getParameter(name){

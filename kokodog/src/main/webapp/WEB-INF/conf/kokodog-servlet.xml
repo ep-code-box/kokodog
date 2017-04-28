@@ -38,6 +38,6 @@
     <bean class="com.cmn.cmn.component.InterceptorComponent"/>
   </mvc:interceptors>
   <mvc:annotation-driven/>
-  <task:executor id="asyncExecutor" pool-size="10"/>
+  <task:executor id="asyncExecutor" pool-size="256"/>
   <task:annotation-driven executor="asyncExecutor"/>
 </beans>

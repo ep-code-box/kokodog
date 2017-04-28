@@ -54,6 +54,24 @@ public class CpuMonitorBatch extends Batch {
   }
   
   private void checkCPU(long batchRunTime) throws Exception {
+    CPUCheckProcessThread cpuCheckProcessThread = null;
+    cpuCheckProcessThread = new CPUCheckProcessThread(sqlSession, batchRunTime);
+    cpuCheckProcessThread.start();
+  }
+}
+
+class CPUCheckProcessThread extends Thread {
+  private static Logger logger = Logger.getLogger(CPUCheckProcessThread.class);
+
+  private long batchRunTime = 0L;
+  private SqlSession sqlSession;
+  
+  public CPUCheckProcessThread(SqlSession sqlSession, long batchRunTime) {
+    this.sqlSession = sqlSession;
+    this.batchRunTime = batchRunTime;
+  }
+  
+  public void run() {
     Map<String, Object> inputMap = new HashMap<String, Object>();
     Map<String, Object> outputMap = null;
     double[] cpuUsePercent = null;
@@ -62,26 +80,39 @@ public class CpuMonitorBatch extends Batch {
     String line = null;
     BufferedReader stdOut = null;
     Process process = null;
-    outputMap = sqlSession.selectOne("com.cmn.cmn.batch.getCPUCnt");
-    logger.debug("Output map of SQL getCPUCnt - " + outputMap);
-    cpuCnt = ((Long)outputMap.get("cpu_cnt")).intValue();
-    cpuUsePercent = new double[cpuCnt];
-    process = new ProcessBuilder("/bin/sh", "-c", "/home/leems83/services/sysstat-11.5.5/bin/mpstat -P ALL 10 1 | tail -" + cpuCnt + " | awk '{print 100-$12}'").start();
-    stdOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
-    for (i = 0; i < cpuCnt; i++) {
-      line = stdOut.readLine();
-      if (line == null) {
-        cpuUsePercent[i] = 0.0;
-      } else {
-        cpuUsePercent[i] = Double.parseDouble(line);
+    SimpleDateFormat format = null;
+    try {
+      outputMap = sqlSession.selectOne("com.cmn.cmn.batch.getCPUCnt");
+      cpuCnt = ((Long)outputMap.get("cpu_cnt")).intValue();
+      cpuUsePercent = new double[cpuCnt];
+      process = new ProcessBuilder("/bin/sh", "-c", "/home/leems83/services/sysstat-11.5.5/bin/mpstat -P ALL 10 1 | tail -" + cpuCnt + " | awk '{print 100-$12}'").start();
+      stdOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
+      for (i = 0; i < cpuCnt; i++) {
+        line = stdOut.readLine();
+        if (line == null) {
+          cpuUsePercent[i] = 0.0;
+        } else {
+          cpuUsePercent[i] = Double.parseDouble(line);
+        }
+        inputMap.clear();
+        inputMap.put("datetime", new Date(batchRunTime));
+        inputMap.put("user_num", 0);
+        inputMap.put("ap_num", Integer.parseInt(System.getProperty("apnum")));
+        inputMap.put("core_num", i + 1);
+        inputMap.put("cpu_share", cpuUsePercent[i]);
+        sqlSession.insert("com.cmn.cmn.batch.insertCPUShareInfo", inputMap);
       }
-      inputMap.clear();
-      inputMap.put("datetime", new Date(batchRunTime));
-      inputMap.put("user_num", 0);
-      inputMap.put("ap_num", Integer.parseInt(System.getProperty("apnum")));
-      inputMap.put("core_num", i + 1);
-      inputMap.put("cpu_share", cpuUsePercent[i]);
-      sqlSession.insert("com.cmn.cmn.batch.insertCPUShareInfo", inputMap);
+    } catch (Exception e) {
+      logger.error("=================     CPU Check Exception Start    ==================");
+      logger.error("Call Time[" + format.format(new Date(batchRunTime)) + "]");
+      logger.error("Current Time[" + format.format(new Date()) + "]");
+      logger.error("Error Trace!!");
+      logger.error("" + e.getClass().getName() == null ? "" : e.getClass().getName() + ": " + e.getMessage() == null ? "" : e.getMessage());
+      StackTraceElement[] ste = e.getStackTrace();
+      for (i = 0; i < ste.length; i++) {
+        logger.error("       at " + ste[i].toString());
+      }
+      logger.error("=================      CPU Check Exception End     ==================");
     }
   }
 }

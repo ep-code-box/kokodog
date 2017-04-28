@@ -94,7 +94,7 @@ public class AddoptInfoComponent {
                                                    , getServerTimeService.getServerTime()
                                                    , ((Long)connList.get(i).get("seq")).longValue()
                                                    , connList.get(i).get("user_num") == null ? 0 : ((Integer)connList.get(i).get("user_num")).intValue());
-//            ((HttpServletResponse)(connList.get(i).get("response"))).setStatus(408);
+            ((HttpServletResponse)(connList.get(i).get("response"))).sendError(408, ((String)messageService.getErrMessageByMessageNum(7).get("msg")).getBytes("UTF-8"));
 //            ((HttpServletResponse)(connList.get(i).get("response"))).getOutputStream().write(((String)messageService.getErrMessageByMessageNum(7).get("msg")).getBytes("UTF-8"));
 //            ((HttpServletResponse)(connList.get(i).get("response"))).getOutputStream().flush();
             
