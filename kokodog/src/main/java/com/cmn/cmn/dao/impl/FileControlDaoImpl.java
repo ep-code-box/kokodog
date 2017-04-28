@@ -50,9 +50,27 @@ public class FileControlDaoImpl implements FileControlDao {
   }
   
   public void deleteFileDeleteByFileNum(Map<String, Object> inputMap) throws SQLException {
-    logger.debug("============   Start method of FileControlDaoImpl.insertFileContent   ============");    
+    logger.debug("============   Start method of FileControlDaoImpl.insertFileContent   ============");
     logger.debug(" Parameter - inputMap[" + inputMap + "]");
-    sqlSession.delete("com.cmn.cmn.deleteFileDeleteByFileNum", inputMap);    
+    sqlSession.delete("com.cmn.cmn.deleteFileDeleteByFileNum", inputMap);
+  }
+  
+  public Map<String, Object> getFileInfo(Map<String, Object> inputMap) throws SQLException {
+    logger.debug("============   Start method of FileControlDaoImpl.getFileInfo   ============");
+    logger.debug(" Parameter - inputMap[" + inputMap + "]");
+    Map<String, Object> outputMap = null;
+    outputMap = sqlSession.selectOne("com.cmn.cmn.getFileInfo", inputMap);
+    logger.debug(" return - outputMap[" + outputMap + "]");
+    return outputMap;
+  }
+  
+  public Map<String, Object> getFileContent(Map<String, Object> inputMap) throws Exception {
+    logger.debug("============   Start method of FileControlDaoImpl.getFileContent   ============");
+    logger.debug(" Parameter - inputMap[" + inputMap + "]");
+    Map<String, Object> outputMap = null;
+    outputMap = sqlSession.selectOne("com.cmn.cmn.getFileContent", inputMap);
+    logger.debug(" return - outputMap[" + outputMap + "]");
+    return outputMap;      
   }
 }
 

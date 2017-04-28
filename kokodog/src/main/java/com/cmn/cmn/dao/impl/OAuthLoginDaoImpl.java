@@ -81,7 +81,25 @@ public class OAuthLoginDaoImpl implements OAuthLoginDao {
   public List<Map<String, Object>> getGoogleLoginOAuthTokenParameterByRefreshToken() throws SQLException {
     logger.debug("============   Start method of GetGoogleLoginDaoImpl.getGoogleLoginOAuthTokenParameterByRefreshToken   ============");    
     List<Map<String, Object>> outputList = sqlSession.selectList("com.cmn.cmn.getGoogleLoginOAuthTokenParameterByRefreshToken");    
-    logger.debug(" return - inputMap[" + outputList + "]");
+    logger.debug(" return - outputList[" + outputList + "]");
     return outputList;
+  }
+  
+  public Map<String, Object> getIsAccessTokenExist(Map<String, Object> inputMap) throws SQLException {
+    logger.debug("============   Start method of GetGoogleLoginDaoImpl.getIsAccessTokenExist   ============");    
+    logger.debug(" Parameter - inputMap[" + inputMap + "]");
+    Map<String, Object> outputMap = null;
+    outputMap = sqlSession.selectOne("com.cmn.cmn.getIsAccessTokenExist", inputMap);    
+    logger.debug(" return - outputMap[" + outputMap + "]");
+    return outputMap;
+  }
+  
+  public Map<String, Object> getRequestTokenByUserNum(Map<String, Object> inputMap) throws SQLException {
+    logger.debug("============   Start method of GetGoogleLoginDaoImpl.getRequestTokenByUserNum   ============");    
+    logger.debug(" Parameter - inputMap[" + inputMap + "]");
+    Map<String, Object> outputMap = null;
+    outputMap = sqlSession.selectOne("com.cmn.cmn.getRequestTokenByUserNum", inputMap);    
+    logger.debug(" return - outputMap[" + outputMap + "]");
+    return outputMap;    
   }
 }

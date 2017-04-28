@@ -178,4 +178,28 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
     paramList.add(inputMap);
     getDataFromURLService.getDataFromURL("https://accounts.google.com/o/oauth2/revoke", paramList, "GET", "UTF-8", GetDataFromURLService.TYPE_JSON);
   }
+  
+  public boolean getIsAccessTokenExist(int userNum) throws Exception {
+    Map<String, Object> inputMap = new HashMap<String, Object>();
+    Map<String, Object> outputMap = null;
+    inputMap.put("user_num", userNum);
+    outputMap = oAuthLoginDao.getIsAccessTokenExist(inputMap);
+    if (outputMap != null && outputMap.get("is_access_token_exist") != null && outputMap.get("is_access_token_exist").equals("Y") == false) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+  
+  public String getRequestTokenByUserNum(int userNum) throws Exception {
+    Map<String, Object> inputMap = new HashMap<String, Object>();
+    Map<String, Object> outputMap = null;
+    inputMap.put("user_num", userNum);
+    outputMap = oAuthLoginDao.getRequestTokenByUserNum(inputMap);
+    if (outputMap == null) {
+      return null;
+    } else {
+      return (String)outputMap.get("request_token");
+    }
+  }
 }

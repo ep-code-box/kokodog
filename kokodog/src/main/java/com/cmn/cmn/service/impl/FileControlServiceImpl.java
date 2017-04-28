@@ -26,7 +26,7 @@ public class FileControlServiceImpl implements FileControlService {
   private static Logger logger = Logger.getLogger(FileControlServiceImpl.class);
   
   public Map<String, Object> insertFile(InputStream is, String fileName, int userNum, String nowDtm) throws Exception {
-   Map<String, Object> inputMap = new HashMap<String, Object>();
+    Map<String, Object> inputMap = new HashMap<String, Object>();
     byte[] buffer = new byte[FILE_DIV_SIZE];
     int fileNum = 0;
     int readSize = 0;
@@ -72,5 +72,20 @@ public class FileControlServiceImpl implements FileControlService {
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("file_num", fileNum);
     fileControlDao.deleteFileDeleteByFileNum(inputMap);    
+  }
+
+  public Map<String, Object> getFileInfo(String fileKey) throws Exception {
+    Map<String, Object> inputMap = new HashMap<String, Object>();
+    inputMap.put("file_key", fileKey);
+    return fileControlDao.getFileInfo(inputMap);
+  }
+  
+  public byte[] getFileContent(int fileNum, int seq) throws Exception {
+    Map<String, Object> inputMap = new HashMap<String, Object>();
+    Map<String, Object> outputMap = null;
+    inputMap.put("file_num", fileNum);
+    inputMap.put("seq", seq);
+    outputMap = fileControlDao.getFileInfo(inputMap);
+    return (byte[])outputMap.get("content");
   }
 }

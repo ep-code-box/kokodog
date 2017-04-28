@@ -31,22 +31,25 @@ import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.apache.ibatis.session.SqlSession;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Component;
 
+import com.cmn.err.KokodogException;
 import com.cmn.err.UserException;
 import com.cmn.err.SystemException;
 import com.cmn.cmn.component.AddoptInfoComponent;
 import com.cmn.cmn.service.GetServerTimeService;
 import com.cmn.cmn.service.OAuthLoginService;
+import com.cmn.cmn.service.MessageService;
+import com.cmn.cmn.service.PageAuthService;
 
 /**
  *  이 객체는 서블릿 수행 전 혹은 후에 기능을 적용하기 위하여
  *  생성한다.
  */
+@Component
+@EnableAsync
 public class InterceptorComponent extends HandlerInterceptorAdapter {
-  @Autowired
-  private SqlSession sqlSession;
-  
   @Autowired
   private UserException userException;
   
@@ -58,6 +61,15 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
   
   @Autowired
   private OAuthLoginService oAuthLoginService;
+  
+  @Autowired
+  private MessageService messageService;
+  
+  @Autowired
+  private PageAuthService pageAuthService;
+  
+  @Autowired
+  private AddoptInfoComponent addoptInfoComponent;
   
   private static Logger logger = Logger.getLogger(InterceptorComponent.class);
   
@@ -75,15 +87,12 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     RequestDispatcher rd = null;
     Calendar calendar = new GregorianCalendar(TimeZone.getDefault());
     request.setAttribute("now_dtm", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
-    String startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(calendar.getTime());
-    AddoptInfoComponent addoptInfoComponent = new AddoptInfoComponent(request, response, sqlSession, startTime);
-    addoptInfoComponent.start();
-    request.setAttribute("_ADDOPT_INFO", addoptInfoComponent);
+    long connSeq = addoptInfoComponent.newConnList(request, response, ((Long)request.getAttribute("system_call_dtm")).longValue(), (Integer)request.getSession().getAttribute("user_num"), request.getRemoteAddr(), request.getRequestURL().toString(), request.getQueryString(), request.getMethod());
+    request.setAttribute("_REQUEST_CONN_SEQ", connSeq);
     checkLogin(request, response);
     Map<String, String> pgmInfo = getPgmTaskPageName(request.getRequestURI(), request.getMethod());
     if ("GET".equals(request.getMethod()) == true && pgmInfo.get("pgm") != null && pgmInfo.get("pgm").equals("FileDown") == true) {
-      fileDownMain(request, response);
-      return false;
+      return true;
     }
     if (isPageExists(pgmInfo.get("pgm"), pgmInfo.get("task"), pgmInfo.get("page")) == false) {
       throw userException.userException(1);
@@ -96,7 +105,7 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
             url = url + "?" + request.getQueryString();
           }
           response.sendRedirect("/cmn/cmn/login?redirect_url=" + URLEncoder.encode(url, "UTF-8"));
-          addoptInfoComponent.setEndValue(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date()), null);
+          afterCompletion(request, response, null, null);
           return false;
         } else {
           throw userException.userException(4);
@@ -121,27 +130,6 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     */
   @Override
   public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView mav) throws Exception {
-    if (request.getAttribute("_TIME_OUT") != null && ((Boolean)(request.getAttribute("_TIME_OUT"))).booleanValue() == true) {
-      Map<String, Object> inputMap = new HashMap<String, Object>();
-      inputMap.put("msg_num", 7);
-      logger.debug("Input map of SQL getCmnMessageByMsgNum - " + inputMap);
-      Map<String, Object> outputMap = sqlSession.selectOne("getCmnMessageByMsgNum", inputMap);
-      logger.debug("Output map of SQL getCmnMessageByMsgNum  " + outputMap);
-      String msg = (String)outputMap.get("msg");
-      int errTyp = ((Integer)outputMap.get("err_typ")).intValue();
-      if (mav != null) {
-        mav = new ModelAndView();
-        Map<String, Object> returnMap = new HashMap<String, Object>();
-        returnMap.put("error_num", 7);
-        returnMap.put("error_nm", msg);
-        if (request.getMethod().equals("GET") == true) {
-          mav.setViewName("err_" + errTyp);
-        } else {
-          mav.setViewName("jsonView");
-        }
-      }
-      response.setStatus(errTyp);
-    }    
   }
   
   /**
@@ -153,11 +141,22 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     */
   @Override
   public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-    if (request.getAttribute("_TIME_OUT") != null && ((Boolean)(request.getAttribute("_TIME_OUT"))).booleanValue() == true) {
-      return;
+    logger.debug("============   Start method of InterceptorComponent.afterCompletion   ============");
+    int responseNum = 0;
+    String errMsg = null;
+    if (ex instanceof KokodogException == true) {
+      responseNum = ((KokodogException)ex).getErrTyp();
+      errMsg = ((KokodogException)ex).getMessage();
+    } else {
+      if (ex != null) {
+        responseNum = 500;
+        errMsg = ex.getMessage();
+      } else {
+        responseNum = 200;
+      }
     }
-    AddoptInfoComponent t = (AddoptInfoComponent)request.getAttribute("_ADDOPT_INFO");
-    t.setEndValue(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date()), ex);
+    addoptInfoComponent.endConnUpdate(request, response, getServerTimeService.getServerTime(), responseNum, errMsg, ((Long)request.getAttribute("_REQUEST_CONN_SEQ")).longValue()
+                                      , ((Long)request.getAttribute("system_call_dtm")).longValue());
   }
 
   /**
@@ -166,20 +165,16 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     *  @param response - 서블릿 응답이 정의된 response
     */
   private void checkLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("============   Start method of InterceptorComponent.getPgmTaskPageName   ============");
     Map<String, Object> inputMap = new HashMap<String, Object>();
     Map<String, Object> outputMap = null;
+    boolean isAccessTokenExist = false;
+    String refreshToken = null;
     if (request.getSession().getAttribute("user_num") != null) {
-      inputMap.put("user_num", request.getSession().getAttribute("user_num"));
-      logger.debug("Input Map of SQL getIsAccessTokenExist - " + inputMap.toString());
-      outputMap = sqlSession.selectOne("getIsAccessTokenExist", inputMap);
-      logger.debug("Ouput Map of SQL getIsAccessTokenExist - " + outputMap);
-      if (outputMap == null || outputMap.get("is_access_token_exist") == null || ((String)(outputMap.get("is_access_token_exist"))).equals("Y") == false) {
-        inputMap.clear();
-        inputMap.put("user_num", request.getSession().getAttribute("user_num"));
-        logger.debug("Input Map of SQL getCmnRequestTokenByUserNum - " + inputMap);
-        outputMap = sqlSession.selectOne("getCmnRequestTokenByUserNum", inputMap);
-        logger.debug("Ouput Map of SQL getCmnRequestTokenByUserNum - " + outputMap);
-        if (outputMap != null && outputMap.get("request_token") != null) {
+      isAccessTokenExist = oAuthLoginService.getIsAccessTokenExist(((Integer)request.getSession().getAttribute("user_num")).intValue());
+      if (isAccessTokenExist == false) {
+        refreshToken = oAuthLoginService.getRequestTokenByUserNum(((Integer)request.getSession().getAttribute("user_num")).intValue());
+        if (refreshToken != null) {
           outputMap = oAuthLoginService.getAccessTokenByRefreshToken((String)outputMap.get("request_token"));
           oAuthLoginService.insertAccessToken((String)outputMap.get("access_token"), ((Integer)outputMap.get("expires_in")).intValue(), (String)request.getAttribute("now_dtm"), ((Integer)request.getSession().getAttribute("user_num")).intValue());
           request.getSession().setAttribute("user_num", request.getSession().getAttribute("user_num"));
@@ -198,6 +193,8 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     *  @return - 분석한 프로그램, 업무, 페이지명을 포함한 map
     */
   private Map<String, String> getPgmTaskPageName(String uri, String method) throws Exception {
+    logger.debug("============   Start method of InterceptorComponent.getPgmTaskPageName   ============");
+    logger.debug(" Parameter - uri[" + uri + "], method[" + method + "]");
     Map<String, String> returnMap = new HashMap<String, String>();
     String[] seperatedRequestUriTemp = uri.split("/");
     String[] seperatedRequestUri = null;
@@ -234,6 +231,7 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
       returnMap.put("task", "cmn");
       returnMap.put("page", "main");
     }
+    logger.debug(" return - returnMap[" + returnMap + "]");
     return returnMap;
   }
   
@@ -248,17 +246,7 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     logger.debug("============   Start method of InterceptorComponent.isPageExists   ============");
     logger.debug(" Parameter - pgm[" + pgm + "], task[" + task + "], page[" + page + "]");
     boolean ret = false;
-    Map<String, Object> inputMap = new HashMap<String, Object>();
-    inputMap.put("pgm_abb", pgm);
-    inputMap.put("task_abb", task);
-    inputMap.put("page_abb", page);
-    Map<String, Object> outputMap = sqlSession.selectOne("getCmnIsPageExist", inputMap);
-    if (outputMap == null || outputMap.get("is_page_exists") == null || outputMap.get("is_page_exists").equals("Y") == false) {
-      ret = false;
-    } else {
-      ret = true;
-    }
-    logger.debug(" return[" + ret + "]");
+    ret = pageAuthService.getIsPageExist(pgm, task, page);
     return ret;
   }
   
@@ -273,51 +261,10 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     logger.debug("============   Start method of InterceptorComponent.isAuthExists   ============");
     logger.debug(" Parameter - userNum[" + userNum + "], pgm[" + pgm + "], task[" + task + "], page[" + page + "]");
     boolean ret = false;
-    Map<String, Object> inputMap = new HashMap<String, Object>();
-    inputMap.put("pgm_abb", pgm);
-    inputMap.put("task_abb", task);
-    inputMap.put("page_abb", page);
-    inputMap.put("user_num", userNum);
-    Map<String, Object> outputMap = sqlSession.selectOne("getCmnIsLoginAuth", inputMap);
-    if (outputMap == null || outputMap.get("is_auth") == null || outputMap.get("is_auth").equals("Y") == false) {
-      ret = false;
-    } else {
-      ret = true;
-    }
-    logger.debug(" return[" + ret + "]");
+    ret = pageAuthService.getIsLoginAuth(pgm, task, page, userNum);
     return ret;
   }
   
-  private void fileDownMain(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    Map<String, Object> inputMap = new HashMap<String, Object>();
-    inputMap.put("file_key", request.getParameter("file_key"));
-    logger.debug("Input map of SQL getCmnFileInfo - " + inputMap);
-    Map<String, Object> outputMap = sqlSession.selectOne("getCmnFileInfo", inputMap);
-    logger.debug("Output map of SQL getCmnFileInfo - " + outputMap);
-    int contentCnt = ((Long)outputMap.get("content_cnt")).intValue();
-    int fileNum = ((Long)outputMap.get("file_num")).intValue();
-    String fileName = new String((String)outputMap.get("file_nm"));
-    long fileLength = ((BigDecimal)outputMap.get("content_length")).longValue();
-    response.setContentType("application/octet-stream");
-    response.setHeader("Content-Disposition", "attachment; fileName=\"" + URLEncoder.encode(fileName, "UTF-8") + "\";");
-    response.setHeader("Content-Transfer-Encoding", "binary");
-    response.setContentType("application/octet-stream");
-    response.setContentLength((int)fileLength);
-    byte[] fileContent = null;
-    for (int i = 0; i < contentCnt; i++) {
-      inputMap.clear();
-      inputMap.put("file_num", fileNum);
-      inputMap.put("seq", i + 1);
-      logger.debug("Input map of SQL getCmnFileContent - " + inputMap);
-      outputMap = sqlSession.selectOne("getCmnFileContent", inputMap);
-      fileContent = (byte[])outputMap.get("content");
-      response.getOutputStream().write(fileContent);
-      response.getOutputStream().flush();
-      outputMap.clear();
-    }   
-    response.getOutputStream().close();
-  }
-
   private String returnView(HttpServletRequest request, Map<String, String> pgmInfo) throws Exception {
     String userAgent = null;
     boolean isMobile = false;
@@ -337,13 +284,7 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
       isMobile = false;
     }
     if (isMobile == true) {
-      inputMap.put("pgm_abb", pgmInfo.get("pgm"));
-      inputMap.put("task_abb", pgmInfo.get("task"));
-      inputMap.put("page_abb", pgmInfo.get("page"));
-      logger.debug("Input map of SQL getCmnIsMobilePageExist - " + inputMap);
-      outputMap = sqlSession.selectOne("getCmnIsMobilePageExist", inputMap);
-      logger.debug("Output map of SQL getCmnIsMobilePageExist - " + outputMap);
-      if (outputMap != null && outputMap.get("is_exist") != null && outputMap.get("is_exist").equals("Y") == true) {
+      if (pageAuthService.getIsMobilePageExist(pgmInfo.get("pgm"), pgmInfo.get("task"), pgmInfo.get("page")) == true) {
         returnUrl = "m/";
       } else {
         returnUrl = "";

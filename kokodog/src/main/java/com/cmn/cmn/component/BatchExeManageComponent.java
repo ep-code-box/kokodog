@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
 import com.cmn.cmn.component.BatchExeProcessComponent;
+import com.cmn.cmn.component.AddoptInfoComponent;
 import com.cmn.cmn.service.GetServerTimeService;
 import com.cmn.cmn.dao.BatchExeManageDao;
 
@@ -32,6 +33,9 @@ public class BatchExeManageComponent {
   
   @Autowired
   private BatchExeProcessComponent batchExeProcessComponent;
+  
+  @Autowired
+  private AddoptInfoComponent addoptInfoComponent;
   private boolean isClosed;
   private static Logger logger = Logger.getLogger(BatchExeManageComponent.class);
   private boolean isFirstRunning = true;
@@ -53,7 +57,7 @@ public class BatchExeManageComponent {
   public void backgroundProcess() {
     logger.debug("============   Start method of BatchExeManageComponent.run   ============");
     Map<String, Object> inputMap = new HashMap<String, Object>();
-    boolean isClosed = false;
+    isClosed = false;
     long lastMin = 0L;
     int i = 0;
     long lastSecondTemp = 0L;
@@ -61,6 +65,7 @@ public class BatchExeManageComponent {
       return;
     }
     isFirstRunning = true;
+    addoptInfoComponent.run();
     while (isClosed == false) {
       try {
         lastSecondTemp = getServerTimeService.getServerTime() / 1000L;
@@ -102,6 +107,7 @@ public class BatchExeManageComponent {
     boolean allBatchProcess = false;
     inputMap.put("datetime", new Date(currentMin * 1000L));
     inputMap.put("user_id", 0);
+    long batchCheckCurTime = getServerTimeService.getServerTime();
     do {
       tempResult = batchExeManageDao.insertBatchLockDateTime(inputMap);
       if (tempResult == 0) {
@@ -112,7 +118,7 @@ public class BatchExeManageComponent {
       } catch (Exception e) {
         // sleep 오류 시 무시
       }
-    } while (tempResult == 0);
+    } while (tempResult == 0 && (getServerTimeService.getServerTime() - batchCheckCurTime) < 1000);
     inputMap.clear();
     inputMap.put("ap_num", apNum);
     inputMap.put("container_num", containerNum);
@@ -143,7 +149,6 @@ public class BatchExeManageComponent {
       batchProcessPercent = (double)preExeCnt / (double)containerCnt;
     }
     outputList = batchExeManageDao.getBatchNoExeList();
-    logger.debug("Output list of SQL getCmnBatchNoExeList - " + outputList);
     for (i = 0; i < outputList.size(); i++) {
       if (allBatchProcess == true || i < outputList.size() / (containerCnt - preExeCnt + 1)) {
         batchExeProcessComponent.batchExeProcess(((Date)outputList.get(i).get("date_time")).getTime(), (String)outputList.get(i).get("batch_exe_nm"), ((Integer)outputList.get(i).get("batch_num")).intValue());

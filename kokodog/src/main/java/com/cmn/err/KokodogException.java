@@ -21,9 +21,9 @@ public class KokodogException extends RuntimeException {
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("msg_num", messageNum);
     logger.debug("Input Map of getCmnErrorMessage SQL Map - " + inputMap);
-    Map<String, Object> outputMap = sqlSession.selectOne("getCmnErrorMessage", inputMap);
+    Map<String, Object> outputMap = sqlSession.selectOne("com.cmn.cmn.getErrMessageByMessageNum", inputMap);
     logger.debug("Output Map of getCmnErrorMessage SQL Map - " + outputMap);
-    String tempMsg = (String)outputMap.get("message");
+    String tempMsg = (String)outputMap.get("msg");
     if (outputMap.get("err_typ") == null) {
       this.errTyp = 500;
     } else {

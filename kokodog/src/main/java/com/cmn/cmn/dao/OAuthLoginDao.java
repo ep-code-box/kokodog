@@ -15,4 +15,6 @@ public interface OAuthLoginDao {
   public Map<String, Object> getAccessTokenByUserNum(Map<String, Object> inputMap) throws SQLException;
   public void updateAccessTokenAsDelete(Map<String, Object> inputMap) throws SQLException;
   public List<Map<String, Object>> getGoogleLoginOAuthTokenParameterByRefreshToken() throws SQLException;
+  public Map<String, Object> getIsAccessTokenExist(Map<String, Object> inputMap) throws SQLException;
+  public Map<String, Object> getRequestTokenByUserNum(Map<String, Object> inputMap) throws SQLException;
 }

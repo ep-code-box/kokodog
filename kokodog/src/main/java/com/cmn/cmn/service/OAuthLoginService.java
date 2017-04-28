@@ -12,4 +12,6 @@ public interface OAuthLoginService {
   public Map<String, Object> getAccessTokenByRefreshToken(String refreshToken) throws Exception;
   public void deleteOAuthInfo(int userNum, String nowDtm) throws Exception;
   public void revokeToken(String accessToken) throws Exception;
+  public boolean getIsAccessTokenExist(int userNum) throws Exception;
+  public String getRequestTokenByUserNum(int userNum) throws Exception;
 }
