@@ -14,4 +14,6 @@ public interface BatchExeManageDao {
   public Map<String, Object> getCurrentBatchProcessInfo(Map<String, Object> inputMap) throws SQLException;
   public List<Map<String, Object>> getBatchNoExeList() throws SQLException;
   public int updateBatchLockDateTimeToN(Map<String, Object> inputMap) throws SQLException;
+  public Map<String, Object> getLastBatchLockInfo() throws SQLException;
+  public int updateBatchLockDateTimeToYWithY(Map<String, Object> inputMap) throws SQLException;
 }

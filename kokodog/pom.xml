@@ -168,6 +168,20 @@
       <version>4.3.4.RELEASE</version>
     </dependency>
   </dependencies>
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <properties>
+        <webappDirectory>webappdev/ROOT</webappDirectory>
+      </properties>
+    </profile>
+    <profile>
+      <id>prod</id>
+      <properties>
+        <webappDirectory>webapps/ROOT</webappDirectory>
+      </properties>
+    </profile>
+  </profiles>
   <build>
     <plugins>
       <plugin>
@@ -178,8 +192,9 @@
           <compilerVersion>1.8</compilerVersion>
           <encoding>UTF-8</encoding>
           <warSourceDirectory>src/main/webapp</warSourceDirectory>
+          <warSourceExcludes>WEB-INF/conf/**</warSourceExcludes>
           <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-          <webappDirectory>/home/leems83/data/webappdev/ROOT</webappDirectory>
+          <webappDirectory>/home/leems83/data/${webappDirectory}</webappDirectory>
           <goals>
             <goal>exploded</goal>
           </goals>

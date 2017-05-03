@@ -15,7 +15,7 @@ import com.cmn.cmn.batch.Batch;
 public class AnotherServiceStateMonitorBatch extends Batch {
   private static Logger logger = Logger.getLogger(AnotherServiceStateMonitorBatch.class);
   
-  public void run(long batchRunTime, String[] param) throws Exception {
+  public void run(long batchRunTime, String param) throws Exception {
     checkAnotherServerState(batchRunTime);
   }
   

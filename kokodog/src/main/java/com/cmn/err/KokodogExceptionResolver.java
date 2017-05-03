@@ -49,9 +49,9 @@ import com.cmn.cmn.service.GetServerTimeService;
 public class KokodogExceptionResolver {
   @Autowired
   private MessageService messageService;
-	
-	@Autowired
-	private GetServerTimeService getServerTimeService;
+  
+  @Autowired
+  private GetServerTimeService getServerTimeService;
   
   private static Logger logger = Logger.getLogger(KokodogExceptionResolver.class);
 
@@ -102,10 +102,10 @@ public class KokodogExceptionResolver {
   private void printLogForUserException(HttpServletRequest request, UserException ex) throws Exception {
     Enumeration param = request.getParameterNames();
     String queryParam = "";
-	  while (param.hasMoreElements()) {
+    while (param.hasMoreElements()) {
       String key = param.nextElement() + "";
       queryParam = queryParam + URLEncoder.encode(key, "UTF-8") + "=" + URLEncoder.encode(request.getParameter(key), "UTF-8") + "&";
-	  }
+    }
     if (queryParam.equals("") == false) {
       queryParam = queryParam.substring(0, queryParam.length() - 1);
     }
@@ -134,10 +134,10 @@ public class KokodogExceptionResolver {
   private void printLogForSystemException(HttpServletRequest request, KokodogException ex) throws Exception {
     Enumeration param = request.getParameterNames();
     String queryParam = "";
-	  while (param.hasMoreElements()){
+    while (param.hasMoreElements()){
       String key = param.nextElement() + "";
       queryParam = queryParam + URLEncoder.encode(key, "UTF-8") + "=" + URLEncoder.encode(request.getParameter(key), "UTF-8") + "&";
-	  }
+    }
     if (queryParam.equals("") == false) {
       queryParam = queryParam.substring(0, queryParam.length() - 1);
     }
@@ -168,17 +168,18 @@ public class KokodogExceptionResolver {
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public Object exception(HttpServletRequest request, HttpServletResponse response, Exception ex) throws Exception {
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Enumeration param = request.getParameterNames();
     String queryParam = "";
-	  while (param.hasMoreElements()){
+    while (param.hasMoreElements()){
       String key = param.nextElement() + "";
       queryParam = queryParam + URLEncoder.encode(key, "UTF-8") + "=" + URLEncoder.encode(request.getParameter(key), "UTF-8") + "&";
-	  }
+    }
     if (queryParam.equals("") == false) {
       queryParam = queryParam.substring(0, queryParam.length() - 1);
     }
     logger.error("=================     Internal Exception Start    ==================");
-    logger.error("Exception Start Dtm[" + request.getAttribute("now_dtm") + "]");
+    logger.error("Exception Start Dtm[" + format.format(new Date(((Long)request.getAttribute("system_call_dtm")).longValue())) + "]");
     logger.error("Request URI[" + request.getRequestURL().toString() + "]");
     logger.error("Query String[" + queryParam + "]");
     logger.error("UserNum[" + request.getSession().getAttribute("user_num") + "]");
@@ -199,7 +200,7 @@ public class KokodogExceptionResolver {
       Map<String, Object> returnMap = new HashMap<String, Object>();
       returnMap.put("error_nm", outputMap.get("msg"));
       returnMap.put("error_sub_nm", ex.getMessage());
-			response.setStatus(((Integer)returnMap.get("err_typ")).intValue());
+      response.setStatus(((Integer)returnMap.get("err_typ")).intValue());
       return (Object)(new ResponseEntity<Map>(returnMap, HttpStatus.INTERNAL_SERVER_ERROR));
     } else {
       ModelAndView mav = new ModelAndView();

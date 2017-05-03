@@ -16,10 +16,20 @@ import org.apache.ibatis.session.SqlSession;
 
 import com.cmn.cmn.batch.Batch;
 
+/**
+  *  CREATE TABLE `opr_inf_cpu_share_info` (<br/>
+  *    `datetime` datetime NOT NULL,<br/>
+  *    `ap_num` int(2) NOT NULL,<br/>
+  *    `core_num` int(2) NOT NULL,<br/>
+  *    `audit_id` int(10) NOT NULL,<br/>
+  *    `audit_dtm` datetime NOT NULL,<br/>
+  *    `cpu_share` double NOT NULL<br/>
+  *  ) ENGINE=MyISAM DEFAULT CHARSET=utf8;<br/>
+  */
 public class CpuMonitorBatch extends Batch {
   private static Logger logger = Logger.getLogger(CpuMonitorBatch.class);
 
-  public void run(long batchRunTime, String[] param) throws Exception {
+  public void run(long batchRunTime, String param) throws Exception {
     addLog("============   Start method of CpuMonitorBatch.run   ============");
     addLog(" Parameter - batchRunTime[" + batchRunTime + "], param[" + param + "]");
     Map<String, Object> outputMap = new HashMap<String, Object>();
@@ -82,7 +92,7 @@ class CPUCheckProcessThread extends Thread {
     Process process = null;
     SimpleDateFormat format = null;
     try {
-      outputMap = sqlSession.selectOne("com.cmn.cmn.batch.getCPUCnt");
+      outputMap = sqlSession.selectOne("com.opr.inf.batch.getCPUCnt");
       cpuCnt = ((Long)outputMap.get("cpu_cnt")).intValue();
       cpuUsePercent = new double[cpuCnt];
       process = new ProcessBuilder("/bin/sh", "-c", "/home/leems83/services/sysstat-11.5.5/bin/mpstat -P ALL 10 1 | tail -" + cpuCnt + " | awk '{print 100-$12}'").start();
@@ -100,7 +110,7 @@ class CPUCheckProcessThread extends Thread {
         inputMap.put("ap_num", Integer.parseInt(System.getProperty("apnum")));
         inputMap.put("core_num", i + 1);
         inputMap.put("cpu_share", cpuUsePercent[i]);
-        sqlSession.insert("com.cmn.cmn.batch.insertCPUShareInfo", inputMap);
+        sqlSession.insert("com.opr.inf.batch.insertCPUShareInfo", inputMap);
       }
     } catch (Exception e) {
       logger.error("=================     CPU Check Exception Start    ==================");

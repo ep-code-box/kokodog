@@ -20,7 +20,14 @@ function cmnASyncCall(tpNm, param, callbackFunc, callbackVar, callbackErr) {
 }
 
 function cmnCall(tpNm, param, callbackFunc, callbackVar, isASync, callbackErr) {
-  var uriSplit =  location.href.substring(location.href.indexOf("://") + 3, location.href.indexOf("?") >= 0 ? location.href.indexOf("?") : location.href.length).split("/");
+  var urlLengthPos = location.href.indexOf("?");
+  if (urlLengthPos < 0 || urlLengthPos > location.href.indexOf("#")) {
+    urlLengthPos = location.href.indexOf("#");
+  }
+  if (urlLengthPos < 0) {
+    urlLengthPos = location.href.length;
+  }
+  var uriSplit =  location.href.substring(location.href.indexOf("://") + 3, urlLengthPos).split("/");
   var pgm = null;
   var task = null;
   var page = null;

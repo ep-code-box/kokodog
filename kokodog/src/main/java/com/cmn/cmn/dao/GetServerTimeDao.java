@@ -1,5 +1,5 @@
 /*
- * Title : GetServerTimeDaoImpl
+ * Title : GetServerTimeDao
  *
  * @Version : 1.0
  *

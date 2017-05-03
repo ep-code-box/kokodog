@@ -44,8 +44,23 @@ import com.cmn.cmn.service.MessageService;
 import com.cmn.cmn.service.PageAuthService;
 
 /**
- *  이 객체는 서블릿 수행 전 혹은 후에 기능을 적용하기 위하여
- *  생성한다.
+ *  이 객체는 서블릿 수행 전 혹은 후에 모든 커넥션에 적용되어야 할 기능을 정의하기 위하여
+ *  생성한다.<br/>
+ *  역할은 다음과 같다.
+ *  <ul>
+ *  <li>서블릿 호출 시 사전 작업</li>
+ *  <ul>
+ *  <li>A. 페이지 존재 확인</li>
+ *  <li>B. 페이지 권한 확인</li>
+ *  <li>C. 모바일 페이지 존재 여부 확인</li>
+ *  <li>D. 메서드별 호출 내용 정의 - GET메서드는 페이지 리턴, POST메서드는 JSON 형식의 응답 리턴</li>
+ *  <li>E. 커넥션 로그 DB에 기록</li>
+ *  </ul>
+ *  <li> 서블릿 종료 시 사후 작업</li>
+ *  <ul>
+ *  <li> 커넥션 종료 시 종료 로그 DB에 기록</li>
+ *  </ul>
+ *  </ul>
  */
 @Component
 @EnableAsync

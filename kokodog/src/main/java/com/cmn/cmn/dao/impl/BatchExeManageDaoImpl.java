@@ -86,4 +86,19 @@ public class BatchExeManageDaoImpl implements BatchExeManageDao {
     logger.debug(" return[" + returnNum + "]");
     return returnNum;
   }
+
+  public Map<String, Object> getLastBatchLockInfo() throws SQLException {
+    logger.debug("============   Start method of BatchExeManageDaoImpl.getLastBatchLockInfo   ============");
+    Map<String, Object> outputMap = sqlSession.selectOne("com.cmn.cmn.getLastBatchLockInfo");
+    logger.debug(" return[" + outputMap + "]");
+    return outputMap;
+  }
+
+  public int updateBatchLockDateTimeToYWithY(Map<String, Object> inputMap) throws SQLException {
+    logger.debug("============   Start method of BatchExeManageDaoImpl.updateBatchLockDateTimeToYWithY   ============");
+    logger.debug(" Parameter - inputMap[" + inputMap + "]");
+    int returnNum = sqlSession.update("com.cmn.cmn.updateBatchLockDateTimeToYWithY", inputMap);
+    logger.debug(" return[" + returnNum + "]");
+    return returnNum;
+  }
 }

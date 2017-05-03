@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.opr.inf.batch">
+  <insert id="insertMemoryInfo" parameterType="HashMap">
+    INSERT INTO opr_inf_memory
+    (datetime,
+     ap_num,
+     container_num,
+     audit_id,
+     audit_dtm,
+     free_memory,
+     total_memory
+    ) VALUES (
+     #{datetime},
+     #{ap_num},
+     #{container_num},
+     #{user_num},
+     NOW(),
+     #{free_memory},
+     #{total_memory}
+    )
+  </insert>
+  <insert id="insertCPUShareInfo" parameterType="HashMap">
+    INSERT INTO opr_inf_cpu_share_info
+    (datetime,
+     ap_num,
+     core_num,
+     audit_id,
+     audit_dtm,
+     cpu_share
+    )
+    SELECT #{datetime} AS datetime
+         , #{ap_num} AS ap_num
+         , #{core_num} AS core_num
+         , #{user_num} AS audit_id
+         , NOW() AS audit_dtm
+         , #{cpu_share} AS cpu_share
+    FROM   DUAL
+    WHERE  NOT EXISTS (SELECT *
+                       FROM   opr_inf_cpu_share_info oicsi
+                       WHERE  oicsi.datetime = #{datetime}
+                       AND    oicsi.ap_num = #{ap_num}
+                       AND    oicsi.core_num = #{core_num}
+                      )
+  </insert>
+  <select id="getCPUCnt" parameterType="HashMap" resultType="HashMap">
+    SELECT CAST(ccd.cd_seq_name AS INTEGER) AS cpu_cnt
+    FROM   cmn_cd_dtl ccd
+    WHERE  ccd.cd_num = 26
+    AND    NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
+  </select>
+  <select id="getIsPrevMemoryInfoBatchExist" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS (SELECT *
+                             FROM   cmn_batch_exe_hst cbeh
+                             WHERE  cbeh.batch_num IN (SELECT CAST(ccd.cd_seq_name AS INTEGER) AS batch_num
+                                                       FROM   cmn_cd_dtl ccd 
+                                                       WHERE  ccd.cd_num = 30
+                                                       AND    CAST(ccd.cd_seq_name AS INTEGER) &lt;&gt; #{batch_num}
+                                                      )
+                           AND    cbeh.exe_dtm = #{exe_dtm}
+                           AND    cbeh.ap_num = #{ap_num}
+                           AND    cbeh.container_num = #{container_num}
+                           AND    cbeh.batch_exe_state = 1
+                          )
+                THEN 'Y'
+                ELSE 'N'
+           END AS is_exist
+  </select>
+  <delete id="deleteBatchHist" parameterType="HashMap">
+    DELETE
+    FROM   cmn_batch_exe_hst cbeh
+    WHERE  cbeh.batch_num = #{batch_num}
+    AND    cbeh.exe_dtm = #{exe_dtm}
+    AND    cbeh.batch_exe_state = 1
+  </delete>
+</mapper>
