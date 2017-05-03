@@ -1,0 +1,181 @@
+.header {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  display: block;
+  width: 100%;
+  height: auto;
+  background-color: #0098ff;
+}
+
+body {
+  overflow: hidden;
+}
+
+.body_sub {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  right: 2px;
+  bottom: 2px;
+  min-height: auto;
+  min-width: auto;
+}
+
+.top_main_grid {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  right: 0px;
+  width: 100%;
+  height: 50px;
+  background-color: #62b6ee;
+  box-shadow: 1px 1px 3px 0 #000;
+}
+
+.top_menu_bar {
+  position: absolute;
+  left: 0px;
+  top: 52px;
+  right: 0px;
+  width: 100%;
+  height: 30px;
+}
+
+.top_menu_icon {
+  position: absolute;
+  left: 0px;
+  top: 84px;
+  right: 0px;
+  overflow: visible;
+  height: 40px;
+}
+
+.content {
+  position: absolute;
+  left: 0px;
+  top: 126px;
+  right: 0px;
+  bottom: 0px;
+  width: 100%;
+}
+
+.left_right_splitter_component {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+}
+
+.left_splitter {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 300px;
+  height: 100%;
+}
+
+.right_splitter {
+  position: absolute;
+  left: 300px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+}
+
+.search_text {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  right: 5px;
+  height: 30px;
+}
+
+.data_list {
+  position: absolute;
+  left: 5px;
+  top: 40px;
+  right: 5px;
+  bottom: 5px;
+}
+
+.source_data {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  right: 5px;
+  bottom: 5px;
+}
+
+#source_data_component {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.save_config_window {
+  height: 350px;
+  width: 500px;
+}
+
+.save_config_img_name_txt {
+  position: absolute;
+  left: 10px;
+  top: 50px;
+  right: 10px;
+  height: 30px;  
+}
+
+.save_config_img_memo_txt {
+  position: absolute;
+  left: 10px;
+  top: 90px;
+  right: 10px;
+  height: 30px;  
+}
+
+.mulitplefileuploader {
+  position: absolute;
+  left: 10px;
+  top: 130px;
+  right: 10px;
+  height: 180px;  
+}
+
+.save_config_dbio_ok_but {
+  position: absolute;
+  width: 50px;
+  height: 20px;
+  right: 90px;
+  bottom: 20px;  
+}
+
+.save_config_dbio_cancel_but {
+  position: absolute;
+  width: 50px;
+  height: 20px;
+  right: 20px;
+  bottom: 20px;  
+}
+
+.top_main_banner {
+  position:absolute;
+  left:10px;
+  top:5px;
+  height:40px;
+  width:40px;
+}
+
+.img_top_main_banner {
+  position:absolute;
+  left:0;
+  width:100%;
+  height:100%;
+  top:0;
+}

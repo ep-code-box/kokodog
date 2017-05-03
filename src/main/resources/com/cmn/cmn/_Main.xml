@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmn.cmn">
+  <select id="getGoogleLoginOAuthRedirectUri" parameterType="HashMap" resultType="HashMap">
+    SELECT ccd.cd_seq_name AS redirect_uri
+    FROM   cmn_cd_dtl ccd
+    WHERE  ccd.cd_num = 6
+    AND    NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
+  </select>
+  <select id="getServerTime" resultType="HashMap">
+    SELECT NOW(3) AS datetime
+  </select>
+  <update id="updateAllBatchExeError" parameterType="HashMap">
+    UPDATE cmn_batch_exe_hst
+    SET    batch_exe_err_num = 3
+         , batch_exe_state = 3
+         , batch_err_report = 'BATCH PROCESS ENDED BY FORCE DETERMINATION SYSTEM'
+         , real_end_dtm = NOW()
+         , audit_id = 0
+         , audit_dtm = NOW()
+    WHERE  ap_num = #{ap_num}
+    AND    container_num = #{container_num}
+    AND    batch_exe_state = 1
+  </update>
+  <insert id="insertBatchLockDateTime" parameterType="HashMap">
+    INSERT INTO cmn_batch_lock_tmp
+    (datetime,
+     audit_id,
+     audit_dtm,
+     lock_yn,
+     ap_num,
+     container_num
+    ) 
+    SELECT #{datetime} AS datetime
+         , #{user_id} AS audit_id
+         , NOW() AS audit_dtm
+         , 'Y' AS lock_yn
+         , #{ap_num} AS ap_num
+         , #{container_num} AS container_num
+    FROM   DUAL
+    WHERE  0 = (SELECT COUNT(*)
+                FROM   cmn_batch_lock_tmp cblt
+               )
+  </insert>
+  <update id="updateBatchLockDateTimeToY" parameterType="HashMap">
+    UPDATE cmn_batch_lock_tmp
+    SET    datetime = #{datetime}
+         , lock_yn = 'Y'
+         , audit_id = #{user_id}
+         , audit_dtm = NOW()
+         , ap_num = #{ap_num}
+         , container_num = #{container_num}
+    WHERE  lock_yn = 'N'
+  </update>
+  <select id="getIsExistPreBatchProcess" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS (SELECT *
+                             FROM   cmn_batch_proc_attm_hst cbpah
+                             WHERE  cbpah.datetime = #{datetime}
+                             AND    cbpah.ap_num = #{ap_num}
+                             AND    cbpah.container_num = #{container_num}
+                           )
+                THEN 'Y'
+                ELSE 'N'
+           END AS is_exist
+  </select>
+  <insert id="insertBatchProcessHstWithoutLast" parameterType="HashMap">
+    INSERT INTO cmn_batch_proc_attm_hst
+    (datetime,
+     ap_num,
+     container_num,
+     audit_id,
+     audit_dtm
+    )
+    SELECT #{datetime} AS datetime
+         , #{ap_num} AS ap_num
+         , #{container_num} AS container_num
+         , #{user_num} AS audit_id
+         , NOW() AS audit_dtm
+    FROM   DUAL
+    WHERE  (SELECT COUNT(*)
+            FROM   cmn_cd_dtl ccd
+            WHERE  ccd.cd_num = 25
+            AND    NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
+           ) &gt;= (SELECT COUNT(*) + 1
+                FROM   cmn_batch_proc_attm_hst cbpah
+                WHERE  cbpah.datetime = #{datetime}
+               )
+  </insert>
+  <insert id="insertBatchProcessHst" parameterType="HashMap">
+    INSERT INTO cmn_batch_proc_attm_hst
+    (datetime,
+     ap_num,
+     container_num,
+     audit_id,
+     audit_dtm
+    ) VALUES (
+     #{datetime},
+     #{ap_num},
+     #{container_num},
+     #{user_num},
+     NOW()
+    )
+  </insert>
+  <select id="getCurrentBatchProcessInfo" parameterType="HashMap" resultType="HashMap">
+    SELECT (SELECT COUNT(*) AS pre_exe_cnt
+            FROM   cmn_batch_proc_attm_hst cbpah
+            WHERE  cbpah.datetime = #{datetime}
+           ) AS pre_exe_cnt
+         , (SELECT COUNT(*) AS container_cnt
+            FROM   cmn_cd_dtl ccd
+            WHERE  ccd.cd_num = 25
+            AND    NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
+           ) AS container_cnt
+  </select>
+  <select id="getBatchNoExeList" parameterType="HashMap" resultType="HashMap">
+    SELECT cb.batch_num AS batch_num
+         , cb.batch_exe_nm AS batch_exe_nm
+         , ADDTIME(cd.date, cb.start_time + INTERVAL ci.int_num MINUTE) AS date_time
+         , cd.date AS date
+         , cb.start_time + INTERVAL ci.int_num MINUTE AS time
+         , cb.exe_param AS exe_param
+    FROM   cmn_batch cb
+         , cmn_int ci
+         , cmn_date cd
+    WHERE  NOW() BETWEEN cb.eff_sta_dtm AND cb.eff_end_dtm
+    AND    NOT EXISTS (SELECT *
+                       FROM   cmn_batch_exe_hst cbeh
+                       WHERE  cbeh.batch_num = cb.batch_num
+                       AND    DATE(cbeh.exe_dtm) = cd.date
+                       AND    TIME(cbeh.exe_dtm) = cb.start_time + INTERVAL ci.int_num MINUTE
+                       AND    (cbeh.batch_exe_state IN ('1', '2')
+                               OR (cbeh.batch_exe_state = '3'
+                                   AND cb.auto_rerun &lt;&gt; 'Y')
+                              )
+                      )
+    AND    cd.date = CURDATE() - INTERVAL 1 DAY
+    AND    DATE(cb.eff_sta_dtm) &lt;= cd.date
+    AND    DATE(cb.eff_end_dtm) &gt;= cd.date
+    AND    (((cb.period = 0 OR cb.period IS NULL) AND ci.int_num = 0) OR (ci.int_num % cb.period = 0))
+    AND    ((cb.start_time + INTERVAL ci.int_num MINUTE &lt;= cb.end_time) OR cb.end_time IS NULL)
+    AND    ci.int_num &lt; 24 * 60
+    AND    ci.int_num &gt;= 0
+    AND    ((cd.holy_yn = 'Y' AND cb.holy_yn = 'Y') OR (cd.holy_yn = 'N' AND cb.week_yn = 'Y'))
+    UNION ALL
+    SELECT cb.batch_num AS batch_num
+         , cb.batch_exe_nm AS batch_exe_nm
+         , ADDTIME(cd.date, cb.start_time + INTERVAL ci.int_num MINUTE) AS date_time
+         , cd.date AS date
+         , cb.start_time + INTERVAL ci.int_num MINUTE AS time
+         , cb.exe_param AS exe_param
+    FROM   cmn_batch cb
+         , cmn_int ci
+         , cmn_date cd
+    WHERE  NOW() BETWEEN cb.eff_sta_dtm AND cb.eff_end_dtm
+    AND    NOT EXISTS (SELECT *
+                       FROM   cmn_batch_exe_hst cbeh
+                       WHERE  cbeh.batch_num = cb.batch_num
+                       AND    DATE(cbeh.exe_dtm) = cd.date
+                       AND    TIME(cbeh.exe_dtm) = cb.start_time + INTERVAL ci.int_num MINUTE
+                       AND    (cbeh.batch_exe_state IN ('1', '2')
+                               OR (cbeh.batch_exe_state = '3'
+                                   AND cb.auto_rerun &lt;&gt; 'Y')
+                              )
+                      )
+    AND    cd.date = CURDATE()
+    AND    DATE(cb.eff_sta_dtm) &lt;= cd.date
+    AND    DATE(cb.eff_end_dtm) &gt;= cd.date
+    AND    cb.start_time + INTERVAL ci.int_num MINUTE &lt;= TIME(NOW())
+    AND    (((cb.period = 0 OR cb.period IS NULL) AND ci.int_num = 0) OR (ci.int_num % cb.period = 0))
+    AND    ci.int_num &lt; 24 * 60
+    AND    ci.int_num &gt;= 0
+    AND    ((cb.start_time + INTERVAL ci.int_num MINUTE &lt;= cb.end_time) OR cb.end_time IS NULL)
+    AND    ((cd.holy_yn = 'Y' AND cb.holy_yn = 'Y') OR (cd.holy_yn = 'N' AND cb.week_yn = 'Y'))
+    ORDER BY 3, 4, 1
+  </select>
+  <update id="updateBatchLockDateTimeToN" parameterType="HashMap">
+    UPDATE cmn_batch_lock_tmp
+    SET    lock_yn = 'N'
+         , audit_id = #{user_id}
+         , audit_dtm = NOW()
+    WHERE  ap_num = #{ap_num}
+    AND    container_num = #{container_num}
+  </update>
+  <select id="getLastBatchLockInfo" parameterType="HashMap" resultType="HashMap">
+    SELECT cblt.datetime AS datetime
+    FROM   cmn_batch_lock_tmp cblt
+  </select>
+  <update id="updateBatchLockDateTimeToYWithY" parameterType="HashMap">
+    UPDATE cmn_batch_lock_tmp
+    SET    datetime = #{datetime}
+         , lock_yn = 'Y'
+         , audit_id = #{user_id}
+         , audit_dtm = NOW()
+         , ap_num = #{ap_num}
+         , container_num = #{container_num}
+  </update>
+  <insert id="insertBatchExeProcess" parameterType="HashMap">
+    INSERT INTO cmn_batch_exe_hst
+    (batch_num,
+     exe_dtm,
+     seq,
+     audit_id,
+     audit_dtm,
+     real_exe_dtm,
+     real_end_dtm,
+     batch_exe_state,
+     batch_exe_err_num,
+     batch_result_report,
+     batch_proc_log_report,
+     batch_err_report,
+     ap_num,
+     container_num
+    )
+    SELECT #{batch_num} AS batch_num
+         , #{exe_dtm} AS exe_dtm
+         , IFNULL(MAX(cbeh.seq) + 1, 1) AS seq
+         , 0 AS audit_id
+         , NOW() AS audit_dtm
+         , NOW() AS real_exe_dtm
+         , NULL AS real_end_dtm
+         , 1 AS batch_exe_state
+         , NULL AS batch_exe_err_num
+         , NULL AS batch_result_report
+         , NULL AS batch_proc_log_report
+         , NULL AS batch_err_report
+         , #{ap_num} AS ap_num
+         , #{container_num} AS container_num
+    FROM   cmn_batch_exe_hst cbeh
+    WHERE  cbeh.batch_num = #{batch_num}
+    AND    cbeh.exe_dtm = #{exe_dtm}
+  </insert>
+  <update id="updateErrReport" parameterType="HashMap">
+    UPDATE cmn_batch_exe_hst cbeh
+    SET    cbeh.batch_err_report = #{err_report}
+         , cbeh.audit_dtm = NOW()
+         , cbeh.batch_exe_state = 3
+         , cbeh.batch_exe_err_num = #{err_num}
+    WHERE  cbeh.batch_num = #{batch_num}
+    AND    cbeh.exe_dtm = #{exe_dtm}
+    AND    cbeh.batch_exe_state = 1
+  </update>
+  <update id="updateBatchFinishResult" parameterType="HashMap">
+    UPDATE cmn_batch_exe_hst cbeh
+    SET    cbeh.real_end_dtm = NOW()
+         , cbeh.batch_exe_state = 2
+         , cbeh.audit_dtm = NOW()
+         , cbeh.batch_result_report = #{batch_result_report}
+    WHERE  cbeh.batch_num = #{batch_num}
+    AND    cbeh.exe_dtm = #{exe_dtm}
+    AND    cbeh.batch_exe_state = 1
+  </update>
+  <select id="getGoogleLoginOAuthTokenParameter" parameterType="HashMap" resultType="HashMap">
+    SELECT ccd1.cd_seq_name AS oauth_login_token_key
+         , ccd2.cd_seq_name AS oauth_login_token_value
+    FROM   cmn_cd_dtl ccd1
+         , cmn_cd_dtl ccd2
+    WHERE  ccd1.cd_num = 3
+    AND    ccd2.cd_num = 4
+    AND    ccd1.cd_seq = ccd2.cd_seq
+    AND    NOW() BETWEEN ccd1.eff_sta_dtm AND ccd1.eff_end_dtm
+    AND    NOW() BETWEEN ccd2.eff_sta_dtm AND ccd2.eff_end_dtm
+  </select>
+  <select id="getUserNumByOAuthLoginId" parameterType="HashMap" resultType="HashMap">
+    SELECT cu.user_num AS user_num
+    FROM   cmn_user cu
+    WHERE  cu.google_id = #{google_id}
+    AND    NOW() BETWEEN cu.eff_sta_dtm AND cu.eff_end_dtm
+  </select>
+  <insert id="insertUser" parameterType="HashMap">
+    INSERT INTO cmn_user
+    (
+      user_num,
+      eff_end_dtm,
+      audit_id,
+      audit_dtm,
+      google_id,
+      email,
+      eff_sta_dtm
+    )
+    SELECT IFNULL(MAX(cu.user_num) + 1, 1) AS user_num,
+           '9999-12-31 23:59:59' AS eff_end_dtm,
+           IFNULL(MAX(cu.user_num) + 1, 1) AS audit_id,
+           NOW() AS audit_dtm,
+           #{google_id} AS google_id,
+           #{email} AS email,
+           #{now_dtm} AS eff_sta_dtm
+    FROM   cmn_user cu
+  </insert>
+  <insert id="insertAccessToken" parameterType="HashMap">
+    INSERT INTO cmn_access_token
+    (
+      user_num,
+      expire_dtm,
+      audit_id,
+      audit_dtm,
+      access_token,
+      eff_sta_dtm
+    )
+    VALUES
+    (
+     #{user_num},
+     #{now_dtm} + INTERVAL #{expires_in} SECOND,
+     #{user_num},
+     NOW(),
+     #{access_token},
+     #{now_dtm}
+    )
+  </insert>
+  <insert id="insertAllInitAuth" parameterType="HashMap">
+    INSERT INTO cmn_user_auth
+    (
+      user_num,
+      auth_num,
+      eff_end_dtm,
+      audit_id,
+      audit_dtm,
+      eff_sta_dtm
+    )
+    SELECT #{user_num} AS user_num,
+           ca.auth_num AS auth_num,
+           '9999-12-31 23:59:59' AS eff_end_dtm,
+           #{user_num} AS audit_id,
+           NOW() AS audit_dtm,
+           #{now_dtm} AS eff_sta_dtm
+    FROM   cmn_auth ca
+    WHERE  ca.auth_init = 'Y'
+    AND    NOW() BETWEEN ca.eff_sta_dtm AND ca.eff_end_dtm
+  </insert>
+  <update id="updatePrevRefreshTokenAsDelete" parameterType="HashMap">
+    UPDATE cmn_refresh_token
+    SET    eff_end_dtm = #{now_dtm} - INTERVAL 1 SECOND
+         , audit_id = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  user_num = #{user_num}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
+  <insert id="insertRefreshToken" parameterType="HashMap">
+    INSERT INTO cmn_refresh_token
+    (
+      user_num,
+      eff_end_dtm,
+      audit_id,
+      audit_dtm,
+      access_token,
+      eff_sta_dtm
+    )
+    VALUES
+    (
+     #{user_num},
+     '9999-12-31 23:59:59',
+     #{user_num},
+     NOW(),
+     #{refresh_token},
+     #{now_dtm}
+    )
+  </insert>
+  <select id="getAccessTokenByUserNum" parameterType="HashMap" resultType="HashMap">
+    SELECT cat.access_token AS access_token
+    FROM   cmn_access_token cat
+    WHERE  cat.user_num = #{user_num}
+    AND    NOW() BETWEEN cat.eff_sta_dtm AND cat.expire_dtm
+  </select>
+  <update id="updateAccessTokenAsDelete" parameterType="HashMap">
+    UPDATE cmn_access_token
+    SET    expire_dtm = #{now_dtm} - INTERVAL 1 SECOND
+         , audit_id = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  user_num = #{user_num}
+    AND    NOW() BETWEEN eff_sta_dtm AND expire_dtm
+  </update>
+  <select id="getGoogleLoginOAuthTokenParameterByRefreshToken" parameterType="HashMap" resultType="HashMap">
+    SELECT ccd1.cd_seq_name AS oauth_login_token_key
+         , ccd2.cd_seq_name AS oauth_login_token_value
+    FROM   cmn_cd_dtl ccd1
+         , cmn_cd_dtl ccd2
+    WHERE  ccd1.cd_num = 13
+    AND    ccd2.cd_num = 14
+    AND    ccd1.cd_seq = ccd2.cd_seq
+    AND    NOW() BETWEEN ccd1.eff_sta_dtm AND ccd1.eff_end_dtm
+    AND    NOW() BETWEEN ccd2.eff_sta_dtm AND ccd2.eff_end_dtm
+  </select>
+  <select id="getIsExistFileKeyByKey" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS(SELECT *
+                            FROM   cmn_file cf
+                            WHERE  cf.file_key = #{key}
+                            AND    NOW() BETWEEN cf.eff_sta_dtm AND cf.eff_end_dtm
+                           )
+                THEN 'Y'
+                ELSE 'N'
+           END AS is_file_key_exist
+  </select>
+  <insert id="insertFile" parameterType="HashMap">
+    INSERT INTO cmn_file
+    (file_num,
+     eff_end_dtm,
+     audit_id,
+     audit_dtm,
+     file_key,
+     file_nm,
+     eff_sta_dtm
+    )
+    SELECT IFNULL(MAX(cf.file_num) + 1, 1) AS file_num
+         , '9999-12-31 23:59:59' AS eff_end_dtm
+         , #{user_num} AS audit_id
+         , NOW() AS audit_dtm
+         , #{file_key} AS file_key
+         , #{file_nm} AS file_nm
+         , #{now_dtm} AS eff_sta_dtm
+    FROM   cmn_file cf
+  </insert>
+  <select id="getLastFileNum" parameterType="HashMap" resultType="HashMap">
+    SELECT MAX(file_num) AS file_num
+    FROM   cmn_file
+  </select>
+  <update id="insertFileContent" parameterType="HashMap">
+    INSERT INTO cmn_file_content
+    (file_num,
+     seq,
+     audit_id,
+     audit_dtm,
+     content
+    )
+    SELECT #{file_num} AS file_num
+         , IFNULL(MAX(cfc.seq) + 1, 1) AS seq
+         , #{user_num} AS audit_id
+         , NOW() AS audit_dtm
+         , #{content} AS content
+    FROM   cmn_file_content cfc
+    WHERE  cfc.file_num = #{file_num}
+  </update>
+  <delete id="deleteFileDeleteByFileNum" parameterType="HashMap">
+    DELETE
+    FROM   cmn_file_content
+    WHERE  file_num = #{file_num}
+  </delete>
+  <select id="getAllCodeListValFromCodeNum" parameterType="HashMap" resultType="HashMap">
+    SELECT ccd.cd_seq AS cd_seq
+         , ccd.cd_seq_name AS cd_seq_name
+    FROM   cmn_cd_dtl ccd
+         , cmn_cd_spc ccs
+    WHERE  NOW() BETWEEN ccs.eff_sta_dtm AND ccs.eff_end_dtm
+    AND    NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
+    AND    ccd.cd_num = #{cd_num}
+    AND    ccs.cd_num = ccd.cd_num
+  </select>
+  <select id="getErrMessageByMessageNum" parameterType="HashMap" resultType="HashMap">
+    SELECT cm.msg_txt AS msg
+         , cm.err_typ AS err_typ
+    FROM   cmn_msg cm
+    WHERE  cm.msg_num = #{msg_num}
+    AND    NOW() BETWEEN cm.eff_sta_dtm AND cm.eff_end_dtm
+  </select>
+  <select id="getIsAccessTokenExist" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS (SELECT *
+                             FROM   cmn_access_token cat
+                             WHERE  cat.user_num = #{user_num}
+                             AND    NOW() BETWEEN cat.eff_sta_dtm AND (cat.expire_dtm - INTERVAL 1 SECOND)
+                            )
+                THEN 'Y'
+                ELSE 'N'
+            END AS is_access_token_exist
+  </select>
+  <select id="getRequestTokenByUserNum" parameterType="HashMap" resultType="HashMap">
+    SELECT crt.refresh_token
+    FROM   cmn_refresh_token crt
+    WHERE  crt.user_num = #{user_num}
+    AND    NOW() BETWEEN crt.eff_sta_dtm AND crt.eff_end_dtm
+  </select>
+  <select id="getIsLoginAuth" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS (SELECT *
+                             FROM   cmn_pgm cp1
+                                  , cmn_task ct
+                                  , cmn_page cp2
+                                  , cmn_page_auth cpa
+                             WHERE  cp1.pgm_abb = #{pgm_abb}
+                             AND    NOW() BETWEEN cp1.eff_sta_dtm AND cp1.eff_end_dtm
+                             AND    ct.pgm_num = cp1.pgm_num
+                             AND    ct.task_abb = #{task_abb}
+                             AND    NOW() BETWEEN ct.eff_sta_dtm AND ct.eff_end_dtm
+                             AND    cp2.pgm_num = cp1.pgm_num
+                             AND    cp2.task_num = ct.task_num
+                             AND    cp2.page_abb = #{page_abb}
+                             AND    NOW() BETWEEN cp2.eff_sta_dtm AND cp2.eff_end_dtm
+                             AND    cpa.page_num = cp2.page_num
+                             AND    cpa.task_num = ct.task_num
+                             AND    cpa.pgm_num = cp1.pgm_num
+                             AND    NOW() BETWEEN cpa.eff_sta_dtm AND cpa.eff_end_dtm
+                             AND    (cpa.auth_num = 0
+                                     OR EXISTS (SELECT *
+                                                FROM   cmn_user_auth cua
+                                                     , cmn_user cu
+                                                     , cmn_auth ca
+                                                WHERE  cu.user_num = #{user_num}
+                                                AND    NOW() BETWEEN cu.eff_sta_dtm AND cu.eff_end_dtm
+                                                AND    cua.user_num = cu.user_num
+                                                AND    NOW() BETWEEN cua.eff_sta_dtm AND cua.eff_end_dtm
+                                                AND    cpa.auth_num = ca.auth_num
+                                                AND    NOW() BETWEEN ca.eff_sta_dtm AND ca.eff_end_dtm
+                                                AND    cua.auth_num = ca.auth_num
+                                               )
+                                    )
+                            )
+                THEN 'Y'
+                ELSE 'N'
+           END AS is_auth
+  </select>
+  <select id="getIsMobilePageExist" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS (SELECT *
+                             FROM   cmn_pgm cp1
+                                  , cmn_task ct
+                                  , cmn_page cp2
+                             WHERE  cp1.pgm_abb = #{pgm_abb}
+                             AND    NOW() BETWEEN cp1.eff_sta_dtm AND cp2.eff_end_dtm
+                             AND    ct.pgm_num = cp1.pgm_num
+                             AND    ct.task_abb = #{task_abb}
+                             AND    NOW() BETWEEN ct.eff_sta_dtm AND ct.eff_end_dtm
+                             AND    cp2.page_abb = #{page_abb}
+                             AND    cp2.pgm_num = ct.pgm_num
+                             AND    cp2.task_num = ct.task_num
+                             AND    cp2.mobile_yn = 'Y'
+                            )
+                THEN 'Y'
+                ELSE 'N'
+           END AS is_exist
+  </select>
+  <insert id="insertConnLog" parameterType="HashMap">
+    INSERT INTO cmn_conn_log
+    (
+     time,
+     millisecond,
+     seq,
+     audit_id,
+     audit_dtm,
+     ip,
+     url,
+     query_string,
+     user_num,
+     method,
+     ap_num,
+     container_num
+    )
+    SELECT #{now_dtm} AS time
+         , #{millisec} AS millisecond
+         , IFNULL(MAX(ccl.seq) + 1, 1) AS seq
+         , #{user_num} AS audit_id
+         , NOW() AS audit_dtm
+         , #{ip} AS ip
+         , #{url} AS url
+         , #{query_string} AS query_string
+         , #{user_num} AS user_num
+         , #{method} AS method
+         , #{ap_num} AS ap_num
+         , #{container_num} AS container_num
+    FROM   cmn_conn_log ccl
+    WHERE  ccl.time = #{now_dtm}
+    AND    ccl.millisecond = #{millisec}
+  </insert>
+  <select id="getLastSeqConnLog" parameterType="HashMap" resultType="HashMap">
+    SELECT MAX(ccl.seq) AS seq
+    FROM   cmn_conn_log ccl
+    WHERE  ccl.time = #{now_dtm}
+    AND    ccl.millisecond = #{millisec}
+  </select>
+  <update id="updateConnEndLog" parameterType="HashMap">
+    UPDATE cmn_conn_log
+    SET    end_dtm = #{end_dtm}
+         , end_millisec = #{end_millisec}
+         , response_num = #{response_num}
+         , error_msg = #{error_msg}
+         , audit_id = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  time = #{now_dtm}
+    AND    millisecond = #{millisec}
+    AND    seq = #{seq}
+  </update>
+  <select id="getFileInfo" parameterType="HashMap" resultType="HashMap">
+    SELECT cf.file_num AS file_num
+         , cf.file_nm AS file_nm
+         , (SELECT count(*)
+            FROM   cmn_file_content cfc
+            WHERE  cfc.file_num = cf.file_num
+           ) AS content_cnt
+         , (SELECT sum(length(cfc.content))
+            FROM   cmn_file_content cfc
+            WHERE  cfc.file_num = cf.file_num
+           ) AS file_length
+    FROM   cmn_file cf
+    WHERE  cf.file_key = #{file_key}
+    AND    NOW() BETWEEN cf.eff_sta_dtm AND cf.eff_end_dtm
+  </select>
+  <select id="getFileContent" parameterType="HashMap" resultType="HashMap">
+    SELECT cfc.content AS content
+    FROM   cmn_file_content cfc
+    WHERE  cfc.file_num = #{file_num}
+    AND    cfc.seq = #{seq}
+  </select>
+  <select id="getIsPageExist" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS (SELECT *
+                             FROM   cmn_pgm cp1
+                                  , cmn_task ct
+                                  , cmn_page cp2
+                             WHERE  cp1.pgm_abb = #{pgm_abb}
+                             AND    NOW() BETWEEN cp1.eff_sta_dtm AND cp1.eff_end_dtm
+                             AND    ct.pgm_num = cp1.pgm_num
+                             AND    ct.task_abb = #{task_abb}
+                             AND    NOW() BETWEEN ct.eff_sta_dtm AND ct.eff_end_dtm
+                             AND    cp2.pgm_num = cp1.pgm_num
+                             AND    cp2.task_num = ct.task_num
+                             AND    cp2.page_abb = #{page_abb}
+                             AND    NOW() BETWEEN cp2.eff_sta_dtm AND cp2.eff_end_dtm
+                            )
+                THEN 'Y'
+                ELSE 'N'
+           END AS is_page_exists
+  </select>
+</mapper>
