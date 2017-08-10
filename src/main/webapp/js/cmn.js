@@ -21,7 +21,7 @@ function cmnASyncCall(tpNm, param, callbackFunc, callbackVar, callbackErr) {
 
 function cmnCall(tpNm, param, callbackFunc, callbackVar, isASync, callbackErr) {
   var urlLengthPos = location.href.indexOf("?");
-  if (urlLengthPos < 0 || urlLengthPos > location.href.indexOf("#")) {
+  if (urlLengthPos < 0 || (location.href.indexOf("#") > 0 && urlLengthPos > location.href.indexOf("#"))) {
     urlLengthPos = location.href.indexOf("#");
   }
   if (urlLengthPos < 0) {

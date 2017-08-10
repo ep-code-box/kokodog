@@ -22,7 +22,7 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-      /WEB-INF/conf/root-context.xml
+      /WEB-INF/classes/conf/root-context.xml
     </param-value>
   </context-param>
   <servlet>
