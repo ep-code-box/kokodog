@@ -1,5 +1,8 @@
 package com.skd.ppa.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONSerializer;
 
@@ -11,17 +14,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.skd.ppa.service.NlpByKonlpyService;
+import com.skd.ppa.service.DocConvWithAibrilService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/conf/root-context.xml"})
-public class NlpByKonlpyServiceTest {
+public class DocConvWithAibrilServiceTest {
+  private static final String fileDir = "/home/leems83/data/proposal_for_skcc_dt/[전산요건] T끼리 순액 맞춤형 요금제.docx";
   @Autowired
-  private NlpByKonlpyService nlpByKonlpyService;
+  private DocConvWithAibrilService docConvWithAibrilService;
   @Test(timeout=5000)
   public void testGetNounList() throws Exception {
-    JSONArray jsonArray = nlpByKonlpyService.getNounList("이것은 테스트 입니다.");
-    Assert.assertTrue(jsonArray.getString(0).equals("이것"));
-    Assert.assertTrue(jsonArray.getString(1).equals("테스트"));
+    FileInputStream fis = new FileInputStream(new File(fileDir));
+    String htmlStr = docConvWithAibrilService.convToHtml(fis);
+    Assert.assertNotNull(htmlStr);
   }
 }
