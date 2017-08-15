@@ -26,6 +26,6 @@ public class DocConvWithAibrilServiceTest {
   public void testGetNounList() throws Exception {
     FileInputStream fis = new FileInputStream(new File(fileDir));
     String htmlStr = docConvWithAibrilService.convToHtml(fis);
-    Assert.assertNotNull(htmlStr);
+    Assert.assertEquals("<?xml", htmlStr.substring(0, 5));
   }
 }

@@ -11,22 +11,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.skd.ppa.service.NlpByKonlpyService;
+import com.skd.ppa.service.DocNlpService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/conf/root-context.xml"})
-public class NlpByKonlpyServiceTest {
+public class DocNlpService {
   @Autowired
-  private NlpByKonlpyService nlpByKonlpyService;
+  private DocNlpService docNlpService;
+  
   @Test(timeout=5000)
   public void testGetNounList() throws Exception {
-    JSONArray jsonArray = nlpByKonlpyService.getNounList("이것은 테스트 입니다.");
+    JSONArray jsonArray = docNlpService.getNounList("이것은 테스트 입니다.");
     Assert.assertTrue(jsonArray.getString(0).equals("이것"));
     Assert.assertTrue(jsonArray.getString(1).equals("테스트"));
   }
+  
   @Test(timeout=5000)
   public void testGetMorphemeList() throws Exception {
-    JSONArray jsonArray = nlpByKonlpyService.getMorpheme("이것은 테스트 입니다.");
+    JSONArray jsonArray = docNlpService.getMorpheme("이것은 테스트 입니다.");
     Assert.assertTrue(jsonArray.getJSONObject(0).getString("voca").equals("이것"));
   }
 }

@@ -11,6 +11,8 @@ package com.skd.ppa.service.impl;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.ArrayList;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONSerializer;
@@ -33,7 +35,8 @@ import com.cmn.err.SystemException;
 @Service("nlpByKonlpyService")
 public class NlpByKonlpyServiceImpl implements NlpByKonlpyService {
   private static Logger logger = Logger.getLogger(NlpByKonlpyServiceImpl.class);
-  private static final String KONLPY_EXE = "/home/leems83/workspace/proposal_analysis/python/keyword_for_proposal.py";
+  private static final String KONLPY_NOUN_EXE = "/home/leems83/workspace/proposal_analysis/python/keyword_for_proposal.py";
+  private static final String KONLPY_MORPHEME_EXE = "/home/leems83/workspace/proposal_analysis/python/morpheme_analysis.py";
   
   @Autowired
   private SystemException systemException;
@@ -45,13 +48,31 @@ public class NlpByKonlpyServiceImpl implements NlpByKonlpyService {
    *  @throws 기타 익셉션
    */
   public JSONArray getNounList(String str) throws Exception {
-    Process oProcess = new ProcessBuilder("python3", KONLPY_EXE, str).start();
+    List<String> list = new ArrayList<String>();
+    list.add(str);
+    return returnPythonExe(list, KONLPY_NOUN_EXE);
+  }
 
-    // 외부 프로그램 출력 읽기
+  /**
+   *  이 메서드는 Konlpy 내 사전에 등록된 전체 형태소 리스트를 분류별로 JSON으로 리턴해주는 역할을 수행한다.
+   *  @param str : 형태소를 추출하기 위한 기본 글
+   *  @return 형태소 리스트
+   *  @throws 기타 익셉션
+   */
+  public JSONArray getMorpheme(String str) throws Exception {
+    List<String> list = new ArrayList<String>();
+    list.add(str);
+    return returnPythonExe(list, KONLPY_MORPHEME_EXE);
+  }
+  
+  private JSONArray returnPythonExe(List<String> argv, String exe) throws Exception {
+    List<String> list = new ArrayList<String>();
+    list.add("python3");
+    list.add(exe);
+    list.addAll(argv);
+    Process oProcess = new ProcessBuilder(list).start();
     BufferedReader stdOut   = new BufferedReader(new InputStreamReader(oProcess.getInputStream()));
     BufferedReader stdError = new BufferedReader(new InputStreamReader(oProcess.getErrorStream()));
-
-    // "표준 출력"과 "표준 에러 출력"을 출력
     String errorStr = "";
     String stdOutStr = "";
     String tmpStr = null;
@@ -64,15 +85,6 @@ public class NlpByKonlpyServiceImpl implements NlpByKonlpyService {
     if ("".equals(errorStr) == false) {
       throw systemException.systemException(35);
     }
-    return (JSONArray)JSONSerializer.toJSON(stdOutStr);
-  }
-  /**
-   *  이 메서드는 Konlpy 내 사전에 등록된 전체 형태소 리스트를 분류별로 JSON으로 리턴해주는 역할을 수행한다.
-   *  @param str : 형태소를 추출하기 위한 기본 글
-   *  @return 형태소 리스트
-   *  @throws 기타 익셉션
-   */
-  public JSONArray getMorpheme(String str) throws Exception {
-    return null;
+    return (JSONArray)JSONSerializer.toJSON(stdOutStr);    
   }
 }
