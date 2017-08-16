@@ -7,7 +7,7 @@
  *
  * @Copyright by 이민석
  */
-package com.skd.ppa.service.impl;
+package com.skd.ppa.module.service.impl;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.skd.ppa.service.NlpByKonlpyService;
+import com.skd.ppa.module.service.NlpByKonlpyService;
 import com.cmn.err.SystemException;
 
 /**
@@ -83,7 +83,7 @@ public class NlpByKonlpyServiceImpl implements NlpByKonlpyService {
       errorStr = errorStr + tmpStr;
     }
     if ("".equals(errorStr) == false) {
-      throw systemException.systemException(35);
+      throw systemException.systemException(19, errorStr);
     }
     return (JSONArray)JSONSerializer.toJSON(stdOutStr);    
   }

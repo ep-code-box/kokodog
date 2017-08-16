@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skd.ppa.main">
+  <insert id="insertConvDocHtml" parameterType="HashMap">
+    INSERT INTO skd_ppa_file_to_html_result
+    (
+      file_num
+    , eff_end_dtm
+    , audit_id
+    , audit_dtm
+    , html
+    , eff_sta_dtm
+    )
+    SELECT cf.file_num AS file_num
+         , '9999-12-31 23:59:59' AS eff_end_dtm
+         , #{user_num} AS audit_id
+         , NOW() AS audit_dtm
+         , #{html} AS html
+         , #{now_dtm} AS eff_sta_dtm
+    FROM   cmn_file cf
+    WHERE  cf.file_key = #{file_key}
+    AND    NOT EXISTS (SELECT * FROM skd_ppa_file_to_html_result WHERE file_num = cf.file_num AND NOW() BETWEEN eff_sta_dtm AND eff_end_dtm)
+  </insert>
+</mapper>

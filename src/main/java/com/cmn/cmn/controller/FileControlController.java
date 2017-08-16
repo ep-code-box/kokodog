@@ -41,9 +41,7 @@ public class FileControlController {
     response.setHeader("Content-Transfer-Encoding", "binary");
     response.setContentType("application/octet-stream");
     response.setContentLength((int)fileLength);
-    byte[] fileContent = null;
     for (int i = 0; i < contentCnt; i++) {
-      fileContent = (byte[])outputMap.get("content");
       response.getOutputStream().write(fileControlService.getFileContent(fileNum, i + 1));
       response.getOutputStream().flush();
       outputMap.clear();

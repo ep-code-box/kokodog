@@ -7,9 +7,9 @@
  *
  * @Copyright by 이민석
  */
-package com.skd.ppa.service;
+package com.skd.ppa.module.service;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
 
 /**
  *  이 객체는 Aibril 에서 제공하는 Document Converting 기능을 수행한다.
@@ -20,11 +20,11 @@ public interface DocConvWithAibrilService {
   /**
    *  이 메쏘드는 MS word, Presentation, Excel의 문서를
    *  HTML 형식으로 리턴해주는 기능을 갖는다.
-   *  @param file - File 형식의 변환 전 파일 위치
+   *  @param is - InputStream 형식의 변환 전 파일 위치
    *  @return HTML 형식의 문자열
    *  @throws 기타 모든 예외
    */
-  public String convToHtml(FileInputStream fis) throws Exception;
+  public String convToHtml(InputStream is) throws Exception;
   
   /**
    *  이 메쏘드는 MS word, Presentation, Excel의 문서를

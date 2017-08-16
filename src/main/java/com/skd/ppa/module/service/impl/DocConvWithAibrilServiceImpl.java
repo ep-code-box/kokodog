@@ -7,11 +7,10 @@
  *
  * @Copyright by 이민석
  */
-package com.skd.ppa.service;
+package com.skd.ppa.module.service.impl;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -25,14 +24,18 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+
 import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cmn.cmn.service.GetDataFromURLService;
-import com.skd.ppa.service.DocConvWithAibrilService;
+import com.skd.ppa.module.service.DocConvWithAibrilService;
 import com.cmn.err.SystemException;
+import com.cmn.err.UserException;
 
 /**
  *  이 객체는 Aibril 에서 제공하는 Document Converting 기능을 수행한다.
@@ -51,6 +54,9 @@ public class DocConvWithAibrilServiceImpl implements DocConvWithAibrilService {
   private SystemException systemException;
 
   @Autowired
+  private UserException userException;
+
+  @Autowired
   private GetDataFromURLService getDataFromURLService;
 
   /**
@@ -60,7 +66,7 @@ public class DocConvWithAibrilServiceImpl implements DocConvWithAibrilService {
    *  @return HTML 형식의 문자열
    *  @throws 기타 모든 예외
    */
-  public String convToHtml(FileInputStream fis) throws Exception {
+  public String convToHtml(InputStream is) throws Exception {
     OutputStreamWriter wsr = null;
     BufferedReader br = null;
     InputStreamReader isr = null;
@@ -87,22 +93,56 @@ public class DocConvWithAibrilServiceImpl implements DocConvWithAibrilService {
       dos.writeBytes("--" + BOUNDARY + "\r\n");
       dos.writeBytes("Content-Disposition:form-data;name=\"file\";filename=\"tempFile.docx\"\r\n");
       dos.writeBytes("\r\n");
-      int bytesAvailable = bytesAvailable = fis.available();
+      int bytesAvailable = bytesAvailable = is.available();
       int maxBufferSize = 1024;
       int bufferSize = Math.min(bytesAvailable, maxBufferSize); 
       byte[] buffer = new byte[bufferSize];
-      int bytesRead = fis.read(buffer, 0, bufferSize);
+      int bytesRead = is.read(buffer, 0, bufferSize);
       while (bytesRead > 0) {
         dos.write(buffer, 0, bufferSize);
-        bytesAvailable = fis.available();
+        bytesAvailable = is.available();
         bufferSize = Math.min(bytesAvailable, maxBufferSize);
-        bytesRead = fis.read(buffer, 0, bufferSize);
+        bytesRead = is.read(buffer, 0, bufferSize);
       }
-      fis.close();
+      is.close();
       dos.writeBytes("\r\n");
       dos.writeBytes("--" + BOUNDARY + "--" + "\r\n");
       dos.flush();
-      isr = new InputStreamReader(conn.getInputStream(), "UTF-8");
+    } catch (Exception e) {
+      throw e;
+    } finally {
+      if (wsr != null) {
+        wsr.close();
+      }
+      if (br != null) {
+        br.close();
+      }
+      if (isr != null) {
+        isr.close();
+      }
+    }
+    try {
+      is = conn.getInputStream();
+    } catch (IOException e) {
+      if (conn instanceof HttpURLConnection == false) {
+        throw e;
+      } else {
+        isr = new InputStreamReader(((HttpURLConnection)conn).getErrorStream(), "UTF-8");
+        br = new BufferedReader(isr);
+        outputStr = "";
+        while ((line = br.readLine()) != null) {
+          outputStr = outputStr + line;
+        }
+        JSONObject jsonObject = (JSONObject)JSONSerializer.toJSON(outputStr);;
+        if (jsonObject.getInt("code") == 415) {
+          throw userException.userException(20, jsonObject.getString("error"));
+        } else {
+          throw systemException.systemException(18, "" + jsonObject.getInt("code"), jsonObject.getString("error"));
+        }
+      }
+    }
+    try {
+      isr = new InputStreamReader(is, "UTF-8");
       br = new BufferedReader(isr);
       outputStr = "";
       while ((line = br.readLine()) != null) {

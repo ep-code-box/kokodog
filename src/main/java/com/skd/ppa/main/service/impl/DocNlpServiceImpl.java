@@ -7,7 +7,7 @@
  *
  * @Copyright by 이민석
  */
-package com.skd.ppa.service.impl;
+package com.skd.ppa.main.service.impl;
 
 import java.io.FileInputStream;
 
@@ -19,9 +19,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.skd.ppa.service.DocNlpService;
-import com.skd.ppa.service.DocConvWithAibrilService;
-import com.skd.ppa.service.NlpByKonlpyService;
+import com.skd.ppa.main.service.DocNlpService;
+import com.skd.ppa.module.service.DocConvWithAibrilService;
+import com.skd.ppa.module.service.NlpByKonlpyService;
 import com.cmn.err.SystemException;
 
 /**
