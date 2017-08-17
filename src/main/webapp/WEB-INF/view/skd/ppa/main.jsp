@@ -10,6 +10,7 @@
     <script type="text/javascript" src="https://jqwidgets.com/public/jqwidgets/jqx-all.js"></script>
     <script src="/js/cmn.js"></script>
     <script type="text/javascript">
+      var fileKey = "";
       $(document).ready(function() {
         contentInitLoad();
         contentEventLoad();
@@ -35,6 +36,8 @@
         });
         $("div#file_upload_component").jqxFileUpload({
           width: "100%",
+          autoUpload: true,
+          multipleFilesUpload: false,
           uploadUrl: "/skd/ppa/main/FileUpload",
           fileInputName: "fileToUpload"
         });
@@ -46,6 +49,8 @@
         $("a#menu_exit").click(event_a_menu_exit_click);
         $("a#help_help").click(event_a_help_help_click);
         $("a#help_about").click(event_a_menu_help_about_click);
+        $("div#file_upload_component").on("uploadEnd", event_div_file_upload_component_upload_end);
+
       }
       
       function event_a_menu_scen_manage_click() {
@@ -62,6 +67,17 @@
       
       function event_a_menu_help_about_click() {
         
+      }
+      
+      function event_div_file_upload_component_upload_end(event) {
+        var response = JSON.parse($(event.args.response).html());
+        fileKey = response.file_key;
+        cmnSyncCall("GetConvToHtml", {file_key : fileKey}, callback, null);
+      }
+      
+      function callback(data, act, input_param, callbackVar) {
+        if (act == "GetConvToHtml") {
+        }
       }
     </script>
   </head>

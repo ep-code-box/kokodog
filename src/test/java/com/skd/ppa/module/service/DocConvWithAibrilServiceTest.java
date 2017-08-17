@@ -25,8 +25,8 @@ public class DocConvWithAibrilServiceTest {
 
   @Autowired
   private DocConvWithAibrilService docConvWithAibrilService;
-
-  @Test(timeout=5000)
+  
+  @Test(timeout=50000)
   public void testGetNounList() throws Exception {
     FileInputStream fis = new FileInputStream(new File(fileDir));
     String htmlStr = docConvWithAibrilService.convToHtml(fis);

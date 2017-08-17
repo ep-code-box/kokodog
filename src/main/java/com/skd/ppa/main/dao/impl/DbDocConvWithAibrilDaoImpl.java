@@ -36,6 +36,6 @@ public class DbDocConvWithAibrilDaoImpl implements DbDocConvWithAibrilDao {
   public int insertConvDocHtml(Map<String, Object> inputMap) throws SQLException {
     logger.debug("============   Start method of DbDocConvWithAibrilDaoImpl.insertConvDocHtml   ============");
     logger.debug(" Parameter - inputMap[" + inputMap + "]");
-    return sqlSession.update("com.skd.ppa.main.insertConvDocHtml", inputMap);
+    return sqlSession.insert("com.skd.ppa.main.insertConvDocHtml", inputMap);
   }
 }

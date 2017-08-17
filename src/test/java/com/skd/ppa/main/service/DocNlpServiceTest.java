@@ -24,7 +24,7 @@ public class DocNlpServiceTest {
   @Autowired
   private DocNlpService docNlpService;
   
-  @Test(timeout=5000)
+  @Test(timeout=50000)
   public void testGetNounList() throws Exception {
     File file = new File(fileDir);
     FileInputStream fis = new FileInputStream(file);
@@ -33,7 +33,7 @@ public class DocNlpServiceTest {
     Assert.assertTrue(jsonArray.getString(1).equals("소속"));
   }
 
-  @Test(timeout=5000)
+  @Test(timeout=50000)
   public void getMorpheme() throws Exception {
     File file = new File(fileDir);
     FileInputStream fis = new FileInputStream(file);

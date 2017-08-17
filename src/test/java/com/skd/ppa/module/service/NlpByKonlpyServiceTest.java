@@ -19,14 +19,14 @@ public class NlpByKonlpyServiceTest {
   @Autowired
   private NlpByKonlpyService nlpByKonlpyService;
 
-  @Test(timeout=5000)
+  @Test(timeout=50000)
   public void testGetNounList() throws Exception {
     JSONArray jsonArray = nlpByKonlpyService.getNounList("이것은 테스트 입니다.");
     Assert.assertTrue(jsonArray.getString(0).equals("이것"));
     Assert.assertTrue(jsonArray.getString(1).equals("테스트"));
   }
   
-  @Test(timeout=5000)
+  @Test(timeout=50000)
   public void testGetMorphemeList() throws Exception {
     JSONArray jsonArray = nlpByKonlpyService.getMorpheme("이것은 테스트 입니다.");
     Assert.assertTrue(jsonArray.getJSONObject(0).getString("voca").equals("이것"));

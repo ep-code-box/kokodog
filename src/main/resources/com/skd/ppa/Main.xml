@@ -21,4 +21,13 @@
     WHERE  cf.file_key = #{file_key}
     AND    NOT EXISTS (SELECT * FROM skd_ppa_file_to_html_result WHERE file_num = cf.file_num AND NOW() BETWEEN eff_sta_dtm AND eff_end_dtm)
   </insert>
+  <select id="getHtml" parameterType="HashMap" resultType="HashMap">
+    SELECT spfthr.html AS html
+    FROM   skd_ppa_file_to_html_result spfthr
+         , cmn_file cf
+    WHERE  cf.file_key = #{file_key}
+    AND    NOW() BETWEEN cf.eff_sta_dtm AND cf.eff_end_dtm
+    AND    cf.file_num = spfthr.file_num
+    AND    NOW() BETWEEN spfthr.eff_sta_dtm AND spfthr.eff_end_dtm
+  </select>
 </mapper>

@@ -10,8 +10,7 @@
 package com.skd.ppa.main.controller;
 
 import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,7 +28,8 @@ import com.skd.ppa.main.service.DbDocConvWithAibrilService;
  *  이 클래스는 SK 주식회사 C&C DT 프로젝트 일환으로
  *  진행하고 있는 상품 요구명세서 분석 프로젝트의
  *  개발 프로젝트 중 일부에 포함된다.<br/>
- *  요구명세서 파일 업로드 시 업로드 된 파일을 DB에 삽입하는 역할을 수행한다.
+ *  요구명세서 DB에 업로드된 파일을 Aibril Document Conversion을 통해
+ *  html 형식으로 바꿔 DB에 저장한다.
  */
 @Controller
 public class SkdPpaMainGetConvToHtmlController {
@@ -39,7 +39,7 @@ public class SkdPpaMainGetConvToHtmlController {
   private static Logger logger = Logger.getLogger(SkdPpaMainFileUploadController.class);
   
   /**
-   *  해당 메서드는 /skd/ppa/main/FileUpload URL을 통해 호출된다.
+   *  해당 메서드는 /skd/ppa/main/GetConvToHtml URL을 통해 호출된다.
    *  Multipart request 방식으로 호출해야 하며 호출된 파일이
    *  DB Blob 형태로 삽입된다.
    *  @param request : 서블릿 Request
@@ -49,10 +49,10 @@ public class SkdPpaMainGetConvToHtmlController {
    */
   @RequestMapping(value="/skd/ppa/main/GetConvToHtml", method=RequestMethod.POST)
   @ResponseBody
-  public String main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validationCheck(request, response);
-    dbDocConvWithAibrilService.
-    return null;
+    dbDocConvWithAibrilService.convToHtml(request.getParameter("file_key"));
+    return new HashMap<String, Object>();
   }
 
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {

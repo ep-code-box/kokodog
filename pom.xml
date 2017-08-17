@@ -197,7 +197,7 @@
           <compilerVersion>1.8</compilerVersion>
           <encoding>UTF-8</encoding>
           <warSourceDirectory>src/main/webapp</warSourceDirectory>
-          <warSourceExcludes>WEB-INF/conf/**</warSourceExcludes>
+          <warSourceExcludes>WEB-INF/conf/**,WEB-INF/classes/**,WEB-INF/web.xml</warSourceExcludes>
           <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
           <webappDirectory>/home/leems83/data/${webappDirectory}</webappDirectory>
           <goals>
