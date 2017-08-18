@@ -9,8 +9,6 @@
  */
 package com.skd.ppa.main.controller;
 
-import java.util.Map;
-import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,7 +20,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.stereotype.Controller;
 
-import com.skd.ppa.main.service.DbDocConvWithAibrilService;
+import com.skd.ppa.main.service.GetConvHtmlService;
+import com.cmn.err.SystemException;
 
 /**
  *  이 클래스는 SK 주식회사 C&C DT 프로젝트 일환으로
@@ -32,30 +31,34 @@ import com.skd.ppa.main.service.DbDocConvWithAibrilService;
  *  html 형식으로 바꿔 DB에 저장한다.
  */
 @Controller
-public class SkdPpaMainGetConvToHtmlController {
+public class SkdPpaMainGetNounListController {
   @Autowired
-  private DbDocConvWithAibrilService dbDocConvWithAibrilService;
+  private GetConvHtmlService getConvHtmlService;
   
-  private static Logger logger = Logger.getLogger(SkdPpaMainFileUploadController.class);
+  @Autowired
+  private SystemException systemException;
+  
+  private static Logger logger = Logger.getLogger(SkdPpaMainGetNounListController.class);
   
   /**
-   *  해당 메서드는 /skd/ppa/main/GetConvToHtml URL을 통해 호출된다.
-   *  Multipart request 방식으로 호출해야 하며 호출된 파일이
-   *  DB Blob 형태로 삽입된다.
+   *  해당 메서드는 /skd/ppa/main/ConvHtmlPage URL을 통해 호출된다.
+   *  Multipart request 방식으로 호출해야 하며 필수 파라미터는 file_key이고
+   *  DB에 담겨 있는 HTML 결과를 리턴한다.
    *  @param request : 서블릿 Request
    *  @param response : 서블릿 response
    *  @return Map 타입의 업로드 된 파일의 파일 번호를 담고 있는 형태의 리스트
    *  @throws 기타 Exception
    */
-  @RequestMapping(value="/skd/ppa/main/GetConvToHtml", method=RequestMethod.POST)
+  @RequestMapping(value="/skd/ppa/main/GetNounList", method=RequestMethod.POST)
   @ResponseBody
-  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public String main(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validationCheck(request, response);
-    dbDocConvWithAibrilService.convToHtml(request.getParameter("file_key"));
-    return new HashMap<String, Object>();
+    return getConvHtmlService.getHtml(request.getParameter("file_key"));
   }
 
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    return;
+    if (request.getParameter("file_key") == null) {
+      throw systemException.systemException(3, "file_key");
+    }
   }
 }

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.skd.ppa.main.service.DocNlpService;
+import com.skd.ppa.main.service.GetConvHtmlService;
 import com.skd.ppa.module.service.DocConvWithAibrilService;
 import com.skd.ppa.module.service.NlpByKonlpyService;
 import com.cmn.err.SystemException;
@@ -38,6 +39,9 @@ public class DocNlpServiceImpl implements DocNlpService {
   
   @Autowired
   private DocConvWithAibrilService docConvWithAibrilService;
+  
+  @Autowired
+  private GetConvHtmlService getConvHtmlService;
   
   @Autowired
   private NlpByKonlpyService nlpByKonlpyService;
@@ -63,5 +67,16 @@ public class DocNlpServiceImpl implements DocNlpService {
    */
   public JSONArray getMorpheme(FileInputStream fis) throws Exception {
     return nlpByKonlpyService.getMorpheme(docConvWithAibrilService.convToHtml(fis));
+  }
+  
+    /**
+   *  이 메서드는 Konlpy 내 사전에 등록된 전체 명사 리스트를 분류별로 JSON으로 리턴해주는 역할을 수행한다.
+   *  @param fileKey : 분석하고자 하는 HTML의 파일 Key
+   *  @return 형태소 리스트
+   *  @throws 기타 익셉션
+   */
+  public JSONArray getNounList(String fileKey) throws Exception {
+    String html = getConvHtmlService.getHtml(fileKey);
+    return nlpByKonlpyService.getNounList(html);
   }
 }

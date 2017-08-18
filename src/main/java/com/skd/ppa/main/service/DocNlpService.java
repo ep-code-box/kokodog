@@ -36,4 +36,12 @@ public interface DocNlpService {
    *  @throws 기타 익셉션
    */
   public JSONArray getMorpheme(FileInputStream fis) throws Exception;
+
+  /**
+   *  이 메서드는 Konlpy 내 사전에 등록된 전체 명사 리스트를 분류별로 JSON으로 리턴해주는 역할을 수행한다.
+   *  @param fileKey : 분석하고자 하는 HTML의 파일 Key
+   *  @return 형태소 리스트
+   *  @throws 기타 익셉션
+   */
+  public JSONArray getNounList(String fileKey) throws Exception;
 }

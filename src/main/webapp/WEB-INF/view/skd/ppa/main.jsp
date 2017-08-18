@@ -10,12 +10,10 @@
     <script type="text/javascript" src="https://jqwidgets.com/public/jqwidgets/jqx-all.js"></script>
     <script src="/js/cmn.js"></script>
     <script type="text/javascript">
-      var fileKey = "";
+      var fileKey = null;
       $(document).ready(function() {
         contentInitLoad();
         contentEventLoad();
-        loadAllInfraInfo();
-        refreshTimer = setInterval(refreshTimerFunction, 1000 * timerFreqSec);
       });
       
       /* jqWidget을 사용하는 각종 함수 들 첫 오픈 처리 */
@@ -50,7 +48,6 @@
         $("a#help_help").click(event_a_help_help_click);
         $("a#help_about").click(event_a_menu_help_about_click);
         $("div#file_upload_component").on("uploadEnd", event_div_file_upload_component_upload_end);
-
       }
       
       function event_a_menu_scen_manage_click() {
@@ -72,11 +69,18 @@
       function event_div_file_upload_component_upload_end(event) {
         var response = JSON.parse($(event.args.response).html());
         fileKey = response.file_key;
-        cmnSyncCall("GetConvToHtml", {file_key : fileKey}, callback, null);
+        cmnSyncCall("ConvToHtml", {file_key : fileKey}, callback, null);
       }
       
       function callback(data, act, input_param, callbackVar) {
-        if (act == "GetConvToHtml") {
+        if (act == "ConvToHtml") {
+          $("div#doc_component").children("iframe#iframe_doc_component").remove();
+          $("div#doc_component").append($("<iframe>", {id: "iframe_doc_component", name: "iframe_doc_component", class: "iframe_doc_component"}));
+          $("body").children("form#doc_load_form").remove();
+          var doc_load_form = $("<form>", {id: "doc_load_form", method: "post", target: "iframe_doc_component", action: "/skd/ppa/main/GetConvHtmlPage"});
+          doc_load_form.append($("<input>", {type: "hidden", name: "file_key", value: fileKey}));
+          $("body").append(doc_load_form);
+          $("form#doc_load_form").submit();
         }
       }
     </script>
@@ -116,7 +120,12 @@
         <div id="left_right_splitter_component">
           <div class="left_splitter">
             <div class="file_upload">
-              <div id="file_upload_component"></div>
+              <div id="file_upload_component">
+              </div>
+            </div>
+            <div class="doc">
+              <div id="doc_component">
+              </div>
             </div>
             <div class="data_list">
               <div id="data_list_component"></div>
