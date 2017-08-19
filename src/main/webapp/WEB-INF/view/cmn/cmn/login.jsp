@@ -39,7 +39,7 @@
       <tr>
         <td>
           <a id="google_login_path" onClick="javascript:goGoogleLogin();">
-            <img src="http://demos.codexworld.com/login-with-google-using-php/images/glogin.png"/>
+            <img src="https://developers.google.com/accounts/images/sign-in-with-google.png?hl=ko"/>
           </a>
         </td>
       </tr>

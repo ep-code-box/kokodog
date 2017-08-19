@@ -31,23 +31,29 @@ function cmnCall(tpNm, param, callbackFunc, callbackVar, isASync, callbackErr) {
   var pgm = null;
   var task = null;
   var page = null;
-  if (uriSplit.length >= 2 && uriSplit[1] !== "") {
-    pgm = uriSplit[1];
+  var url = null;
+  if (tpNm.substring(0, 1) != "/") {
+    if (uriSplit.length >= 2 && uriSplit[1] !== "") {
+      pgm = uriSplit[1];
+    } else {
+      pgm = "cmn";
+    }
+    if (uriSplit.length >= 3 && uriSplit[2] !== "") {
+      task = uriSplit[2];
+    } else {
+      task = "cmn";
+    }
+    if (uriSplit.length >= 4 && uriSplit[3] !== "") {
+      page = uriSplit[3];
+    } else {
+      page = "main";
+    }
+    url = "/" + pgm + "/" + task + "/" + page + "/" + tpNm;
   } else {
-    pgm = "cmn";
-  }
-  if (uriSplit.length >= 3 && uriSplit[2] !== "") {
-    task = uriSplit[2];
-  } else {
-    task = "cmn";
-  }
-  if (uriSplit.length >= 4 && uriSplit[3] !== "") {
-    page = uriSplit[3];
-  } else {
-    page = "main";
+    url = tpNm;
   }
   $.ajax({
-    url: "/" + pgm + "/" + task + "/" + page + "/" + tpNm,
+    url: url,
     type: "post",
     data: param,
     dataType: "JSON",
@@ -172,5 +178,22 @@ function get_cookie(cookie_name) {
   }
   else {
     return null;
+  }
+}
+
+function setCmnComboCodeMapping(obj, code, init) {
+  cmnSyncCall("/cmn/cmn/main/GetCommonCode", {code: code}, cmnCallbackFunc, {obj: obj, init: init});
+}
+
+function cmnCallbackFunc(data, act, input_param, callbackVar) {
+  var i = 0;
+  var dict = Object.keys(data);
+  for (i = 0; i < dict.length; i++) {
+    callbackVar.obj.jqxDropDownList("addItem", {label: data[dict[i]], value: dict[i]});
+  }
+  if (typeof callbackVar.init == "undefined" || callbackVar.init == null) {
+    callbackVar.obj.jqxDropDownList("selectIndex", 0);
+  } else {
+    callbackVar.obj.jqxDropDownList("selectIndex", callbackVar.init);    
   }
 }

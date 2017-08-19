@@ -37,6 +37,7 @@ public class NlpByKonlpyServiceImpl implements NlpByKonlpyService {
   private static Logger logger = Logger.getLogger(NlpByKonlpyServiceImpl.class);
   private static final String KONLPY_NOUN_EXE = "/home/leems83/workspace/proposal_analysis/python/keyword_for_proposal.py";
   private static final String KONLPY_MORPHEME_EXE = "/home/leems83/workspace/proposal_analysis/python/morpheme_analysis.py";
+  private static final String KONLPY_DETAIL_EXE = "/home/leems83/workspace/proposal_analysis/python/keyword_for_proposal_by_raw.py";
   
   @Autowired
   private SystemException systemException;
@@ -65,6 +66,18 @@ public class NlpByKonlpyServiceImpl implements NlpByKonlpyService {
     return returnPythonExe(list, KONLPY_MORPHEME_EXE);
   }
   
+  /**
+   *  이 메서드는 Konlpy 내 사전에 등록된 전체 형태소 리스트를 분류별로 JSON으로 리턴해주는 역할을 수행한다.(상세하게 전체 다 리스트업 해준다.)
+   *  @param str : 형태소를 추출하기 위한 기본 글
+   *  @return 형태소 리스트
+   *  @throws 기타 익셉션
+   */
+  public JSONArray getMorphemeDetail(String str) throws Exception {
+    List<String> list = new ArrayList<String>();
+    list.add(str);
+    return returnPythonExe(list, KONLPY_DETAIL_EXE);
+  }
+
   private JSONArray returnPythonExe(List<String> argv, String exe) throws Exception {
     List<String> list = new ArrayList<String>();
     list.add("python3");

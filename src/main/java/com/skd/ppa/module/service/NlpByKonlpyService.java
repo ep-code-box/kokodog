@@ -26,6 +26,7 @@ public interface NlpByKonlpyService {
    *  @throws 기타 익셉션
    */
   public JSONArray getNounList(String str) throws Exception;
+  
   /**
    *  이 메서드는 Konlpy 내 사전에 등록된 전체 형태소 리스트를 분류별로 JSON으로 리턴해주는 역할을 수행한다.
    *  @param str : 형태소를 추출하기 위한 기본 글
@@ -33,4 +34,12 @@ public interface NlpByKonlpyService {
    *  @throws 기타 익셉션
    */
   public JSONArray getMorpheme(String str) throws Exception;
+
+  /**
+   *  이 메서드는 Konlpy 내 사전에 등록된 전체 형태소 리스트를 분류별로 JSON으로 리턴해주는 역할을 수행한다.(상세하게 전체 다 리스트업 해준다.)
+   *  @param str : 형태소를 추출하기 위한 기본 글
+   *  @return 형태소 리스트
+   *  @throws 기타 익셉션
+   */
+  public JSONArray getMorphemeDetail(String str) throws Exception;
 }

@@ -11,9 +11,11 @@
     <script src="/js/cmn.js"></script>
     <script type="text/javascript">
       var fileKey = null;
+      var morphemeData = null;
       $(document).ready(function() {
         contentInitLoad();
         contentEventLoad();
+        setComoboCodeMapping();
         GetPastFileUploadList();
       });
       
@@ -56,6 +58,34 @@
           value: "조회",
           disabled: true
         });
+        $("div#view_data_type_combo_component").jqxDropDownList({
+          width: "100%",
+          height: "100%"
+        });
+        $("div#view_data_list_component").jqxGrid({
+          width: "100%",
+          height: "100%",
+          columnsheight: 25,
+          columnsresize: true,
+          selectionmode: "none",
+          enabletooltips: true,
+          showfilterrow: true,
+          filterable: true,
+          sortable: true,
+          filtermode: "default",
+          columns: [
+            {text: "No", datafield: "no", width: 50, cellsalign: "right", cellsrenderer: cellsrenderer},
+            {text: "형태소", datafield: "vocabulary", width: 100, cellsalign: "left", cellsrenderer: cellsrenderer},
+            {text: "품사태그", datafield: "part_of_speach_tag", cellsalign: "left", width: 70, cellsrenderer: cellsrenderer},
+            {text: "의미부류", datafield: "meaning", width: 100, cellsalign: "left", cellsrenderer: cellsrenderer},
+            {text: "종성유무", datafield: "final_consonant_yn", width: 70, cellsalign: "left", cellsrenderer: cellsrenderer},
+            {text: "발음", datafield: "pronounce", width:100, cellsalign: "left", cellsrenderer: cellsrenderer},
+            {text: "타입", datafield: "type", width: 100, cellsalign: "left", cellsrenderer: cellsrenderer},
+            {text: "첫번째품사", datafield: "first_part_of_speach_tag", width: 100, cellsalign: "left", cellsrenderer: cellsrenderer},
+            {text: "마지막품사", datafield: "last_part_of_speach_tag", width: 100, cellsalign: "left", cellsrenderer: cellsrenderer},
+            {text: "표현", datafield: "expression", cellsalign: "left", cellsrenderer: cellsrenderer}
+          ]
+        });
       }
 
       /* jqWidget을 사용하는 각종 이벤트들 맵핑 처리 */
@@ -68,6 +98,11 @@
         $("div#past_upload_file_list_component").on("change", event_div_past_upload_file_list_component);
         $("div#past_upload_file_del_but_component").click(event_div_past_upload_file_del_but_omponent);
         $("div#past_upload_file_process_but_component").click(event_div_past_upload_file_process_but_component);
+        $("div#view_data_type_combo_component").on("change", event_div_view_dat_type_combo_component_change);
+      }
+      
+      function setComoboCodeMapping() {
+        setCmnComboCodeMapping($("div#view_data_type_combo_component"), 31);
       }
       
       function event_a_menu_scen_manage_click() {
@@ -84,6 +119,10 @@
       
       function event_a_menu_help_about_click() {
         
+      }
+      
+      function event_div_view_dat_type_combo_component_change() {
+        setMorphemeList();
       }
       
       function event_div_file_upload_component_upload_end(event) {
@@ -124,6 +163,7 @@
           doc_load_form.append($("<input>", {type: "hidden", name: "file_key", value: fileKey}));
           $("body").append(doc_load_form);
           $("form#doc_load_form").submit();
+          cmnSyncCall("GetMorphemeDetailList", {file_key: fileKey}, callback, null);
         } else if (act == "GetPastFileUploadList") {
           var i = 0;
           for (i = 0; i < data.length; i++) {
@@ -141,7 +181,39 @@
               $("div#past_upload_file_list_component").jqxDropDownList("removeAt", i);
             }
           }
+        } else if (act == "GetMorphemeDetailList") {
+          morphemeData = data;
+          setMorphemeList();
         }
+      }
+      
+      var cellsrenderer = function (row, columnfield, value, defaulthtml, columnproperties) {
+        if ($("div#view_data_list_component").jqxGrid("getrowdata", row)["meaning"] == "상품요건서분석") {
+          return "<span style=\"margin:4px 4px;float:" + columnproperties.cellsalign + ";color:#FF0000;\">" + value + "</span>";
+        } else {
+          return "<span style=\"margin:4px 4px;float:" + columnproperties.cellsalign + ";color:#000000;\">" + value + "</span>";
+        }
+      }
+      
+      function setMorphemeList() {
+        var i = 0;
+        var sourceDataList = [];
+        if (morphemeData == null) {
+          return;
+        }
+        for (i = 0; i < morphemeData.length; i++) {
+          var strFontsStart = "<div class=\"voca_selected\">";
+          var strFontEnd = "</div>";
+          if ($("div#view_data_type_combo_component").jqxDropDownList().val() == "1"
+             || ($("div#view_data_type_combo_component").jqxDropDownList().val() == "2" && morphemeData[i].type[0].substring(0, 1) == "N")
+             || ($("div#view_data_type_combo_component").jqxDropDownList().val() == "3" && morphemeData[i].type[1] == "상품요건서분석")) {
+            sourceDataList.push({no: i + 1, vocabulary: morphemeData[i].voca, part_of_speach_tag: morphemeData[i].type[0], meaning: morphemeData[i].type[1]
+                                 , final_consonant_yn: morphemeData[i].type[2], pronounce: morphemeData[i].type[3], type: morphemeData[i].type[4]
+                                 , first_part_of_speach_tag: morphemeData[i].type[5], last_part_of_speach_tag: morphemeData[i].type[6], expression: morphemeData[i].type[7]});
+          }
+        }
+        $("div#view_data_list_component").jqxGrid("clear");
+        $("div#view_data_list_component").jqxGrid("addrow", null, sourceDataList);        
       }
       
       function pad(number, size) {
@@ -216,13 +288,12 @@
             </div>
           </div>
           <div class="right_splitter">
-            <div class="source_data_tab">
-              <div id="source_data_tab_component">
-                <ul>
-                  <li></li>
-                </ul>
-                <div>
-                </div>
+            <div class="view_data_type_combo">
+              <div id="view_data_type_combo_component">
+              </div>
+            </div>
+            <div class="view_data_list">
+              <div id="view_data_list_component">
               </div>
             </div>
           </div>

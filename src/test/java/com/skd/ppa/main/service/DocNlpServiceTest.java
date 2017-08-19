@@ -37,10 +37,17 @@ public class DocNlpServiceTest {
   }
 
   @Test(timeout=50000)
-  public void getMorpheme() throws Exception {
+  public void testGetMorpheme() throws Exception {
     File file = new File(fileDir);
     FileInputStream fis = new FileInputStream(file);
     JSONArray jsonArray = docNlpService.getMorpheme(fis);
     Assert.assertTrue(jsonArray.size() >= 1);
+  }
+
+  @Test(timeout=50000)
+  public void testGetMorphemeDetail() throws Exception {
+    JSONArray jsonArray = null;
+    jsonArray = docNlpService.getMorphemeDetail("UPEVSSA1SjTfiYJy1rtNOHUT0Wv40BnXUpXG0b8A");
+    Assert.assertTrue(jsonArray.getJSONObject(0).getString("voca").equals("<?"));
   }
 }
