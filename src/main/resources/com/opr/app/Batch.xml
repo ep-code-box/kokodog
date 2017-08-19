@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.opr.app.batch">
+  <delete id="deletePastAppLog" parameterType="HashMap">
+    DELETE
+    FROM   cmn_app_log
+    WHERE  log_typ NOT IN ('ERROR', 'WARN', 'FATAL')
+    AND    datetime &lt; #{currentTime} - INTERVAL (SELECT CAST(ccd.cd_seq_name AS unsigned int)
+                                                    FROM   cmn_cd_dtl ccd
+                                                    WHERE  ccd.cd_num = 32
+                                                    AND    NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
+                                                   ) DAY
+  </delete>
+</mapper>
