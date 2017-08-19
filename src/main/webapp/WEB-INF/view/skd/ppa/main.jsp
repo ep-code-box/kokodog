@@ -14,6 +14,7 @@
       $(document).ready(function() {
         contentInitLoad();
         contentEventLoad();
+        GetPastFileUploadList();
       });
       
       /* jqWidget을 사용하는 각종 함수 들 첫 오픈 처리 */
@@ -39,6 +40,22 @@
           uploadUrl: "/skd/ppa/main/FileUpload",
           fileInputName: "fileToUpload"
         });
+        $("div#past_upload_file_list_component").jqxDropDownList({
+          width: "100%",
+          height: "100%"
+        });
+        $("input#past_upload_file_del_but_component").jqxButton({
+          width: "100%",
+          height: "100%",
+          value: "삭제",
+          disabled: true
+        });
+        $("input#past_upload_file_process_but_component").jqxButton({
+          width: "100%",
+          height: "100%",
+          value: "조회",
+          disabled: true
+        });
       }
 
       /* jqWidget을 사용하는 각종 이벤트들 맵핑 처리 */
@@ -48,6 +65,9 @@
         $("a#help_help").click(event_a_help_help_click);
         $("a#help_about").click(event_a_menu_help_about_click);
         $("div#file_upload_component").on("uploadEnd", event_div_file_upload_component_upload_end);
+        $("div#past_upload_file_list_component").on("change", event_div_past_upload_file_list_component);
+        $("div#past_upload_file_del_but_component").click(event_div_past_upload_file_del_but_omponent);
+        $("div#past_upload_file_process_but_component").click(event_div_past_upload_file_process_but_component);
       }
       
       function event_a_menu_scen_manage_click() {
@@ -72,6 +92,29 @@
         cmnSyncCall("ConvToHtml", {file_key : fileKey}, callback, null);
       }
       
+      function event_div_past_upload_file_list_component(event) {
+        if (event.args.index >= 0) {
+          $("#past_upload_file_process_but_component").jqxButton("disabled", false);
+          $("#past_upload_file_del_but_component").jqxButton("disabled", false);
+        } else {
+          $("#past_upload_file_process_but_component").jqxButton("disabled", true);
+          $("#past_upload_file_del_but_component").jqxButton("disabled", true);          
+        }
+      }
+      
+      function event_div_past_upload_file_del_but_omponent() {
+        cmnSyncCall("DeletePastFileUpload", {file_key: $("div#past_upload_file_list_component").jqxDropDownList("val")}, callback, $("div#past_upload_file_list_component").jqxDropDownList("val"));
+      }
+      
+      function event_div_past_upload_file_process_but_component() {
+        fileKey = $("div#past_upload_file_list_component").jqxDropDownList("val");
+        cmnSyncCall("ConvToHtml", {file_key : fileKey}, callback, null);
+      }
+      
+      function GetPastFileUploadList() {
+        cmnSyncCall("GetPastFileUploadList", {}, callback, null);
+      }
+      
       function callback(data, act, input_param, callbackVar) {
         if (act == "ConvToHtml") {
           $("div#doc_component").children("iframe#iframe_doc_component").remove();
@@ -81,7 +124,36 @@
           doc_load_form.append($("<input>", {type: "hidden", name: "file_key", value: fileKey}));
           $("body").append(doc_load_form);
           $("form#doc_load_form").submit();
+        } else if (act == "GetPastFileUploadList") {
+          var i = 0;
+          for (i = 0; i < data.length; i++) {
+            var date = new Date(data[i].eff_sta_dtm);
+            var nowDateStr = pad(date.getFullYear(), 4) + "-" + pad(date.getMonth() + 1, 2) + "-" + pad(date.getDate(), 2) + " " + pad(date.getHours(), 2) + ":" + pad(date.getMinutes(), 2) + ":" + pad(date.getSeconds(), 2);
+            $("div#past_upload_file_list_component").jqxDropDownList("addItem", {label: "[" + nowDateStr + "]" + data[i].file_nm, value: data[i].file_key});
+          }
+        } else if (act == "DeletePastFileUpload") {
+          var i = 0;
+          for (i = 0; i < $("div#past_upload_file_list_component").jqxDropDownList("getItems").length; i++) {
+            if ($("div#past_upload_file_list_component").jqxDropDownList("getItem", i).value == callbackVar) {
+              if ($("div#past_upload_file_list_component").jqxDropDownList("getSelectedItem").index == i) {
+                $("div#past_upload_file_list_component").jqxDropDownList("selectIndex", -1);
+              }
+              $("div#past_upload_file_list_component").jqxDropDownList("removeAt", i);
+            }
+          }
         }
+      }
+      
+      function pad(number, size) {
+        var str = "" + number;
+        if (str.length > size) {
+          throw "Number size is bigger than request size";
+        }
+        var i = 0;
+        for (i = str.length; i < size; i++) {
+          str = "0" + str;
+        }
+        return str;
       }
     </script>
   </head>
@@ -119,6 +191,18 @@
       <div class="content">
         <div id="left_right_splitter_component">
           <div class="left_splitter">
+            <div class="past_upload_file">
+              <div class="past_upload_file_list">
+                <div id="past_upload_file_list_component">
+                </div>
+              </div>
+              <div class="past_upload_file_process_but">
+                <input type="button "id="past_upload_file_process_but_component"/>
+              </div>
+              <div class="past_upload_file_del_but">
+                <input type="button" id="past_upload_file_del_but_component"/>
+              </div>
+            </div>
             <div class="file_upload">
               <div id="file_upload_component">
               </div>

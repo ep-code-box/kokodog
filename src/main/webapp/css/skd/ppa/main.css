@@ -60,7 +60,7 @@ body {
   bottom: 0px;
 }
 
-.file_upload {
+.past_upload_file {
   position: absolute;
   left: 0px;
   top: 0px;
@@ -68,10 +68,42 @@ body {
   height: 30px;
 }
 
+.past_upload_file_list {
+  position: absolute;
+  left: 0px;
+  top: 3px;
+  right: 100px;
+  height: 28px;  
+}
+
+.past_upload_file_process_but {
+  position: absolute;
+  width: 45px;
+  top: 3px;
+  right: 50px;
+  height: 28px;  
+}
+
+.past_upload_file_del_but {
+  position: absolute;
+  width: 45px;
+  top: 3px;
+  right: 5px;
+  height: 28px;  
+}
+
+.file_upload {
+  position: absolute;
+  left: 0px;
+  top: 33px;
+  right: 0px;
+  height: 60px;
+}
+
 .doc {
   position: absolute;
   left: 0px;
-  top: 30px;
+  top: 97px;
   right: 0px;
   bottom: 0px;  
 }

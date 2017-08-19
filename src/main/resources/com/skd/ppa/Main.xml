@@ -30,4 +30,27 @@
     AND    cf.file_num = spfthr.file_num
     AND    NOW() BETWEEN spfthr.eff_sta_dtm AND spfthr.eff_end_dtm
   </select>
+  <select id="getPastFileUpload" parameterType="HashMap" resultType="HashMap">
+    SELECT cf.file_nm AS file_nm
+         , cf.file_key AS file_key
+         , cf.eff_sta_dtm AS eff_sta_dtm
+    FROM   cmn_file cf
+         , skd_ppa_file_to_html_result spfthr
+    WHERE  NOW() BETWEEN cf.eff_sta_dtm AND cf.eff_end_dtm
+    AND    cf.file_num = spfthr.file_num
+    AND    NOW() BETWEEN spfthr.eff_sta_dtm AND spfthr.eff_end_dtm
+    ORDER BY cf.eff_sta_dtm
+  </select>
+  <update id="deletePastFileUpload" parameterType="HashMap">
+    UPDATE skd_ppa_file_to_html_result
+    SET    audit_id = #{user_num}
+         , audit_dtm = NOW()
+         , eff_end_dtm = #{now_dtm} - INTERVAL 1 SECOND
+    WHERE  file_num = (SELECT cf.file_num
+                       FROM   cmn_file cf
+                       WHERE  cf.file_key = #{file_key}
+                       AND    NOW() BETWEEN cf.eff_sta_dtm AND cf.eff_end_dtm
+                      )
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
 </mapper>

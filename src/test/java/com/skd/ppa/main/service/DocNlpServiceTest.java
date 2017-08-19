@@ -31,10 +31,9 @@ public class DocNlpServiceTest {
     JSONArray jsonArray = docNlpService.getNounList(fis);
     Assert.assertTrue(jsonArray.getString(0).equals("작성자"));
     Assert.assertTrue(jsonArray.getString(1).equals("소속"));
-    jsonArray = docNlpService.getNounList("2QffxK946iGyL7wNXnSluFiac9XChZKGSjVtjTor");
-    System.out.println(jsonArray.toString());
-    Assert.assertTrue(jsonArray.getString(0).equals("한승호"));
-    Assert.assertTrue(jsonArray.getString(1).equals("요금"));
+    jsonArray = docNlpService.getNounList("UPEVSSA1SjTfiYJy1rtNOHUT0Wv40BnXUpXG0b8A");
+    Assert.assertTrue(jsonArray.getString(0).equals("작성자"));
+    Assert.assertTrue(jsonArray.getString(1).equals("소속"));
   }
 
   @Test(timeout=50000)
