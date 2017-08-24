@@ -191,7 +191,7 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
         refreshToken = oAuthLoginService.getRequestTokenByUserNum(((Integer)request.getSession().getAttribute("user_num")).intValue());
         if (refreshToken != null) {
           outputMap = oAuthLoginService.getAccessTokenByRefreshToken((String)outputMap.get("request_token"));
-          oAuthLoginService.insertAccessToken((String)outputMap.get("access_token"), ((Integer)outputMap.get("expires_in")).intValue(), (String)request.getAttribute("now_dtm"), ((Integer)request.getSession().getAttribute("user_num")).intValue());
+          oAuthLoginService.insertAccessToken((String)outputMap.get("access_token"), ((Integer)outputMap.get("expires_in")).intValue(), ((Integer)request.getSession().getAttribute("user_num")).intValue());
           request.getSession().setAttribute("user_num", request.getSession().getAttribute("user_num"));
         } else {
           request.getSession().setAttribute("user_num", null);

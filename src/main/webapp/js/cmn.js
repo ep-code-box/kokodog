@@ -4,9 +4,17 @@ var g_callArg;
 var g_status_call;
 var g_is_loader_exist = false;
 var g_is_loader_open = false;
+var g_body_obj = [];
 
 function cmnSyncCall(tpNm, param, callbackFunc, callbackVar, callbackErr) {
   if (g_is_loader_exist === false) {
+    var body_obj = $("<div>").children();
+    for (var i = 0; i < body_obj.length; i++) {
+      if (body_obj[i].css("zIndex") > 0) {
+        g_body_obj.push({body_obj: body_obj[i], zIndex: body_obj[i].css("zIndex")});
+//        body_obj[i].css("zIndex", 0);
+      }
+    }
     $("<div>", {id: "_cmn_loader"}).appendTo("body");
     $("div#_cmn_loader").jqxLoader({width: 100, height: 60, imagePosition: "top"});
     g_is_loader_exist = true;
@@ -57,7 +65,7 @@ function cmnCall(tpNm, param, callbackFunc, callbackVar, isASync, callbackErr) {
     type: "post",
     data: param,
     dataType: "JSON",
-    async: isASync,
+    async: true,
     success: function(data) {
       closeLoader();
       if (callbackFunc != null && typeof callbackFunc != "undefined" && callbackFunc !== "") {

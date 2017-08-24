@@ -1,9 +1,12 @@
 package com.cmn.cmn.service.impl;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.HashMap;
+import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -12,6 +15,8 @@ import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.cmn.cmn.service.GetDataFromURLService;
 import com.cmn.cmn.service.GetGoogleLoginOAuthRedirectUriService;
@@ -74,8 +79,15 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
     return id;
   }
   
-  public int getUserNumByOAuthId(String id, String nowDtm) throws Exception {
+  public int getUserNumByOAuthId(String id) throws Exception {
     Map<String, Object> inputMap = new HashMap<String, Object>();
+    long systemCallDtm = 0L;
+    HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+    if (request != null && request.getAttribute("system_call_dtm") != null) {
+      systemCallDtm = ((Long)request.getAttribute("system_call_dtm")).longValue();
+    } else {
+      systemCallDtm = GregorianCalendar.getInstance().getTimeInMillis();
+    }
     inputMap.put("google_id", id);
     logger.debug("Input Map of SQL Map getUserNumByOAuthLoginId - " + inputMap);
     Map<String, Object> outputMap = oAuthLoginDao.getUserNumByOAuthLoginId(inputMap);
@@ -85,7 +97,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
       isNewUser = true;
       inputMap.clear();
       inputMap.put("google_id", id);
-      inputMap.put("now_dtm", nowDtm);
+      inputMap.put("now_dtm", new Date(systemCallDtm));
       logger.debug("Input Map of SQL Map insertCmnUser - " + inputMap);
       oAuthLoginDao.insertUser(inputMap);
       inputMap.clear();
@@ -96,36 +108,50 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
     if (isNewUser == true) {
       inputMap.clear();
       inputMap.put("user_num", userNum);
-      inputMap.put("now_dtm", nowDtm);
+      inputMap.put("now_dtm", new Date(systemCallDtm));
       oAuthLoginDao.insertAllInitAuth(inputMap);      
     }
     return userNum;
   }
   
-  public void insertToken(String accessToken, String refreshToken, int expiresIn, String nowDtm, int userNum) throws Exception {
-    insertAccessToken(accessToken, expiresIn, nowDtm, userNum);
+  public void insertToken(String accessToken, String refreshToken, int expiresIn, int userNum) throws Exception {
+    insertAccessToken(accessToken, expiresIn, userNum);
     if (refreshToken != null) {
-      insertRefreshToken(refreshToken, nowDtm, userNum);
+      insertRefreshToken(refreshToken, userNum);
     }
   }
   
-  public void insertAccessToken(String accessToken, int expiresIn, String nowDtm, int userNum) throws Exception {
+  public void insertAccessToken(String accessToken, int expiresIn, int userNum) throws Exception {
     Map<String, Object> inputMap = new HashMap<String, Object>();
+    long systemCallDtm = 0L;
+    HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+    if (request != null && request.getAttribute("system_call_dtm") != null) {
+      systemCallDtm = ((Long)request.getAttribute("system_call_dtm")).longValue();
+    } else {
+      systemCallDtm = GregorianCalendar.getInstance().getTimeInMillis();
+    }
     inputMap.put("user_num", userNum);
-    inputMap.put("now_dtm", nowDtm);
+    inputMap.put("now_dtm", new Date(systemCallDtm));
     inputMap.put("expires_in", expiresIn);
     inputMap.put("access_token", accessToken);
     oAuthLoginDao.insertAccessToken(inputMap);    
   }
 
-  public void insertRefreshToken(String refreshToken, String nowDtm, int userNum) throws Exception {
+  public void insertRefreshToken(String refreshToken, int userNum) throws Exception {
     Map<String, Object> inputMap = new HashMap<String, Object>();
+    long systemCallDtm = 0L;
+    HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+    if (request != null && request.getAttribute("system_call_dtm") != null) {
+      systemCallDtm = ((Long)request.getAttribute("system_call_dtm")).longValue();
+    } else {
+      systemCallDtm = GregorianCalendar.getInstance().getTimeInMillis();
+    }
     inputMap.put("user_num", userNum);
-    inputMap.put("now_dtm", nowDtm);
+    inputMap.put("now_dtm", new Date(systemCallDtm));
     oAuthLoginDao.updatePrevRefreshTokenAsDelete(inputMap);        
     inputMap.clear();
     inputMap.put("user_num", userNum);
-    inputMap.put("now_dtm", nowDtm);
+    inputMap.put("now_dtm", new Date(systemCallDtm));
     inputMap.put("refresh_token", refreshToken);
     logger.debug("Input Map of SQL Map insertRefreshToken - " + inputMap);
     oAuthLoginDao.insertRefreshToken(inputMap);        
@@ -154,8 +180,15 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
     return returnMap;    
   }
   
-  public void deleteOAuthInfo(int userNum, String nowDtm) throws Exception {
+  public void deleteOAuthInfo(int userNum) throws Exception {
     Map<String, Object> inputMap = new HashMap<String, Object>();
+    long systemCallDtm = 0L;
+    HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+    if (request != null && request.getAttribute("system_call_dtm") != null) {
+      systemCallDtm = ((Long)request.getAttribute("system_call_dtm")).longValue();
+    } else {
+      systemCallDtm = GregorianCalendar.getInstance().getTimeInMillis();
+    }
     inputMap.put("user_num", userNum);
     Map<String, Object> outputMap = null;
     String accessToken = null;
@@ -163,11 +196,11 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
     accessToken = (String)outputMap.get("access_token");
     inputMap.clear();
     inputMap.put("user_num", userNum);
-    inputMap.put("now_dtm", nowDtm);
+    inputMap.put("now_dtm", new Date(systemCallDtm));
     oAuthLoginDao.updatePrevRefreshTokenAsDelete(inputMap);
     inputMap.clear();
     inputMap.put("user_num", userNum);
-    inputMap.put("now_dtm", nowDtm);
+    inputMap.put("now_dtm", new Date(systemCallDtm));
     oAuthLoginDao.updateAccessTokenAsDelete(inputMap);
   }
   

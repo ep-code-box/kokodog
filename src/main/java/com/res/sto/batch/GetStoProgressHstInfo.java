@@ -39,11 +39,13 @@ public class GetStoProgressHstInfo extends Batch {
     Map<String, Object> inputMap = new HashMap<String, Object>();
     Map<String, Object> outputMap = null;
     String dateStr = sdf2.format(new Date(batchRunTime));
-    inputMap.put("date", sdf1.parse(dateStr));
+    inputMap.put("date", dateStr);
     List<Map<String, Object>> outputList = null;
+    addLog("Base date[" + dateStr + "]");
     logger.debug("input map of SQL getResStoAllCorpList - " + inputMap);
-    outputList = sqlSession.selectList("getResStoAllCorpList", inputMap);
+    outputList = sqlSession.selectList("com.res.sto.batch.getResStoAllCorpList", inputMap);
     logger.debug("input map of SQL getResStoAllCorpList - " + outputList);
+    addLog("Total output stock collection data size[" + outputList.size() + "]");
     int i = 0;
     int j = 0;
     int k = 0;
@@ -103,7 +105,7 @@ public class GetStoProgressHstInfo extends Batch {
           }
           inputMap.put("date", sdf1.parse(element.html().replaceAll("\\.", "")));
           logger.debug("input map of SQL getResStoPriceHstExist - " + inputMap);
-          outputMap = sqlSession.selectOne("getResStoPriceHstExist", inputMap);
+          outputMap = sqlSession.selectOne("com.res.sto.batch.getResStoPriceHstExist", inputMap);
           logger.debug("output map of SQL getResStoPriceHstExist - " + outputMap);
           if (outputMap == null || outputMap.get("is_exist") == null || outputMap.get("is_exist").equals("Y") == true) {
             isDataInserted = true;
@@ -127,7 +129,7 @@ public class GetStoProgressHstInfo extends Batch {
           element = elements.eq(k + 2).first().children().eq(6).first().children().first();
           inputMap.put("volume", Integer.parseInt(element.html().replaceAll(",", "")));
           logger.debug("input map of SQL insertResStoPriceHst - " + inputMap);
-          sqlSession.insert("insertResStoPriceHst", inputMap);
+          sqlSession.insert("com.res.sto.batch.insertResStoPriceHst", inputMap);
           insertDataCnt++;
           isStockInserted = true;
         }
@@ -135,6 +137,7 @@ public class GetStoProgressHstInfo extends Batch {
       if (isStockInserted == true) {
         insertStockCnt++;
       }
+      Thread.sleep(10);
     }
     setReport("==========================================\nData Insert Count : " + insertDataCnt + "\nStock Insert Count : " + insertStockCnt + "\n===========================================\n");
   }

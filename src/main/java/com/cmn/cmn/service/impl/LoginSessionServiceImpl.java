@@ -20,7 +20,7 @@ public class LoginSessionServiceImpl implements LoginSessionService {
   
   public void loginSessionLogout(HttpServletRequest request) throws Exception {
     if (request.getSession().getAttribute("user_num") != null) {
-      oAuthLoginService.deleteOAuthInfo(((Integer)request.getSession().getAttribute("user_num")).intValue(), (String)request.getSession().getAttribute("now_dtm"));
+      oAuthLoginService.deleteOAuthInfo(((Integer)request.getSession().getAttribute("user_num")).intValue());
       request.getSession().setAttribute("user_num", null);
     }    
   }

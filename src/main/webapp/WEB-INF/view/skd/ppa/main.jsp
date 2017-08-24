@@ -5,9 +5,23 @@
     <title>KOKODOG[Proposal Analysis]</title>
     <link rel="shortcut icon" type="image/x-icon" href="/FileDown?file_key=tId6m0peoFkF2GYcAfAJG48kOE5Djo5ky49MFtnX" />
     <link rel="stylesheet" href="/css/skd/ppa/main.css"/>
-    <link rel="stylesheet" href="https://jqwidgets.com/public/jqwidgets/styles/jqx.base.css" type="text/css"/>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="https://jqwidgets.com/public/jqwidgets/jqx-all.js"></script>
+    <link rel="stylesheet" href="/js/jqwidgets/styles/jqx.base.css" type="text/css"/>
+    <script type="text/javascript" src="/js/jquery/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxcore.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxloader.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxmenu.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxsplitter.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxfileupload.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxdropdownlist.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxbuttons.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxgrid.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxlistbox.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxscrollbar.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxdata.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxgrid.filter.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxgrid.columnsresize.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxgrid.sort.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxgrid.selection.js"></script>
     <script src="/js/cmn.js"></script>
     <script type="text/javascript">
       var fileKey = null;
@@ -207,7 +221,7 @@
           if ($("div#view_data_type_combo_component").jqxDropDownList().val() == "1"
              || ($("div#view_data_type_combo_component").jqxDropDownList().val() == "2" && morphemeData[i].type[0].substring(0, 1) == "N")
              || ($("div#view_data_type_combo_component").jqxDropDownList().val() == "3" && morphemeData[i].type[1] == "상품요건서분석")) {
-            sourceDataList.push({no: i + 1, vocabulary: morphemeData[i].voca, part_of_speach_tag: morphemeData[i].type[0], meaning: morphemeData[i].type[1]
+            sourceDataList.push({no: i + 1, vocabulary: morphemeData[i].voca.replace(/</gi, "&lt;").replace(/>/gi, "&gt;"), part_of_speach_tag: morphemeData[i].type[0], meaning: morphemeData[i].type[1]
                                  , final_consonant_yn: morphemeData[i].type[2], pronounce: morphemeData[i].type[3], type: morphemeData[i].type[4]
                                  , first_part_of_speach_tag: morphemeData[i].type[5], last_part_of_speach_tag: morphemeData[i].type[6], expression: morphemeData[i].type[7]});
           }

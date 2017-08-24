@@ -68,9 +68,9 @@
   </select>
   <delete id="deleteBatchHist" parameterType="HashMap">
     DELETE
-    FROM   cmn_batch_exe_hst cbeh
-    WHERE  cbeh.batch_num = #{batch_num}
-    AND    cbeh.exe_dtm = #{exe_dtm}
-    AND    cbeh.batch_exe_state = 1
+    FROM   cmn_batch_exe_hst
+    WHERE  batch_num = #{batch_num}
+    AND    exe_dtm = #{exe_dtm}
+    AND    batch_exe_state = 1
   </delete>
 </mapper>

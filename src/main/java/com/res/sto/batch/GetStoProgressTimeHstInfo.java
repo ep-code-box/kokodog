@@ -41,10 +41,10 @@ public class GetStoProgressTimeHstInfo extends Batch{
     Map<String, Object> inputMap = new HashMap<String, Object>();
     Map<String, Object> outputMap = null;
     String dateStr = sdf2.format(new Date(batchRunTime));
-    inputMap.put("date", sdf1.parse(dateStr));
+    inputMap.put("date", dateStr);
     List<Map<String, Object>> outputList = null;
     logger.debug("input map of SQL getResStoAllCorpList - " + inputMap);
-    outputList = sqlSession.selectList("getResStoAllCorpList", inputMap);
+    outputList = sqlSession.selectList("com.res.sto.batch.getResStoAllCorpList", inputMap);
     logger.debug("input map of SQL getResStoAllCorpList - " + outputList);
     int i = 0;
     int j = 0;
@@ -90,7 +90,7 @@ public class GetStoProgressTimeHstInfo extends Batch{
           element = elements.eq(k + 2).first().children().first();
           inputMap.put("purchase_time", sdf2.format(dateCal.getTime()) + " " + element.html() + ":00");
           logger.debug("input map of SQL getResStoIsExistPriceTimeHst - " + inputMap);
-          outputMap = sqlSession.selectOne("getResStoIsExistPriceTimeHst", inputMap);
+          outputMap = sqlSession.selectOne("com.res.sto.batch.getResStoIsExistPriceTimeHst", inputMap);
           logger.debug("output map of SQL getResStoIsExistPriceTimeHst - " + outputMap);
           if (outputMap == null || outputMap.get("is_exist") == null || outputMap.get("is_exist").equals("Y") == true) {
             isDataInserted = true;
@@ -112,7 +112,7 @@ public class GetStoProgressTimeHstInfo extends Batch{
           element = elements.eq(k + 2).first().children().eq(7).first();
           inputMap.put("purchase_price", Integer.parseInt(element.html().replaceAll(",", "")));
           logger.debug("input map of SQL insertResStoPriceTimeHst - " + inputMap);
-          sqlSession.insert("insertResStoPriceTimeHst", inputMap);
+          sqlSession.insert("com.res.sto.batch.insertResStoPriceTimeHst", inputMap);
           insertDataCnt++;
           isStockInserted = true;
         }

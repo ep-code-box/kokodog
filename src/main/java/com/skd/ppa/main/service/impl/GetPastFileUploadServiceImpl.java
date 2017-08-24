@@ -52,13 +52,11 @@ public class GetPastFileUploadServiceImpl implements GetPastFileUploadService {
    *  @throws 기타 Exception
    */
   public void deletePastFileUpload(String fileKey) throws Exception {
-    ServletRequestAttributes sra = null;
     HttpServletRequest request = null;
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("file_key", fileKey);
     try {
-      sra = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
-      request = sra.getRequest();
+      request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
       if (request == null || request.getSession() == null || request.getSession().getAttribute("user_num") == null) {
         inputMap.put("user_num", 0);
         inputMap.put("now_dtm", new Date());

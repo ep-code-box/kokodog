@@ -41,8 +41,8 @@ public class SetSystemLoginController {
     requestUrl = getRequestURLService.getRequestURL(request);
     outputMap = oAuthLoginService.getAccessTokenByCode(request.getParameter("code"), requestUrl);
     id = oAuthLoginService.getOAuthIdByAccessToken((String)(outputMap.get("access_token")));
-    userNum = oAuthLoginService.getUserNumByOAuthId(id, (String)request.getAttribute("now_dtm"));
-    oAuthLoginService.insertToken((String)outputMap.get("access_token"), outputMap.get("refresh_token") != null ? (String)outputMap.get("refresh_token") : null, ((Integer)outputMap.get("expires_in")).intValue(), (String)request.getAttribute("now_dtm"), userNum);
+    userNum = oAuthLoginService.getUserNumByOAuthId(id);
+    oAuthLoginService.insertToken((String)outputMap.get("access_token"), outputMap.get("refresh_token") != null ? (String)outputMap.get("refresh_token") : null, ((Integer)outputMap.get("expires_in")).intValue(), userNum);
     loginSessionService.loginSessionLogin(request, userNum);
     mav = new ModelAndView("redirect:" + request.getParameter("state"));
     return mav;

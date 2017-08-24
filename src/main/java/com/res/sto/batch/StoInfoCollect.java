@@ -54,19 +54,15 @@ public class StoInfoCollect extends Batch {
   }
   
   private void process(SqlSession sqlSession, Date exeDateTime) throws Exception {
+    addLog("============   Start method of StoInfoCollect.process   ============");
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("date", new SimpleDateFormat("yyyy-MM-dd").format(this.dateTime.getTime()));
     inputMap.put("datetime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(this.dateTime.getTime()));
-    Map<String, Object> outputMap = null;
-    logger.debug("Input map of SQL getResStoIsGetStockInfoBatchExistsOnDate - " + inputMap);
-    outputMap = sqlSession.selectOne("getResStoIsGetStockInfoBatchExistsOnDate", inputMap);
-    logger.debug("Output map of SQL getResStoIsGetStockInfoBatchExistsOnDate- " + outputMap);
-    if (outputMap != null && outputMap.get("is_exist") != null && outputMap.get("is_exist").equals("N")) {
-      getStockCorpInfo();
-    }
+    getStockCorpInfo();
   }
   
   private void getStockCorpInfo() throws Exception {
+    addLog("============   Start method of StoInfoCollect.getStockCorpInfo   ============");
     GetDataFromURLService getDataFromURLService = new GetDataFromURLServiceImpl();
     String data = (String)getDataFromURLService.getDataFromURL("https://m.nhqv.com/codes/jcode.js", new ArrayList<Map<String, String>>(), "GET", "EUC-KR", GetDataFromURLService.TYPE_STRING);
     String tempStr = "";
@@ -87,6 +83,7 @@ public class StoInfoCollect extends Batch {
     int numberOfInsert = 0;
     int numberOfUpdate = 0;
     int numberOfDelete = 0;
+    addLog("Corporation data[1, 100]" + data.substring(0, 100));
     while ((index = data.indexOf("codes[\"", index)) >= 0) {
       numberOfTotalCount++;
       logger.debug("first point of codes[ index[" + index + "]");
@@ -107,7 +104,7 @@ public class StoInfoCollect extends Batch {
       inputMap.put("stock_num", stockNum);
       inputMap.put("date", sdf1.parse(this.dateStr));
       logger.debug("Input map of SQL getResStoCorpInfo - " + inputMap);
-      outputMap = sqlSession.selectOne("getResStoCorpInfo", inputMap);
+      outputMap = sqlSession.selectOne("com.res.sto.batch.getResStoCorpInfo", inputMap);
       logger.debug("Output map of SQL getResStoCorpInfo - " + outputMap);
       if (outputMap == null) {
         isNewInfo = true;
@@ -135,7 +132,7 @@ public class StoInfoCollect extends Batch {
         inputMap.put("user_num", 0);
         inputMap.put("date", sdf1.parse(this.dateStr));
         logger.debug("Input map of SQL updateResStoCorpInfoDelete - " + inputMap);
-        sqlSession.update("updateResStoCorpInfoDelete", inputMap);
+        sqlSession.update("com.res.sto.batch.updateResStoCorpInfoDelete", inputMap);
       }
       if (isNewInfo == true || isInfoChanged == true) {
         inputMap.clear();
@@ -148,7 +145,7 @@ public class StoInfoCollect extends Batch {
         }
         inputMap.put("eff_sta_dt", sdf1.parse(this.dateStr));
         logger.debug("Input map of SQL insertResStoNewStockCorpInfo - " + inputMap);
-        sqlSession.insert("insertResStoNewStockCorpInfo", inputMap);
+        sqlSession.insert("com.res.sto.batch.insertResStoNewStockCorpInfo", inputMap);
       }
       if (isNewInfo == true) {
         numberOfInsert++;
@@ -160,7 +157,7 @@ public class StoInfoCollect extends Batch {
     inputMap.clear();
     inputMap.put("date", sdf1.parse(this.dateStr));
     logger.debug("Input map of SQL getResStoAllCorpList - " + inputMap);
-    outputList = sqlSession.selectList("getResStoAllCorpList", inputMap);
+    outputList = sqlSession.selectList("com.res.sto.batch.getResStoAllCorpList", inputMap);
     logger.debug("Output list of SQL getResStoAllCorpList - " + outputList);
     inputMap.clear();
     for (i = 0; i < outputList.size(); i++) {
@@ -171,7 +168,7 @@ public class StoInfoCollect extends Batch {
         inputMap.put("date", sdf1.parse(this.dateStr));
         inputMap.put("user_num", 0);
         logger.debug("Input map of SQL updateResStoCorpInfoDelete - " + inputMap);
-        outputList = sqlSession.selectList("updateResStoCorpInfoDelete", inputMap);
+        outputList = sqlSession.selectList("com.res.sto.batch.updateResStoCorpInfoDelete", inputMap);
         numberOfDelete++;
       }
     }

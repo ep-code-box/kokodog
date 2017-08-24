@@ -495,7 +495,7 @@
                                                                     batch_nm: data[i].batch_nm,
                                                                     exe_dtm: toDateFormat(data[i].exe_dtm),
                                                                     real_exe_dtm: toDateFormat(data[i].real_exe_dtm),
-                                                                    real_end_dtm: toDateFormat(data[i].real_end_dtm),
+                                                                    real_end_dtm: (data[i].real_end_dtm == "" ? "" : toDateFormat(data[i].real_end_dtm)),
                                                                     batch_exe_state_nm: data[i].batch_exe_state_nm});
           }
         } else if (act == "GetAppLogList") {

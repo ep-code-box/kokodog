@@ -9,11 +9,10 @@
 
   <name>kokodog</name>
   <url>http://maven.apache.org</url>
-
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <webappRootDirectory>/home/leems83/data</webappRootDirectory>
   </properties>
-
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -178,33 +177,81 @@
       <id>dev</id>
       <properties>
         <webappDirectory>webappdev/ROOT</webappDirectory>
+        <confDirectory>conf_dev</confDirectory>
       </properties>
     </profile>
     <profile>
       <id>prod</id>
       <properties>
         <webappDirectory>webapps/ROOT</webappDirectory>
+        <confDirectory>conf_prod</confDirectory>
       </properties>
     </profile>
   </profiles>
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <version>2.4</version>
         <configuration>
-          <compilerVersion>1.8</compilerVersion>
-          <encoding>UTF-8</encoding>
-          <warSourceDirectory>src/main/webapp</warSourceDirectory>
-          <warSourceExcludes>WEB-INF/conf/**,WEB-INF/classes/**,WEB-INF/web.xml</warSourceExcludes>
-          <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-          <webappDirectory>/home/leems83/data/${webappDirectory}</webappDirectory>
-          <goals>
-            <goal>exploded</goal>
-          </goals>
+           <packagingExcludes>
+             WEB-INF/classes/conf/*
+           </packagingExcludes>
+           <compilerVersion>1.8</compilerVersion>
+           <encoding>UTF-8</encoding>
+           <warSourceDirectory>src/main/webapp</warSourceDirectory>
+           <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+           <webappDirectory>${webappRootDirectory}/${webappDirectory}</webappDirectory>
+           <goals>
+             <goal>exploded</goal>
+           </goals>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.4</version>
+          <configuration>
+            <failOnError>false</failOnError>
+          </configuration>
+          <executions>
+            <execution>
+              <id>auto-clean</id>
+              <phase>initialize</phase>
+              <goals>
+                <goal>clean</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>run</goal>
+              </goals>
+              <configuration>
+                <tasks>
+                  <delete>
+                    <fileset dir="${webappRootDirectory}/${webappDirectory}/WEB-INF/classes/conf/" includes="*"/>
+                  </delete>
+                  <copy todir="${webappRootDirectory}/${webappDirectory}/WEB-INF/classes/conf/">
+                    <fileset dir="${webappRootDirectory}/${webappDirectory}/WEB-INF/classes/${confDirectory}"/>
+                  </copy>
+                  <delete  dir="${webappRootDirectory}/${webappDirectory}/WEB-INF/classes/conf_dev/" includes="*"/>
+                  <delete  dir="${webappRootDirectory}/${webappDirectory}/WEB-INF/classes/conf_prod/" includes="*"/>
+                </tasks>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
     </plugins>
     <finalName>ROOT</finalName>
   </build>

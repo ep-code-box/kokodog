@@ -9,6 +9,7 @@
  */
 package com.skd.ppa.module.service.impl;
 
+import java.io.File;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -21,6 +22,8 @@ import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import com.skd.ppa.module.service.NlpByKonlpyService;
 import com.cmn.err.SystemException;
@@ -35,9 +38,9 @@ import com.cmn.err.SystemException;
 @Service("nlpByKonlpyService")
 public class NlpByKonlpyServiceImpl implements NlpByKonlpyService {
   private static Logger logger = Logger.getLogger(NlpByKonlpyServiceImpl.class);
-  private static final String KONLPY_NOUN_EXE = "/home/leems83/workspace/proposal_analysis/python/keyword_for_proposal.py";
-  private static final String KONLPY_MORPHEME_EXE = "/home/leems83/workspace/proposal_analysis/python/morpheme_analysis.py";
-  private static final String KONLPY_DETAIL_EXE = "/home/leems83/workspace/proposal_analysis/python/keyword_for_proposal_by_raw.py";
+  private static final String KONLPY_NOUN_EXE = "keyword_for_proposal.py";
+  private static final String KONLPY_MORPHEME_EXE = "morpheme_analysis.py";
+  private static final String KONLPY_DETAIL_EXE = "keyword_for_proposal_by_raw.py";
   
   @Autowired
   private SystemException systemException;
@@ -79,9 +82,31 @@ public class NlpByKonlpyServiceImpl implements NlpByKonlpyService {
   }
 
   private JSONArray returnPythonExe(List<String> argv, String exe) throws Exception {
+    ServletRequestAttributes sra = null;
+    String realPath = null;
+    try {
+      sra = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
+      realPath = sra.getRequest().getSession().getServletContext().getRealPath("/WEB-INF/classes/python");
+      if ((new File(realPath)).isDirectory() == false) {
+        realPath =  this.getClass().getResource("/").toURI().getPath();
+        if (realPath.length() != 0 && realPath.charAt(realPath.length() - 1) != '/') {
+          realPath = realPath + "/";
+        }
+        realPath = realPath + "../classes/python";
+      }
+    } catch (IllegalStateException e) {
+      realPath = this.getClass().getResource("/").toURI().getPath();
+      if (realPath.length() != 0 && realPath.charAt(realPath.length() - 1) != '/') {
+        realPath = realPath + "/";
+      }
+      realPath = realPath + "../classes/python";
+    }
+    if (realPath.length() != 0 && realPath.charAt(realPath.length() - 1) != '/') {
+      realPath = realPath + "/";
+    }
     List<String> list = new ArrayList<String>();
     list.add("python3");
-    list.add(exe);
+    list.add(realPath + exe);
     list.addAll(argv);
     Process oProcess = new ProcessBuilder(list).start();
     BufferedReader stdOut   = new BufferedReader(new InputStreamReader(oProcess.getInputStream()));

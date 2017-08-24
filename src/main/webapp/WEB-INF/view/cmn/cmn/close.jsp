@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/styles/jqx.base.css" type="text/css"/>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <link rel="stylesheet" href="/js/jqwidgets/styles/jqx.base.css" type="text/css"/>
+    <script type="text/javascript" src="/js/jquery/jquery-3.2.1.js"></script>
     <script type="text/javascript" src="/js/cmn.js"></script>
     <meta charset="UTF-8"/>
     <link rel="stylesheet" type="text/css" href="/css/cmn/cmn/close.css">
