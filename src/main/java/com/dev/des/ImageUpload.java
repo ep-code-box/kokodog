@@ -61,16 +61,19 @@ public class ImageUpload {
   public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validation(request, response);
     List<Map<String, Object>> outputList = new ArrayList<Map<String, Object>>();
+    Map<String, Object> outputMap = null;
     Map<String, Object> inputMap = new HashMap<String, Object>();
-    outputList = fileControlService.insertFile(request);
-    for (int i = 0; i < outputList.size(); i++) {
+    outputMap = fileControlService.insertFile(request);
+    logger.debug("OutputMap of method fileControlService.insertFile[" + outputMap + "]");
+    for (int i = 0; i < ((List)outputMap.get("__img_info")).size(); i++) {
       inputMap.clear();
-      inputMap.put("img_name", null);
-      inputMap.put("file_num", outputList.get(i).get("file_num"));
+      inputMap.put("img_name", outputMap.get("img_name"));
+      inputMap.put("img_memo", outputMap.get("img_memo"));
+      inputMap.put("file_num", (((Map)((List)outputMap.get("__img_info")).get(i)).get("file_num")));
       inputMap.put("now_dtm", request.getAttribute("now_dtm"));
       inputMap.put("user_num", request.getSession().getAttribute("user_num"));
       logger.debug("Input map of SQL insertDevDesImageInfo - " + inputMap);
-      sqlSession.insert("insertDevDesImageInfo", inputMap);
+      sqlSession.insert("com.dev.des.image_manage.insertDevDesImageInfo", inputMap);
     }
     return new HashMap<String, Object>();
   }

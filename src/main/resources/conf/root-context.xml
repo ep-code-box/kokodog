@@ -22,7 +22,8 @@
     <property name="url" value="${jdbc.url}"/>
     <property name="username" value="${jdbc.id}"/>
     <property name="password" value="${jdbc.password}"/>
-		<property name="validationQuery" value="select 1"/>
+    <property name="validationQuery" value="select 1"/>
+    <property name="testOnBorrow" value="true"/>
   </bean>
   <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
     <property name="configLocation" value="classpath:/conf/mybatis.xml"/>

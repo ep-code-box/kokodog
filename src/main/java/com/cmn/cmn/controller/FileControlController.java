@@ -1,5 +1,6 @@
 package com.cmn.cmn.controller;
 
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class FileControlController {
   
   private static Logger logger = Logger.getLogger(FileControlController.class);
   
-  @RequestMapping(value="/fileDown", method=RequestMethod.GET)
+  @RequestMapping(value="/FileDown", method=RequestMethod.GET)
   public String fileDownload(HttpServletRequest request, HttpServletResponse response) throws Exception {
     Map<String, Object> inputMap = new HashMap<String, Object>();
     Map<String, Object> outputMap = null;
@@ -32,10 +33,10 @@ public class FileControlController {
     int contentCnt = 0;
     long fileLength = 0L;
     outputMap = fileControlService.getFileInfo(request.getParameter("file_key"));
-    fileNum = ((Integer)outputMap.get("file_num")).intValue();
+    fileNum = ((Long)outputMap.get("file_num")).intValue();
     fileNm = (String)outputMap.get("file_nm");
-    contentCnt = ((Integer)outputMap.get("content_cnt")).intValue();
-    fileLength = ((Long)outputMap.get("content_length")).longValue();
+    contentCnt = ((Long)outputMap.get("content_cnt")).intValue();
+    fileLength = ((BigDecimal)outputMap.get("file_length")).longValue();
     response.setContentType("application/octet-stream");
     response.setHeader("Content-Disposition", "attachment; fileName=\"" + URLEncoder.encode(fileNm, "UTF-8") + "\";");
     response.setHeader("Content-Transfer-Encoding", "binary");

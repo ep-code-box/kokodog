@@ -53,4 +53,118 @@
                       )
     AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
   </update>
+  <select id="getChatIdAndSeq" parameterType="HashMap" resultType="HashMap">
+    SELECT spcs.conv_num AS conv_num
+         , spcs.conv_id AS conv_id
+         , (SELECT MAX(spcd.dialog_counter)
+            FROM   skd_ppa_conv_dtl spcd
+            WHERE  spcd.user_num = spcs.user_num
+            AND    spcd.conv_num = spcs.conv_num
+           ) AS dialog_counter
+         , (SELECT spcd.dialog_stack
+            FROM   skd_ppa_conv_dtl spcd
+            WHERE  spcd.user_num = spcs.user_num
+            AND    spcd.conv_num = spcs.conv_num
+            AND    spcd.dialog_counter = (SELECT MAX(spcd2.dialog_counter)
+                                          FROM   skd_ppa_conv_dtl spcd2
+                                          WHERE  spcd2.user_num = spcd.user_num
+                                          AND    spcd2.conv_num = spcd.conv_num
+                                         )
+           ) AS dialog_stack
+    FROM   skd_ppa_conv_spc spcs
+    WHERE  spcs.user_num = #{user_num}
+    AND    NOW() BETWEEN spcs.eff_sta_dtm AND spcs.eff_end_dtm
+  </select>
+  <insert id="insertChatSeq" parameterType="HashMap">
+    INSERT INTO skd_ppa_conv_dtl
+    (
+      user_num
+    , conv_num
+    , dialog_counter
+    , eff_end_dtm
+    , audit_id
+    , audit_dtm
+    , text
+    , nodes_visited
+    , log_messages
+    , dialog_stack
+    , _node_output_map
+    , etc
+    , eff_sta_dtm
+    , conv_main_cd
+    )
+    VALUES
+    (
+      #{user_num}
+    , #{conv_num}
+    , #{dialog_counter}
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , #{text}
+    , #{nodes_visited}
+    , #{log_messages}
+    , #{dialog_stack}
+    , #{_node_output_map}
+    , #{etc}
+    , #{now_dtm}
+    , #{conv_main_cd}
+    )
+  </insert>
+  <insert id="insertConvSpc" parameterType="HashMap">
+    INSERT INTO skd_ppa_conv_spc
+    (
+      user_num
+    , conv_num
+    , eff_end_dtm
+    , audit_id
+    , audit_dtm
+    , conv_id
+    , eff_sta_dtm
+    )
+    VALUES
+    (
+      #{user_num}
+    , #{conv_num}
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , NULL
+    , #{now_dtm}
+    )
+  </insert>
+  <update id="updateConvSpcConvId" parameterType="HashMap">
+    UPDATE skd_ppa_conv_spc
+    SET    conv_id = #{conv_id}
+         , audit_id = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  user_num = #{user_num}
+    AND    conv_num = #{conv_num}
+  </update>
+  <update id="updateConvSpcPastEndDataUpdateToNow" parameterType="HashMap">
+    UPDATE skd_ppa_conv_spc
+    SET    eff_end_dtm = #{now_dtm} - INTERVAL 1 SECOND
+         , audit_id = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  user_num = #{user_num}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
+  <select id="getMaxConvNum" parameterType="HashMap" resultType="HashMap">
+    SELECT IFNULL(MAX(spcs.conv_num), 0) AS max_num
+    FROM   skd_ppa_conv_spc spcs
+    WHERE  spcs.user_num = #{user_num}
+  </select>
+  <select id="getInitProdChat" parameterType="HashMap" resultType="HashMap">
+    SELECT spcd.text AS text
+         , spcd.conv_main_cd AS conv_main_cd
+    FROM   skd_ppa_conv_spc spcs
+         , skd_ppa_conv_dtl spcd
+    WHERE  spcs.user_num = #{user_num}
+    AND    spcs.conv_num = spcd.conv_num
+    AND    spcs.user_num = spcd.user_num
+    AND    NOW() BETWEEN spcs.eff_sta_dtm AND spcs.eff_end_dtm
+    AND    NOW() BETWEEN spcd.eff_sta_dtm AND spcd.eff_end_dtm
+    ORDER BY spcd.dialog_counter DESC, spcd.eff_sta_dtm DESC
+    LIMIT 0, 30
+  </select>
 </mapper>

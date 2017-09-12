@@ -48,8 +48,23 @@ body {
   left: 0px;
   top: 52px;
   right: 0px;
-  width: 100%;
   height: 30px;
+}
+
+.top_chat_toggle_button {
+  position: absolute;
+  width: 32px;
+  top: 52px;
+  right: 0px;
+  height: 32px;
+}
+
+.top_chat_refresh_button {
+  position: absolute;
+  width: 32px;
+  top: 52px;
+  right: 32px;
+  height: 32px;
 }
 
 .content {
@@ -142,4 +157,48 @@ body {
 
 .voca_selected {
   color: #FF0000;
+}
+
+.chat {
+  position: absolute;
+  top: 84px;
+  right: 0px;
+  width: 400px;
+  bottom: 0px;
+  z-index: -1;
+}
+
+.chat_list {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  left: 10px;
+  bottom: 70px;
+  overflow: scroll;
+}
+
+.chatbot_input {
+  position: absolute;
+  height: 25px;
+  bottom: 20px;
+  left: 10px;
+  right: 10px;
+}
+
+.chatbot_message {
+  position: relative;
+  width: 250px;
+  min-height: 30px;
+}
+
+.chatbot_message_pos_2 {
+  float: left;
+}
+
+.chatbot_message_pos_2 {
+  float: right;
+}
+
+.chatbot_refresh_but {
+  
 }

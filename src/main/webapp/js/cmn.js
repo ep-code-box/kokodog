@@ -79,7 +79,13 @@ function cmnCall(tpNm, param, callbackFunc, callbackVar, isASync, callbackErr) {
       } catch (e) {
         closeLoader();
       }
-      if (jsonMsg.error_num == 4) {
+      var errorNum = 0;
+      try {
+        errorNum = jsonMsg.error_num;
+      } catch (e) {
+        alert("[999] 기타 알 수 없는 오류로 인해 처리할 수 없습니다.");
+      }
+      if (errorNum == 4) {
         g_pop_status = window.open("/cmn/cmn/login?redirect_url=" + encodeURIComponent(getCloseUrl()), "Auto Login",
                                     "width=500px,height=840px,left=0,top=0,scrollbars=no,toolbar=no,resizable=no");
         if (typeof g_pop_status != "undefined" && g_pop_status != null) {

@@ -166,7 +166,6 @@ public class KokodogExceptionResolver {
     *  @return - 결과를 표현할 모델
     */
   @ExceptionHandler(Exception.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public Object exception(HttpServletRequest request, HttpServletResponse response, Exception ex) throws Exception {
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Enumeration param = request.getParameterNames();

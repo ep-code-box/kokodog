@@ -39,7 +39,8 @@ public class FileControlServiceImpl implements FileControlService {
   private static long FILE_MAX_MEMORY_SIZE = 10 * 1024;
   private static String UPLOAD_DIR = "/home/leems83/data/webappdev/ROOT/WEB-INF/files";
 
-  public List<Map<String, Object>> insertFile(HttpServletRequest request) throws Exception {
+  public Map<String, Object> insertFile(HttpServletRequest request) throws Exception {
+    Map<String, Object> returnMap = new HashMap<String, Object>();
     File tempDirectory = new File(UPLOAD_DIR);
     DiskFileItemFactory factory = new DiskFileItemFactory();
     factory.setSizeThreshold(FILE_THREADHOLD_SIZE);
@@ -79,6 +80,7 @@ public class FileControlServiceImpl implements FileControlService {
           logger.debug("Size : " + item.getSize());
           logger.debug("String : " + item.getString());
           logger.debug("=================================");
+          returnMap.put(item.getFieldName(), item.getString());
         }
       }
     } catch (Exception e) {
@@ -87,7 +89,8 @@ public class FileControlServiceImpl implements FileControlService {
       }
       throw e;
     }
-    return outputList;    
+    returnMap.put("__img_info", outputList);
+    return returnMap;    
   }
   
   public Map<String, Object> insertFile(InputStream is, String fileName, int userNum, Long systemCallDtm) throws Exception {

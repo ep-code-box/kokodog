@@ -1,4 +1,4 @@
-package com.cmn.cmn.service;
+package com.cmn.cmn.service.impl;
 
 import javax.servlet.http.HttpServletRequest;
 

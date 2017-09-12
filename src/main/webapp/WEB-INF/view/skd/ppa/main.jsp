@@ -6,6 +6,8 @@
     <link rel="shortcut icon" type="image/x-icon" href="/FileDown?file_key=tId6m0peoFkF2GYcAfAJG48kOE5Djo5ky49MFtnX" />
     <link rel="stylesheet" href="/css/skd/ppa/main.css"/>
     <link rel="stylesheet" href="/js/jqwidgets/styles/jqx.base.css" type="text/css"/>
+    <link rel="stylesheet" href="/js/jqwidgets/styles/jqx.energyblue.css" type="text/css"/>
+    <link rel="stylesheet" href="/js/jqwidgets/styles/jqx.orange.css" type="text/css"/>
     <script type="text/javascript" src="/js/jquery/jquery-3.2.1.js"></script>
     <script type="text/javascript" src="/js/jqwidgets/jqxcore.js"></script>
     <script type="text/javascript" src="/js/jqwidgets/jqxloader.js"></script>
@@ -22,6 +24,10 @@
     <script type="text/javascript" src="/js/jqwidgets/jqxgrid.columnsresize.js"></script>
     <script type="text/javascript" src="/js/jqwidgets/jqxgrid.sort.js"></script>
     <script type="text/javascript" src="/js/jqwidgets/jqxgrid.selection.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxresponsivepanel.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxinput.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxnotification.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxwindow.js"></script>
     <script src="/js/cmn.js"></script>
     <script type="text/javascript">
       var fileKey = null;
@@ -60,13 +66,13 @@
           width: "100%",
           height: "100%"
         });
-        $("input#past_upload_file_del_but_component").jqxButton({
+        $("div#past_upload_file_del_but_component").jqxButton({
           width: "100%",
           height: "100%",
           value: "삭제",
           disabled: true
         });
-        $("input#past_upload_file_process_but_component").jqxButton({
+        $("div#past_upload_file_process_but_component").jqxButton({
           width: "100%",
           height: "100%",
           value: "조회",
@@ -100,6 +106,50 @@
             {text: "표현", datafield: "expression", cellsalign: "left", cellsrenderer: cellsrenderer}
           ]
         });
+        $("div#top_chat_toggle_button_component").jqxButton({
+          width: "100%",
+          height: "100%",
+          imgSrc: "/FileDown?file_key=sP2eZeZJ2WaKM3fWXyKgXkERfBkA8JWvty0TJK13"
+        });
+        $("div#top_chat_refresh_button_component").jqxButton({
+          width: "100%",
+          height: "100%",
+          disabled: true,
+          imgSrc: "/FileDown?file_key=fuZm4Ylwru55YVRQdID77h7OTyJjZurfOlzEBu9N"          
+        });
+        $("div#chat_component").jqxResponsivePanel({
+          width: "100%",
+          height: "100%",
+          collapseBreakpoint: 500,
+          animationType: "slide",
+          animationDirection: "right",
+          autoClose: false
+        });
+        $("input#chatbot_input_component").jqxInput({
+          placeHolder: "질문을 입력하세요.",
+          height: "100%",
+          width: "100%"
+        });
+        $("div#chatbot_del_confirm_window_component").jqxWindow({
+          autoOpen: false,
+          resizable: false,
+          okButton: $("input#chatbot_del_confirm_window_component_ok"),
+          cancelButton: $("input#chatbot_del_confirm_window_component_ok"),
+          isModal: true,
+          initContent: function () {
+            $("input#chatbot_del_confirm_window_component_ok").jqxButton({
+              width: "80px",
+              height: "30px"
+            });
+            $("input#chatbot_del_confirm_window_component_cancel").jqxButton({
+              width: "80px",
+              height: "30px"
+            });
+            $("input#chatbot_del_confirm_window_component_ok").focus();
+          },
+          width: "270px",
+          height: "130px"
+        });
       }
 
       /* jqWidget을 사용하는 각종 이벤트들 맵핑 처리 */
@@ -110,9 +160,16 @@
         $("a#help_about").click(event_a_menu_help_about_click);
         $("div#file_upload_component").on("uploadEnd", event_div_file_upload_component_upload_end);
         $("div#past_upload_file_list_component").on("change", event_div_past_upload_file_list_component);
-        $("div#past_upload_file_del_but_component").click(event_div_past_upload_file_del_but_omponent);
+        $("div#past_upload_file_del_but_component").click(event_div_past_upload_file_del_but_component);
         $("div#past_upload_file_process_but_component").click(event_div_past_upload_file_process_but_component);
         $("div#view_data_type_combo_component").on("change", event_div_view_dat_type_combo_component_change);
+        $("div#top_chat_toggle_button_component").on("click", event_div_top_chat_toggle_button_component_click);
+        $("input#chatbot_input_component").keydown(event_input_chatbot_input_component_onkeypress);
+        $("div#top_chat_refresh_button_component").on("click", event_div_top_chat_refresh_button_component_click);
+        $("div#chat_component").on("open", event_div_chat_component_open);
+        $("div#chat_component").on("close", event_div_chat_component_close);
+        $("input#chatbot_del_confirm_window_component_ok").on("click", event_chatbot_del_confirm_window_component_ok_click);
+        $("input#chatbot_del_confirm_window_component_cancel").on("click", event_chatbot_del_confirm_window_component_cancel_click);
       }
       
       function setComoboCodeMapping() {
@@ -147,15 +204,15 @@
       
       function event_div_past_upload_file_list_component(event) {
         if (event.args.index >= 0) {
-          $("#past_upload_file_process_but_component").jqxButton("disabled", false);
-          $("#past_upload_file_del_but_component").jqxButton("disabled", false);
+          $("div#past_upload_file_process_but_component").jqxButton("disabled", false);
+          $("div#past_upload_file_del_but_component").jqxButton("disabled", false);
         } else {
-          $("#past_upload_file_process_but_component").jqxButton("disabled", true);
-          $("#past_upload_file_del_but_component").jqxButton("disabled", true);          
+          $("div#past_upload_file_process_but_component").jqxButton("disabled", true);
+          $("div#past_upload_file_del_but_component").jqxButton("disabled", true);          
         }
       }
       
-      function event_div_past_upload_file_del_but_omponent() {
+      function event_div_past_upload_file_del_but_component() {
         cmnSyncCall("DeletePastFileUpload", {file_key: $("div#past_upload_file_list_component").jqxDropDownList("val")}, callback, $("div#past_upload_file_list_component").jqxDropDownList("val"));
       }
       
@@ -164,8 +221,48 @@
         cmnSyncCall("ConvToHtml", {file_key : fileKey}, callback, null);
       }
       
+      function event_div_top_chat_toggle_button_component_click() {
+        if ($("div#chat_component").jqxResponsivePanel("isOpened") == true) {
+          $("div#top_chat_refresh_button_component").jqxButton("disabled", true);
+          $("div#chat_component").jqxResponsivePanel("close");
+        } else {
+          cmnSyncCall("ProdChatInit", {}, callback, null);
+        }
+      }
+      
+      function event_div_top_chat_refresh_button_component_click() {
+        if ($("div#top_chat_refresh_button_component").jqxButton("disabled") == false) {
+          $("div#chatbot_del_confirm_window_component").jqxWindow("open");
+        }
+      }
+      
+      function event_input_chatbot_input_component_onkeypress(event) {
+        if(event.keyCode == 13 && $("input#chatbot_input_component").val().length > 0) {
+          addChatList($("input#chatbot_input_component").val(), 1);
+          cmnSyncCall("ProdChat", {text:  $("input#chatbot_input_component").val()}, callback, null);
+          $("input#chatbot_input_component").val("");
+        }
+      }
+      
+      function event_div_chat_component_open() {
+        $("div#top_chat_refresh_button_component").jqxButton("disabled", false);
+        $("input#chatbot_input_component").jqxInput("focus");
+      }
+      
+      function event_div_chat_component_close() {
+        $("div.chat").css("z-index", -1);
+      }
+      
       function GetPastFileUploadList() {
         cmnSyncCall("GetPastFileUploadList", {}, callback, null);
+      }
+      
+      function event_chatbot_del_confirm_window_component_ok_click() {
+        cmnSyncCall("RefreshChatBot", {}, callback, null);        
+      }
+      
+      function event_chatbot_del_confirm_window_component_cancel_click() {
+        $("div#chatbot_del_confirm_window_component").jqxWindow("close");
       }
       
       function callback(data, act, input_param, callbackVar) {
@@ -198,9 +295,44 @@
         } else if (act == "GetMorphemeDetailList") {
           morphemeData = data;
           setMorphemeList();
+        } else if (act == "ProdChat") {
+          addChatList(data.text, 2);
+        } else if (act == "ProdChatInit") {
+          $("div.chat").css("z-index", 298);
+          var i = 0;
+          $("div.chat_list").html("");
+          for (i = 0; i < data.length; i++) {
+            addChatList(data[data.length - i - 1].text, data[data.length - i - 1].conv_main_cd);
+          }
+          $("div#chat_component").jqxResponsivePanel("open");          
+        } else if (act == "RefreshChatBot") {
+          $("div.chat_list").html("");
+          addChatList(data.text, 2);
+          $("div#chatbot_del_confirm_window_component").jqxWindow("close");
         }
       }
       
+      function addChatList(text, type) {
+        var new_component = $("<div>", {class: "chatbot_message"}).addClass("chatbot_message_pos_" + type);
+        new_component.appendTo("div.chat_list");
+        var new_component_sub = $("<div>");
+        new_component_sub.html(text);
+        new_component_sub.jqxNotification({
+          width: "250px",
+          opacity: 0.9,
+          autoOpen: true,
+          autoClose: false,
+          showCloseButton: false,
+          closeOnClick: false,
+          template: null,
+          appendContainer: "div.chatbot_message:last-child",
+          theme: (type == 1 ? "energyblue" : "orange")
+        });
+        new_component_sub.appendTo(new_component);
+        $("div.chat_list").append($("<p>").css("clear", "both").html(" "));
+        $("div.chat_list").scrollTop($("div.chat_list")[0].scrollHeight);
+      }
+
       var cellsrenderer = function (row, columnfield, value, defaulthtml, columnproperties) {
         if ($("div#view_data_list_component").jqxGrid("getrowdata", row)["meaning"] == "상품요건서분석") {
           return "<span style=\"margin:4px 4px;float:" + columnproperties.cellsalign + ";color:#FF0000;\">" + value + "</span>";
@@ -274,6 +406,14 @@
           </ul>
         </div>
       </div>
+      <div class="top_chat_toggle_button">
+        <div id="top_chat_toggle_button_component">
+        </div>
+      </div>
+      <div class="top_chat_refresh_button">
+        <div id="top_chat_refresh_button_component">
+        </div>
+      </div>
       <div class="content">
         <div id="left_right_splitter_component">
           <div class="left_splitter">
@@ -283,10 +423,12 @@
                 </div>
               </div>
               <div class="past_upload_file_process_but">
-                <input type="button "id="past_upload_file_process_but_component"/>
+                <div id="past_upload_file_process_but_component">
+                </div>
               </div>
               <div class="past_upload_file_del_but">
-                <input type="button" id="past_upload_file_del_but_component"/>
+                <div id="past_upload_file_del_but_component">
+                </div>
               </div>
             </div>
             <div class="file_upload">
@@ -311,6 +453,27 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    <div id="chatbot_del_confirm_window_component">      
+      <div>확인</div>
+      <div>
+        <div style="margin-top:10px;margin-left:10px;">
+          정말로 모든 대화를 삭제하시겠습니까?
+        </div>
+        <div>
+          <input type="button" id="chatbot_del_confirm_window_component_ok" value="OK" style="margin-right:20px;margin-top:20px;margin-left:30px;" />
+          <input type="button" id="chatbot_del_confirm_window_component_cancel" value="Cancel" />
+        </div>
+      </div>
+    </div>
+    <div class="chat">
+      <div id="chat_component" style="padding:5px;">
+        <div class="chat_list">
+        </div>
+        <div class="chatbot_input">
+          <input type="text" id="chatbot_input_component"/>
         </div>
       </div>
     </div>

@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <link rel="shortcut icon" type="image/x-icon" href="/FileDown?file_key=tId6m0peoFkF2GYcAfAJG48kOE5Djo5ky49MFtnX" />
     <link rel="stylesheet" href="/css/m/opr/inf/main.css"/>
-    <link rel="stylesheet" href="https://jqwidgets.com/public/jqwidgets/styles/jqx.base.css" type="text/css"/>
+    <link rel="stylesheet" href="/js/jqwidgets/styles/jqx.base.css" type="text/css"/>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-    <script type="text/javascript" src="https://jqwidgets.com/public/jqwidgets/jqx-all.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqx-all.js"></script>
     <script src="/js/cmn.js"></script>
     <script type="text/javascript">
       var graphColor = {};

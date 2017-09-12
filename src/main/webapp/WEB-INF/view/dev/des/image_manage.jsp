@@ -5,11 +5,11 @@
     <title>이미지 관리</title>
     <link rel="shortcut icon" type="image/x-icon" href="/FileDown?file_key=tId6m0peoFkF2GYcAfAJG48kOE5Djo5ky49MFtnX"/>
     <link rel="stylesheet" href="/css/dev/des/image_manage.css"/>
-    <link rel="stylesheet" href="https://jqwidgets.com/public/jqwidgets/styles/jqx.base.css" type="text/css"/>
+    <link rel="stylesheet" href="/js/jqwidgets/styles/jqx.base.css" type="text/css"/>
     <link href="https://rawgithub.com/hayageek/jquery-upload-file/master/css/uploadfile.css" rel="stylesheet">
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="https://jqwidgets.com/public/jqwidgets/jqx-all.js"></script>
-    <script type="text/javascript" src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxwindow.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqx-all.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqxwindow.js"></script>
     <script type="text/javascript" src="https://rawgithub.com/hayageek/jquery-upload-file/master/js/jquery.uploadfile.min.js"></script>
     <script type="text/javascript" src="/js/cmn.js"></script>
     <script type="text/javascript">
