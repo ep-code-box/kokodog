@@ -1,3 +1,5 @@
+
+
 /*
  * Title : SkdPpaMainRefreshCahtBotController
  *
@@ -23,47 +25,45 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.stereotype.Controller;
 
-import com.skd.ppa.main.service.GetProdChatService;
+import com.skd.ppa.main.service.DocNlpService;
 import com.cmn.err.SystemException;
 
 /**
  *  이 클래스는 SK 주식회사 C&C DT 프로젝트 일환으로
  *  진행하고 있는 상품 요구명세서 분석 프로젝트의
  *  개발 프로젝트 중 일부에 포함된다.<br/>
- *  상품 개발 Chatbot 기능을 제공한다.
+ *  상품 개발 체크리스트를 돌려준다.
  */
 @Controller
-public class SkdPpaMainRefreshChatBotController {
+public class SkdPpaMainGetProdChkLstController {
   @Autowired
-  private GetProdChatService getProdChatService;
+  private DocNlpService docNlpService;
   
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(SkdPpaMainRefreshChatBotController.class);
+  private static Logger logger = Logger.getLogger(SkdPpaMainGetProdChkLstController.class);
   
   /**
-   *  해당 메서드는 /skd/ppa/main/RefreshCahtBot URL을 통해 호출된다.
-   *  해당 고객이 갖고 있는 기존 대화 이력을 모두 삭제처리한다.
-   *  삭제 후에 최초 대화 내용을 리턴한다.
+   *  해당 메서드는 /skd/ppa/main/GetProdChkLst URL을 통해 호출된다.
+   *  상품봇의 전체 체크리스트 결과를 되돌려준다.
    *  @param request : 서블릿 Request
    *  @param response : 서블릿 response
    *  @return Map 타입의 업로드 된 파일의 파일 번호를 담고 있는 형태의 리스트
    *  @throws 기타 Exception
    */
-  @RequestMapping(value="/skd/ppa/main/RefreshChatBot", method=RequestMethod.POST)
+  @RequestMapping(value="/skd/ppa/main/GetProdChkLst", method=RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    List<Map<String, Object>> outputList = null;
     validationCheck(request, response);
-    Map<String, Object> returnMap = new HashMap<String, Object>();
-    getProdChatService.refresh(((Integer)request.getSession().getAttribute("user_num")).intValue());
-    outputList = getProdChatService.getProdInitChat(((Integer)request.getSession().getAttribute("user_num")).intValue());
-    returnMap.put("text", outputList.get(outputList.size() - 1).get("text"));
+    Map<String, Object> returnMap = null;
+    returnMap = docNlpService.getProdChkLstDetail(request.getParameter("file_key"));
     return returnMap;
   }
 
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    return;
+    if (request.getParameter("file_key") == null || request.getParameter("file_key").length() < 10) {
+      throw systemException.systemException(3, "file_key");
+    }
   }
 }

@@ -167,4 +167,12 @@
     ORDER BY spcd.dialog_counter DESC, spcd.eff_sta_dtm DESC
     LIMIT 0, 30
   </select>
+  <select id="getAllProdChkList" parameterType="HashMap" resultType="HashMap">
+    SELECT spcl.lst_num AS lst_num
+         , spcl.chk_lst_nm AS chk_lst_nm
+         , spcl.chk_lst_memo AS chk_lst_memo
+    FROM   skd_ppa_chk_lst spcl
+    WHERE  NOW() BETWEEN spcl.eff_sta_dtm AND spcl.eff_end_dtm
+    ORDER BY spcl.lst_num
+  </select>
 </mapper>

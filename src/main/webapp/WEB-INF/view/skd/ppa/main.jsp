@@ -35,6 +35,7 @@
       $(document).ready(function() {
         contentInitLoad();
         contentEventLoad();
+        init();
         setComoboCodeMapping();
         GetPastFileUploadList();
       });
@@ -150,6 +151,47 @@
           width: "270px",
           height: "130px"
         });
+        $("input#view_data_type_but_component").jqxToggleButton({
+          width: "100%",
+          height: "100%",
+          toggled: false,
+          value: "리스트 전환"
+        });
+        var initrowdetails = function(index, parentElement, gridElement, record) {
+          var div = $($(parentElement).children()[0]);
+          var voca_lst = JSON.parse($("div#view_prod_chk_list_component").jqxGrid("getrowdata", index).voca_list);
+          var i = 0;
+          var voca_lst_str = "";
+          for (i = 0; i < voca_lst.length; i++) {
+            if (i != 0) {
+              voca_lst_str = voca_lst_str + ",";
+            }
+            voca_lst_str = voca_lst_str + voca_lst[i].voca + "[" + voca_lst[i].voca_num + "]";
+          }
+          var voca_lst_component = $("<div>", {css: {overflowX: "hidden", overflowY:"auto", width: "100%", height: "80px", border: "1px solid", whiteSpace: "pre-wrap", padding: "10px 0 0 10px"}});
+          voca_lst_component.html(voca_lst_str);
+          div.append(voca_lst_component);
+        };
+        $("div#view_prod_chk_list_component").jqxGrid({
+          width: "100%",
+          height: "100%",
+          columnsheight: 25,
+          columnsresize: true,
+          selectionmode: "none",
+          enabletooltips: true,
+          filterable: false,
+          sortable: true,
+          filtermode: "default",
+          rowdetails: true,
+          initrowdetails: initrowdetails,
+          rowdetailstemplate: {rowdetails: "<div id='grid' style='margin: 10px;'></div>", rowdetailsheight: 100, rowdetailshidden: true},
+          columns: [
+            {text: "No", datafield: "no", width: 50, cellsalign: "right"},
+            {text: "체크리스트 항목", datafield: "chk_nm", width: 200, cellsalign: "left"},
+            {text: "체크리스트 상세", datafield: "chk_detail_nm", cellsalign: "left"},
+            {text: "정상 등록", datafield: "chk_yn", width: 80, cellsalign: "left"}
+          ]
+        });
       }
 
       /* jqWidget을 사용하는 각종 이벤트들 맵핑 처리 */
@@ -170,6 +212,7 @@
         $("div#chat_component").on("close", event_div_chat_component_close);
         $("input#chatbot_del_confirm_window_component_ok").on("click", event_chatbot_del_confirm_window_component_ok_click);
         $("input#chatbot_del_confirm_window_component_cancel").on("click", event_chatbot_del_confirm_window_component_cancel_click);
+        $("#view_data_type_but_component").on("click", event_view_data_type_but_component_click);
       }
       
       function setComoboCodeMapping() {
@@ -265,6 +308,23 @@
         $("div#chatbot_del_confirm_window_component").jqxWindow("close");
       }
       
+      function event_view_data_type_but_component_click() {
+        if ($("#view_data_type_but_component").jqxToggleButton("toggled") == true && fileKey != null && fileKey.length > 0) {
+          $("div#view_prod_chk_list_component").jqxGrid("clear");
+          cmnSyncCall("GetProdChkLst", {file_key: fileKey}, callback, null);
+        } else if ($("#view_data_type_but_component").jqxToggleButton("toggled") == false && fileKey != null && fileKey.length > 0) {
+          $("div#view_data_list_component").jqxGrid("clear");
+          cmnSyncCall("GetMorphemeDetailList", {file_key: fileKey}, callback, null);
+        }
+        if ($("#view_data_type_but_component").jqxToggleButton("toggled") == true) {
+          $("div.view_prod_chk_list").css("display", "");
+          $("div.view_data_list_detail").css("display", "none");
+        } else {
+          $("div.view_prod_chk_list").css("display", "none");
+          $("div.view_data_list_detail").css("display", "");          
+        }
+      }
+      
       function callback(data, act, input_param, callbackVar) {
         if (act == "ConvToHtml") {
           $("div#doc_component").children("iframe#iframe_doc_component").remove();
@@ -309,7 +369,20 @@
           $("div.chat_list").html("");
           addChatList(data.text, 2);
           $("div#chatbot_del_confirm_window_component").jqxWindow("close");
+        } else if (act == "GetProdChkLst") {
+          var i = 0;
+          var sourceDataList = [];
+          for (i = 0; i < data.chk_list.length; i++) {
+            sourceDataList.push({no: data.chk_list[i].lst_num, chk_nm: data.chk_list[i].chk_lst_nm, chk_detail_nm: data.chk_list[i].chk_lst_memo
+                                 , chk_yn: data.chk_list[i].chk_lst_yn, voca_list: JSON.stringify(data.chk_list[i].chk_lst_voca)});
+          }
+          $("div#view_prod_chk_list_component").jqxGrid("clear");
+          $("div#view_prod_chk_list_component").jqxGrid("addrow", null, sourceDataList);   
         }
+      }
+      
+      function init() {
+        $("div.view_prod_chk_list").css("display", "none");
       }
       
       function addChatList(text, type) {
@@ -334,7 +407,7 @@
       }
 
       var cellsrenderer = function (row, columnfield, value, defaulthtml, columnproperties) {
-        if ($("div#view_data_list_component").jqxGrid("getrowdata", row)["meaning"] == "상품요건서분석") {
+        if (typeof $("div#view_data_list_component").jqxGrid("getrowdata", row) != "undefined" && $("div#view_data_list_component").jqxGrid("getrowdata", row)["meaning"] == "상품요건서분석") {
           return "<span style=\"margin:4px 4px;float:" + columnproperties.cellsalign + ";color:#FF0000;\">" + value + "</span>";
         } else {
           return "<span style=\"margin:4px 4px;float:" + columnproperties.cellsalign + ";color:#000000;\">" + value + "</span>";
@@ -448,8 +521,17 @@
               <div id="view_data_type_combo_component">
               </div>
             </div>
+            <div class="view_data_type_but">
+              <input type="button" id="view_data_type_but_component"/>
+            </div>
             <div class="view_data_list">
-              <div id="view_data_list_component">
+              <div class="view_data_list_detail">
+                <div id="view_data_list_component">
+                </div>
+              </div>
+              <div class="view_prod_chk_list">
+                <div id="view_prod_chk_list_component">
+                </div>
               </div>
             </div>
           </div>

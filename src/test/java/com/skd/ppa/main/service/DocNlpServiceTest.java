@@ -2,6 +2,8 @@ package com.skd.ppa.main.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.List;
+import java.util.Map;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONSerializer;
@@ -49,5 +51,12 @@ public class DocNlpServiceTest {
     JSONArray jsonArray = null;
     jsonArray = docNlpService.getMorphemeDetail("UPEVSSA1SjTfiYJy1rtNOHUT0Wv40BnXUpXG0b8A");
     Assert.assertTrue(jsonArray.getJSONObject(0).getString("voca").equals("<?"));
+  }
+
+  @Test(timeout=50000)
+  public void testGetProdChkLstDetail() throws Exception {
+    Map<String, Object> outputMap = null;
+    outputMap = docNlpService.getProdChkLstDetail("UPEVSSA1SjTfiYJy1rtNOHUT0Wv40BnXUpXG0b8A");
+    Assert.assertTrue(((String)((List<Map<String, Object>>)outputMap.get("morpheme_detail_list")).get(0).get("voca")).equals("<?"));
   }
 }

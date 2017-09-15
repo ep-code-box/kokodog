@@ -10,6 +10,7 @@
 package com.skd.ppa.main.service;
 
 import java.io.FileInputStream;
+import java.util.Map;
 
 import net.sf.json.JSONArray;
 
@@ -53,4 +54,16 @@ public interface DocNlpService {
    *  @throws 기타 익셉션
    */
   public JSONArray getMorphemeDetail(String fileKey) throws Exception;
+  
+  /**
+   *  이 메서드는 Konlpy 내 사전에 등록된 전체 형태소 리스트를 분류하고
+   *  분류된 결과를 바탕으로 상품요건서분석에 맞는 결과를 회신해주는 역할을 수행한다.
+   *  @param fileKey : 분석하고자 하는 HTML의 파일 Key
+   *  @return Map 타입의 결과 회신
+   *       chk_lst_num : 체크리스트 번호
+   *       chk_lst_nm : 체크리스트 명칭
+   *       chk_lst_yn : 문서 내 요소 체크리스트 포함 여부
+   *  @throws 기타 익셉션
+   */
+  public Map<String, Object> getProdChkLstDetail(String fileKey) throws Exception;
 }

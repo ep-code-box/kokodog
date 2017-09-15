@@ -139,9 +139,17 @@ body {
   height: 100%;
 }
 
-.view_data_type_combo {
+.view_data_type_but {
   position: absolute;
   left: 0px;
+  top: 0px;
+  width: 80px;
+  height: 30px;  
+}
+
+.view_data_type_combo {
+  position: absolute;
+  left: 80px;
   top: 0px;
   width: 100%;
   height: 30px;  
@@ -201,4 +209,20 @@ body {
 
 .chatbot_refresh_but {
   
+}
+
+.view_data_list_detail {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+}
+
+.view_prod_chk_list {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
 }
