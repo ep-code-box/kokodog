@@ -114,6 +114,7 @@ public class DocNlpServiceImpl implements DocNlpService {
    *       chk_lst_yn : 문서 내 요소 체크리스트 포함 여부
    *  @throws 기타 익셉션
    */
+  @SuppressWarnings({"rawtypes", "unchecked"})
   public Map<String, Object> getProdChkLstDetail(String fileKey) throws Exception {
     int i = 0;
     int j = 0;
@@ -166,7 +167,7 @@ public class DocNlpServiceImpl implements DocNlpService {
             tmpMap = new HashMap<String, Object>();
             tmpMap.put("voca_num", i);
             tmpMap.put("voca", jsonMorphemeList.getJSONObject(i).getString("voca"));
-            ((ArrayList<Map<String, Object>>)outputList.get(k).get("chk_lst_voca")).add(tmpMap);
+            ((List<Map<String, Object>>)outputList.get(k).get("chk_lst_voca")).add(tmpMap);
           }
         }
       }

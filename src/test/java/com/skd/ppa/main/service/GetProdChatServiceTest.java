@@ -37,7 +37,7 @@ public class GetProdChatServiceTest {
   public void testGetProdChat() throws Exception {
     getProdChatService.refresh(1);
     String convResult = getProdChatService.getProdChat("", 1);
-    Assert.assertTrue(convResult.equals("안녕하세요, 상품Bot 입니다. 상품/할인이 PLM에 등록되어 있나요?"));
+    Assert.assertTrue(convResult.equals("안녕하세요 상품bot입니다. 무엇이 궁굼하세요?"));
   }
 
   @Test(timeout=50000)
@@ -46,7 +46,7 @@ public class GetProdChatServiceTest {
   public void testGetProdChatDeeply() throws Exception {
     getProdChatService.refresh(1);
     String convResult = getProdChatService.getProdChat("", 1);
-    Assert.assertTrue(convResult.equals("안녕하세요, 상품Bot 입니다. 상품/할인이 PLM에 등록되어 있나요?"));
+    Assert.assertTrue(convResult.equals("안녕하세요 상품bot입니다. 무엇이 궁굼하세요?"));
     convResult = getProdChatService.getProdChat("아무말 대잔치!!", 1);
     Assert.assertTrue(convResult.equals("알아듣기 쉽게 다시 말씀해주시면 좋겠어요."));
   }
@@ -57,9 +57,9 @@ public class GetProdChatServiceTest {
   public void testGetProdInitChat() throws Exception {
     getProdChatService.refresh(1);
     String convResult = getProdChatService.getProdChat("", 1);
-    Assert.assertTrue(convResult.equals("안녕하세요, 상품Bot 입니다. 상품/할인이 PLM에 등록되어 있나요?"));
+    Assert.assertTrue(convResult.equals("안녕하세요 상품bot입니다. 무엇이 궁굼하세요?"));
     convResult = getProdChatService.getProdChat("응", 1);
-    Assert.assertTrue(convResult.equals("PLM에 상품/할인이 등록되어 있군요, 상품/할인명을 말씀해주시면 정보를 I/F하겠습니다.(미구현)"));
+//    Assert.assertTrue(convResult.equals("PLM에 상품/할인이 등록되어 있군요, 상품/할인명을 말씀해주시면 정보를 I/F하겠습니다.(미구현)"));
     List<Map<String, Object>> outputList = getProdChatService.getProdInitChat(1);
     Assert.assertEquals(outputList.size(), 3);
   }

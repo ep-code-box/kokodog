@@ -39,6 +39,16 @@
         setComoboCodeMapping();
         GetPastFileUploadList();
       });
+      var checkImgRenderer = function (row, column, value) {
+        var chkYn = $("div#view_prod_chk_list_component").jqxGrid("getrowdata", row).chk_yn;
+        var imgUrl = null;
+        if (chkYn == "Y") {
+          imgUrl = "/FileDown?file_key=1XA2nZGruEcuxsFDIxpSxttofROJMNF53XCRX4Ew";
+        } else {
+          imgUrl = "/FileDown?file_key=rWxcM1PT9ElCFHwTOSuByQ09LfOg1VPtRoUkrv4K";
+        }
+        return "<div style=\"width:100%;height:100%;text-align:center;\"><img style=\"width:20px;height:20px;margin-top:2px\" src=\"" + imgUrl + "\"></div>";
+      }        
       
       /* jqWidget을 사용하는 각종 함수 들 첫 오픈 처리 */
       function contentInitLoad() {
@@ -188,8 +198,8 @@
           columns: [
             {text: "No", datafield: "no", width: 50, cellsalign: "right"},
             {text: "체크리스트 항목", datafield: "chk_nm", width: 200, cellsalign: "left"},
-            {text: "체크리스트 상세", datafield: "chk_detail_nm", cellsalign: "left"},
-            {text: "정상 등록", datafield: "chk_yn", width: 80, cellsalign: "left"}
+            {text: "등록 여부", cellsrenderer: checkImgRenderer, width: 70},
+            {text: "체크리스트 상세", datafield: "chk_detail_nm", cellsalign: "left"}
           ]
         });
       }
@@ -256,12 +266,16 @@
       }
       
       function event_div_past_upload_file_del_but_component() {
-        cmnSyncCall("DeletePastFileUpload", {file_key: $("div#past_upload_file_list_component").jqxDropDownList("val")}, callback, $("div#past_upload_file_list_component").jqxDropDownList("val"));
+        if ($("div#past_upload_file_del_but_component").jqxButton("disabled") == false) {
+          cmnSyncCall("DeletePastFileUpload", {file_key: $("div#past_upload_file_list_component").jqxDropDownList("val")}, callback, $("div#past_upload_file_list_component").jqxDropDownList("val"));
+        }
       }
       
       function event_div_past_upload_file_process_but_component() {
-        fileKey = $("div#past_upload_file_list_component").jqxDropDownList("val");
-        cmnSyncCall("ConvToHtml", {file_key : fileKey}, callback, null);
+        if ($("div#past_upload_file_process_but_component").jqxButton("disabled") == false) {
+          fileKey = $("div#past_upload_file_list_component").jqxDropDownList("val");
+          cmnSyncCall("ConvToHtml", {file_key : fileKey}, callback, null);
+        }
       }
       
       function event_div_top_chat_toggle_button_component_click() {
@@ -309,13 +323,6 @@
       }
       
       function event_view_data_type_but_component_click() {
-        if ($("#view_data_type_but_component").jqxToggleButton("toggled") == true && fileKey != null && fileKey.length > 0) {
-          $("div#view_prod_chk_list_component").jqxGrid("clear");
-          cmnSyncCall("GetProdChkLst", {file_key: fileKey}, callback, null);
-        } else if ($("#view_data_type_but_component").jqxToggleButton("toggled") == false && fileKey != null && fileKey.length > 0) {
-          $("div#view_data_list_component").jqxGrid("clear");
-          cmnSyncCall("GetMorphemeDetailList", {file_key: fileKey}, callback, null);
-        }
         if ($("#view_data_type_but_component").jqxToggleButton("toggled") == true) {
           $("div.view_prod_chk_list").css("display", "");
           $("div.view_data_list_detail").css("display", "none");
@@ -323,6 +330,7 @@
           $("div.view_prod_chk_list").css("display", "none");
           $("div.view_data_list_detail").css("display", "");          
         }
+        getMorphemeWithState();
       }
       
       function callback(data, act, input_param, callbackVar) {
@@ -334,7 +342,7 @@
           doc_load_form.append($("<input>", {type: "hidden", name: "file_key", value: fileKey}));
           $("body").append(doc_load_form);
           $("form#doc_load_form").submit();
-          cmnSyncCall("GetMorphemeDetailList", {file_key: fileKey}, callback, null);
+          getMorphemeWithState();
         } else if (act == "GetPastFileUploadList") {
           var i = 0;
           for (i = 0; i < data.length; i++) {
@@ -445,6 +453,16 @@
           str = "0" + str;
         }
         return str;
+      }
+      
+      function getMorphemeWithState() {
+        if ($("#view_data_type_but_component").jqxToggleButton("toggled") == true && fileKey != null && fileKey.length > 0) {
+          $("div#view_prod_chk_list_component").jqxGrid("clear");
+          cmnSyncCall("GetProdChkLst", {file_key: fileKey}, callback, null);
+        } else if ($("#view_data_type_but_component").jqxToggleButton("toggled") == false && fileKey != null && fileKey.length > 0) {
+          $("div#view_data_list_component").jqxGrid("clear");
+          cmnSyncCall("GetMorphemeDetailList", {file_key: fileKey}, callback, null);
+        }
       }
     </script>
   </head>

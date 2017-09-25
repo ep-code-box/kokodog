@@ -12,8 +12,8 @@ package com.skd.ppa.module.service.impl;
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONSerializer;
@@ -123,6 +123,6 @@ public class NlpByKonlpyServiceImpl implements NlpByKonlpyService {
     if ("".equals(errorStr) == false) {
       throw systemException.systemException(19, errorStr);
     }
-    return (JSONArray)JSONSerializer.toJSON(stdOutStr);    
+    return (JSONArray)JSONSerializer.toJSON(stdOutStr);
   }
 }

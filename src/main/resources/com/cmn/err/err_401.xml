@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmn.err.err_401">
+  <select id="getAuthListByPath" parameterType="HashMap" resultType="HashMap">
+    SELECT ca.auth_num AS auth_num
+         , ca.auth_nm AS auth_nm
+    FROM   cmn_auth ca
+         , cmn_page_auth cpa
+         , cmn_pgm cp1
+         , cmn_task ct
+         , cmn_page cp2
+    WHERE  cp1.pgm_abb = #{pgm_abb}
+    AND    NOW() BETWEEN cp1.eff_sta_dtm AND cp2.eff_end_dtm
+    AND    ct.task_abb = #{task_abb}
+    AND    ct.pgm_num = cp1.pgm_num
+    AND    NOW() BETWEEN ct.eff_sta_dtm AND ct.eff_end_dtm
+    AND    cp2.page_abb = #{page_abb}
+    AND    cp2.pgm_num = cp1.pgm_num
+    AND    cp2.task_num = ct.task_num
+    AND    NOW() BETWEEN cp2.eff_sta_dtm AND cp2.eff_end_dtm
+    AND    cpa.pgm_num = cp1.pgm_num
+    AND    cpa.task_num = ct.task_num
+    AND    cpa.page_num = cp2.page_num
+    AND    NOW() BETWEEN cpa.eff_sta_dtm AND cpa.eff_end_dtm
+    AND    ca.auth_num = cpa.auth_num
+    AND    NOW() BETWEEN ca.eff_sta_dtm AND ca.eff_end_dtm
+    AND    NOT EXISTS (SELECT *
+                       FROM   cmn_user_auth cua
+                       WHERE  cua.user_num = #{user_num}
+                       AND    cua.auth_num = ca.auth_num
+                       AND    NOW() BETWEEN cua.eff_sta_dtm AND cua.eff_end_dtm
+                      )
+    AND    NOT EXISTS (SELECT *
+                       FROM   cmn_err_auth_request cear
+                       WHERE  cear.auth_num = ca.auth_num
+                       AND    cear.request_user_num = #{user_num}
+                       AND    (cear.auth_yn IS NULL OR cear.auth_yn = 'N')
+                       AND    cear.request_dtm &gt;= NOW() - INTERVAL 2 DAY
+                      )
+  </select>
+  <insert id="requestAuth" parameterType="HashMap">
+    INSERT INTO cmn_err_auth_request
+    (
+      auth_num
+    , request_user_num
+    , request_dtm
+    , auth_id
+    , auth_dtm
+    , auth_yn
+    )
+    VALUES
+    (
+      #{auth_num}
+    , #{user_num}
+    , #{now_dtm}
+    , #{user_num}
+    , NOW()
+    , 'N'
+    )
+  </insert>
+</mapper>

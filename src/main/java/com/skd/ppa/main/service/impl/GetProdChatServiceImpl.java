@@ -41,7 +41,7 @@ import com.cmn.err.SystemException;
  */
 @Service("getProdChatService")
 public class GetProdChatServiceImpl implements GetProdChatService {
-  private static final String URL = "https://gateway.aibril-watson.kr/conversation/api/v1/workspaces/b6ef9da0-164a-4dc7-97f3-f30c6545f6af/message?version=2017-05-26";
+  private static final String URL = "https://gateway.aibril-watson.kr/conversation/api/v1/workspaces/794a6b19-d9b3-495a-af13-e0ce2a993d7a/message?version=2017-05-26";
   private static final String USER= "7e406e3e-7f66-44ed-8473-fd6fc1f0f888";
   private static final String PASSWORD = "rQ3Bk6FqdxmR";
 
