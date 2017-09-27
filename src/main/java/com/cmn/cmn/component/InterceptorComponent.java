@@ -99,19 +99,19 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     request.setAttribute("now_dtm", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
     ip = request.getHeader("X-Forwarded-For");
     if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-        ip = request.getHeader("Proxy-Client-IP");
+      ip = request.getHeader("Proxy-Client-IP");
     }
     if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-        ip = request.getHeader("WL-Proxy-Client-IP");
+      ip = request.getHeader("WL-Proxy-Client-IP");
     }
     if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-        ip = request.getHeader("HTTP_CLIENT_IP");
+      ip = request.getHeader("HTTP_CLIENT_IP");
     }
     if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-        ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+      ip = request.getHeader("HTTP_X_FORWARDED_FOR");
     }
     if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-        ip = request.getRemoteAddr();
+      ip = request.getRemoteAddr();
     }
     long connSeq = addoptInfoComponent.newConnList(request, response, ((Long)request.getAttribute("system_call_dtm")).longValue(), (Integer)request.getSession().getAttribute("user_num"), ip, request.getRequestURL().toString(), request.getQueryString(), request.getMethod());
     request.setAttribute("_REQUEST_CONN_SEQ", connSeq);
