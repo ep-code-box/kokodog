@@ -125,7 +125,7 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     }
     if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
       ip = request.getRemoteAddr();
-      logger.debug("Client IP[X-Forwarded-For] : " + ip);
+      logger.debug("Client IP[Base remote addr] : " + ip);
     }
     long connSeq = addoptInfoComponent.newConnList(request, response, ((Long)request.getAttribute("system_call_dtm")).longValue(), (Integer)request.getSession().getAttribute("user_num"), ip, request.getRequestURL().toString(), request.getQueryString(), request.getMethod());
     request.setAttribute("_REQUEST_CONN_SEQ", connSeq);
