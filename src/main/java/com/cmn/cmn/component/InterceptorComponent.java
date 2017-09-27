@@ -10,14 +10,15 @@
 
 package com.cmn.cmn.component;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -95,23 +96,36 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     logger.debug("============   Start method of InterceptorComponent.preHandle   ============");
     request.setAttribute("system_call_dtm", getServerTimeService.getServerTime());
     String ip = null;
+    Enumeration eHeader = null;
     Calendar calendar = new GregorianCalendar(TimeZone.getDefault());
     request.setAttribute("now_dtm", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
+    eHeader = request.getHeaderNames();
+    while (eHeader.hasMoreElements()) {
+      String hName = (String)eHeader.nextElement();
+      String hValue = request.getHeader(hName);
+      logger.debug("Client IP for headers [" + hName + "/" + hValue + "]")
+    }
     ip = request.getHeader("X-Forwarded-For");
+    logger.debug("Client IP[X-Forwarded-For] : " + ip);
     if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
       ip = request.getHeader("Proxy-Client-IP");
+      logger.debug("Client IP[Proxy-Client-IP] : " + ip);
     }
     if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
       ip = request.getHeader("WL-Proxy-Client-IP");
+      logger.debug("Client IP[WL-Proxy-Client-IP] : " + ip);
     }
     if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
       ip = request.getHeader("HTTP_CLIENT_IP");
+      logger.debug("Client IP[X-Forwarded-For] : " + ip);
     }
     if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
       ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+      logger.debug("Client IP[HTTP_X_FORWARDED_FOR] : " + ip);
     }
     if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
       ip = request.getRemoteAddr();
+      logger.debug("Client IP[X-Forwarded-For] : " + ip);
     }
     long connSeq = addoptInfoComponent.newConnList(request, response, ((Long)request.getAttribute("system_call_dtm")).longValue(), (Integer)request.getSession().getAttribute("user_num"), ip, request.getRequestURL().toString(), request.getQueryString(), request.getMethod());
     request.setAttribute("_REQUEST_CONN_SEQ", connSeq);
