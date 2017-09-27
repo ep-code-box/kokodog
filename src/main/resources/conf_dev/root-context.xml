@@ -12,7 +12,15 @@
                         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
   <context:annotation-config/>
   <context:component-scan base-package="com"/>
-  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+  <bean id="environmentVariablesConfiguration" class="org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig">
+    <property name="algorithm" value="PBEWithMD5AndDES"/>
+    <property name="password" value="BRACE_KOKODOG"/>
+  </bean>
+  <bean id="configurationEncryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+    <property name="config" ref="environmentVariablesConfiguration"/>
+  </bean>
+  <bean id="propertyConfigurer" class="org.jasypt.spring.properties.EncryptablePropertyPlaceholderConfigurer">
+    <constructor-arg ref="configurationEncryptor"/>
 	  <property name="locations">
       <value>classpath:/conf/jdbc.properties</value>
 	  </property>
