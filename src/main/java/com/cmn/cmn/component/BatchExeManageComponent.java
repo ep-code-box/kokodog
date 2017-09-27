@@ -199,7 +199,6 @@ public class BatchExeManageComponent {
     Map<String, Object> inputMap = new HashMap<String, Object>();
     Map<String, Object> outputMap = null;
     int batchProcessListCnt = 0;
-    double batchProcessPercent = 0.0;
     int preExeCnt = 0;
     int containerCnt = 0;
     Random random = null;
@@ -259,7 +258,6 @@ public class BatchExeManageComponent {
         outputMap = batchExeManageDao.getCurrentBatchProcessInfo(inputMap);
         preExeCnt = ((Long)outputMap.get("pre_exe_cnt")).intValue();
         containerCnt = ((Long)outputMap.get("container_cnt")).intValue();
-        batchProcessPercent = (double)preExeCnt / (double)containerCnt;
       }
       outputList = batchExeManageDao.getBatchNoExeList();
       for (i = 0; i < outputList.size(); i++) {

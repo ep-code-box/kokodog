@@ -11,7 +11,6 @@ package com.cmn.cmn.component;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
@@ -22,15 +21,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.annotation.PreDestroy;
 
-import org.apache.ibatis.session.SqlSession;
 import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.cmn.err.UserException;
-import com.cmn.err.SystemException;
 import com.cmn.cmn.service.ConnLogService;
 import com.cmn.cmn.service.GetServerTimeService;
 import com.cmn.cmn.service.MessageService;
@@ -74,7 +70,6 @@ public class AddoptInfoComponent {
   private GetServerTimeService getServerTimeService;
   
   private static int TIME_OUT = 30;
-  private boolean setStart = false;
   private long setDayConnCnt = 0L;
   private List<Map<String, Object>> connList = null;
   private boolean isClosed = false;
@@ -162,7 +157,6 @@ public class AddoptInfoComponent {
     Map<String, Object> inputListMap = new HashMap<String, Object>();
     Calendar tmpCal = null;
     Calendar systemCallCal = null;
-    int i = 0;
     if (prevDay == 0L) {
       tmpCal = (Calendar)GregorianCalendar.getInstance();
       tmpCal.setTimeInMillis(systemCallDtm);
@@ -212,7 +206,6 @@ public class AddoptInfoComponent {
   @Async
   public void endConnUpdate(HttpServletRequest request, HttpServletResponse response, long endCallDtm, int responseNum, String errMsg, long connSeq, long systemCallDtm) {
     logger.debug("============   Start method of AddoptInfoComponent.endConnUpdate   ============");
-    int cnt = 0;
     int i = 0;
     try {
       for (i = 0; i < connList.size(); i++) {

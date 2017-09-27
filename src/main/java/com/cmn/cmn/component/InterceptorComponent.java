@@ -13,19 +13,14 @@ package com.cmn.cmn.component;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
-import java.lang.Thread;
 import java.net.URLEncoder;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
-import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.RequestDispatcher;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -99,10 +94,26 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
     logger.debug("============   Start method of InterceptorComponent.preHandle   ============");
     request.setAttribute("system_call_dtm", getServerTimeService.getServerTime());
-    RequestDispatcher rd = null;
+    String ip = null;
     Calendar calendar = new GregorianCalendar(TimeZone.getDefault());
     request.setAttribute("now_dtm", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
-    long connSeq = addoptInfoComponent.newConnList(request, response, ((Long)request.getAttribute("system_call_dtm")).longValue(), (Integer)request.getSession().getAttribute("user_num"), request.getRemoteAddr(), request.getRequestURL().toString(), request.getQueryString(), request.getMethod());
+    ip = request.getHeader("X-Forwarded-For");
+    if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        ip = request.getHeader("Proxy-Client-IP");
+    }
+    if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        ip = request.getHeader("WL-Proxy-Client-IP");
+    }
+    if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        ip = request.getHeader("HTTP_CLIENT_IP");
+    }
+    if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+    }
+    if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        ip = request.getRemoteAddr();
+    }
+    long connSeq = addoptInfoComponent.newConnList(request, response, ((Long)request.getAttribute("system_call_dtm")).longValue(), (Integer)request.getSession().getAttribute("user_num"), ip, request.getRequestURL().toString(), request.getQueryString(), request.getMethod());
     request.setAttribute("_REQUEST_CONN_SEQ", connSeq);
     checkLogin(request, response);
     Map<String, String> pgmInfo = getPgmTaskPageName(request.getRequestURI(), request.getMethod());
@@ -181,7 +192,6 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     */
   private void checkLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
     logger.debug("============   Start method of InterceptorComponent.getPgmTaskPageName   ============");
-    Map<String, Object> inputMap = new HashMap<String, Object>();
     Map<String, Object> outputMap = null;
     boolean isAccessTokenExist = false;
     String refreshToken = null;
@@ -190,7 +200,7 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
       if (isAccessTokenExist == false) {
         refreshToken = oAuthLoginService.getRequestTokenByUserNum(((Integer)request.getSession().getAttribute("user_num")).intValue());
         if (refreshToken != null) {
-          outputMap = oAuthLoginService.getAccessTokenByRefreshToken((String)outputMap.get("request_token"));
+          outputMap = oAuthLoginService.getAccessTokenByRefreshToken(refreshToken);
           oAuthLoginService.insertAccessToken((String)outputMap.get("access_token"), ((Integer)outputMap.get("expires_in")).intValue(), ((Integer)request.getSession().getAttribute("user_num")).intValue());
           request.getSession().setAttribute("user_num", request.getSession().getAttribute("user_num"));
         } else {
@@ -284,8 +294,6 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     String userAgent = null;
     boolean isMobile = false;
     String returnUrl = null;
-    Map<String, Object> inputMap = new HashMap<String, Object>();
-    Map<String, Object> outputMap = null;
     if (request.getSession().getAttribute("is_mobile") == null) {
       userAgent = request.getHeader("User-Agent").toLowerCase();
       if (userAgent.indexOf("mobile") >= 0) {
