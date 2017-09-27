@@ -171,6 +171,11 @@
 	    <artifactId>java-sdk</artifactId>
 	    <version>3.8.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.jasypt</groupId>
+      <artifactId>jasypt-spring3</artifactId>
+      <version>1.9.2</version>
+    </dependency>
   </dependencies>
   <profiles>
     <profile>
