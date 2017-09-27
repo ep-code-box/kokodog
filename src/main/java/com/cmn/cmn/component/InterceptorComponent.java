@@ -103,7 +103,7 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     while (eHeader.hasMoreElements()) {
       String hName = (String)eHeader.nextElement();
       String hValue = request.getHeader(hName);
-      logger.debug("Client IP for headers [" + hName + "/" + hValue + "]")
+      logger.debug("Client IP for headers [" + hName + "/" + hValue + "]");
     }
     ip = request.getHeader("X-Forwarded-For");
     logger.debug("Client IP[X-Forwarded-For] : " + ip);
