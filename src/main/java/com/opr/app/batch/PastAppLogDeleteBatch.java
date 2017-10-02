@@ -9,6 +9,10 @@
  */
 package com.opr.app.batch;
 
+import java.util.Date;
+import java.util.Map;
+import java.util.HashMap;
+
 import com.cmn.cmn.batch.Batch;
 
 /**
@@ -39,7 +43,9 @@ public class PastAppLogDeleteBatch extends Batch {
     addLog("============   Start method of pastAppLogDeleteBatch.pastAppLogDeleteBatch   ============");
     addLog(" Parameter - batchRunTime[" + currentTime + "]");
     int deleteCnt = 0;
-    sqlSession.delete("com.opr.app.batch.deletePastAppLog", currentTime);
+    Map<String, Object> inputMap = new HashMap<String, Object>();
+    inputMap.put("current_time", new Date(currentTime));
+    deleteCnt = sqlSession.delete("com.opr.app.batch.deletePastAppLog", inputMap);
     setReport("================= Report of Batch PastAppLogDeleteBatch ==============================");
     setReport("Total Delete Count[" + deleteCnt + "]");
     addLog("============   End method of pastAppLogDeleteBatch.pastAppLogDeleteBatch   ============");
