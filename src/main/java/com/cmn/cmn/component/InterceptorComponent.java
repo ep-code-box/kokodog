@@ -22,7 +22,9 @@ import java.text.SimpleDateFormat;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +83,7 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
   @Autowired
   private AddoptInfoComponent addoptInfoComponent;
   
-  private static Logger logger = Logger.getLogger(InterceptorComponent.class);
+  private static Logger logger = LogManager.getLogger(InterceptorComponent.class);
   
   /**
     *  서블릿이 호출되기 전에 수행

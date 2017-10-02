@@ -15,7 +15,8 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +41,7 @@ public class SkdPpaMainRefreshChatBotController {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(SkdPpaMainRefreshChatBotController.class);
+  private static Logger logger = LogManager.getLogger(SkdPpaMainRefreshChatBotController.class);
   
   /**
    *  해당 메서드는 /skd/ppa/main/RefreshCahtBot URL을 통해 호출된다.
@@ -54,6 +55,7 @@ public class SkdPpaMainRefreshChatBotController {
   @RequestMapping(value="/skd/ppa/main/RefreshChatBot", method=RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of SkdPpaMainRefreshChatBotController.main[/skd/ppa/main/RefreshChatBot]");
     List<Map<String, Object>> outputList = null;
     validationCheck(request, response);
     Map<String, Object> returnMap = new HashMap<String, Object>();

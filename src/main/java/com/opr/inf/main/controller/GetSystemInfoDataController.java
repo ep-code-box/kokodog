@@ -6,7 +6,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,14 +30,14 @@ public class GetSystemInfoDataController {
   @Autowired
   private GetSystemInfoDataService getSystemInfoDataService;
   
-  private static Logger logger = Logger.getLogger(GetSystemInfoDataController.class);
+  private static Logger logger = LogManager.getLogger(GetSystemInfoDataController.class);
   
   private static final int MAX_DIFF_TIME = 2 * 24 * 60 * 60;
-  private static final int BASE_CNT = 200;
   
   @RequestMapping(value="/opr/inf/main/GetSystemInfoData", method=RequestMethod.POST)
   @ResponseBody
-  public List main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public List<Map<String, Object>> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of GetSystemInfoDataController.main[/opr/inf/main/GetSystemInfoData]");
     validation(request, response);
     List<Map<String, Object>> outputList = null;
     outputList = getSystemInfoDataService.getSystemInfoData(Long.parseLong(request.getParameter("from_datetime"))

@@ -10,8 +10,8 @@ import java.util.GregorianCalendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
-import org.apache.log4j.Logger;
-import org.apache.ibatis.session.SqlSession;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,7 +24,7 @@ import com.cmn.cmn.service.impl.GetDataFromURLServiceImpl;
 
 public class GetStoProgressTimeHstInfo extends Batch{
   
-  private static Logger logger = Logger.getLogger(GetStoProgressTimeHstInfo.class);
+  private static Logger logger = LogManager.getLogger(GetStoProgressTimeHstInfo.class);
 
   @Override
   public void run(long batchRunTime, String param) throws Exception {
@@ -34,7 +34,6 @@ public class GetStoProgressTimeHstInfo extends Batch{
   }
   
   private void process(long batchRunTime) throws Exception {
-    SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
     SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
     GetDataFromURLService getDataFromURLService = new GetDataFromURLServiceImpl();
     String url = null;

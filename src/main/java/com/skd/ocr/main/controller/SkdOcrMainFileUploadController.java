@@ -7,15 +7,15 @@
  *
  * @Copyright by 이민석
  */
-package com.skd.ppa.main.controller;
+package com.skd.ocr.main.controller;
 
 import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +44,7 @@ public class SkdOcrMainFileUploadController {
   @Autowired
   private SystemException systemException;
 
-  private static Logger logger = Logger.getLogger(SkdOcrMainFileUploadController.class);
+  private static Logger logger = LogManager.getLogger(SkdOcrMainFileUploadController.class);
   
   /**
    *  해당 메서드는 /skd/ocr/main/FileUpload URL을 통해 호출된다.
@@ -59,6 +59,7 @@ public class SkdOcrMainFileUploadController {
   @ResponseBody
   @SuppressWarnings({"rawtypes", "unchecked"})
   public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of SkdOcrMainFileUploadController.main[skd/ocr/main/FileUpload");
     validationCheck(request, response);
     Map<String, Object> outputMap = (Map)((List)fileControlService.insertFile(request).get("__img_info")).get(0);
     imgOcrService.insertUploadImgInfo((String)outputMap.get("file_key"), request.getSession().getAttribute("user_num") == null ? 0 : ((Integer)(request.getSession().getAttribute("user_num"))).intValue());

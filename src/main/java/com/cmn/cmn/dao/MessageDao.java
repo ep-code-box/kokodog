@@ -1,6 +1,5 @@
 package com.cmn.cmn.dao;
 
-import java.util.List;
 import java.util.Map;
 import java.sql.SQLException;
 

@@ -12,16 +12,20 @@ package com.dev.ser.main;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import com.cmn.err.SystemException;
 
 /**
@@ -35,7 +39,7 @@ public class InsertService {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(InsertService.class);
+  private static Logger logger = LogManager.getLogger(InsertService.class);
 
   /**
     *  서비스 개발을 위해 전체 페이지 리스트를 가져오는 쿼리
@@ -45,7 +49,7 @@ public class InsertService {
     */
   @RequestMapping(value="/dev/ser/main/InsertService", method=RequestMethod.POST)
   @ResponseBody
-  public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validation(request, response);
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("cd_num", 17);

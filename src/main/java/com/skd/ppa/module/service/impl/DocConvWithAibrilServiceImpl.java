@@ -18,16 +18,13 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
-import java.util.Map;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +41,7 @@ import com.cmn.err.UserException;
  */
 @Service("docConvWithAibrilService")
 public class DocConvWithAibrilServiceImpl implements DocConvWithAibrilService {
-  private static Logger logger = Logger.getLogger(DocConvWithAibrilServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(DocConvWithAibrilServiceImpl.class);
   private static final String AIBRIL_DOC_CONF_URL = "https://gateway.aibril-watson.kr/document-conversion/api/v1/convert_document?version=2015-12-15";
   private static final String AIBRIL_USER_NAME = "42abed68-c1d7-49a3-9882-2f1e5fd04518";
   private static final String AIBRIL_PASSWORD = "f3pZUAKvkDFW";
@@ -67,6 +64,7 @@ public class DocConvWithAibrilServiceImpl implements DocConvWithAibrilService {
    *  @throws 기타 모든 예외
    */
   public String convToHtml(InputStream is) throws Exception {
+    logger.debug("Start method of DocConvWithAibrilServiceImpl.convToHtml");
     OutputStreamWriter wsr = null;
     BufferedReader br = null;
     InputStreamReader isr = null;
@@ -93,7 +91,7 @@ public class DocConvWithAibrilServiceImpl implements DocConvWithAibrilService {
       dos.writeBytes("--" + BOUNDARY + "\r\n");
       dos.writeBytes("Content-Disposition:form-data;name=\"file\";filename=\"tempFile.docx\"\r\n");
       dos.writeBytes("\r\n");
-      int bytesAvailable = bytesAvailable = is.available();
+      int bytesAvailable = is.available();
       int maxBufferSize = 1024;
       int bufferSize = Math.min(bytesAvailable, maxBufferSize); 
       byte[] buffer = new byte[bufferSize];

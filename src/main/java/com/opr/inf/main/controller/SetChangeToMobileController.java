@@ -1,4 +1,4 @@
-package com.opr.inf.main;
+package com.opr.inf.main.controller;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.cmn.err.SystemException;
 import com.cmn.err.UserException;
@@ -25,11 +26,12 @@ public class SetChangeToMobileController {
   @Autowired
   private UserException userException;
   
-  private static Logger logger = Logger.getLogger(SetChangeToMobileController.class);
+  private static Logger logger = LogManager.getLogger(SetChangeToMobileController.class);
   
   @RequestMapping(value="/opr/inf/main/SetChangeToMobile", method=RequestMethod.POST)
   @ResponseBody
-  public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of SetChangeToMobileController.main[/opr/inf/main/SetChangeToMobile");
     request.getSession().setAttribute("is_mobile", "Y");
     return new HashMap<String, Object>();
   }

@@ -12,16 +12,19 @@ package com.dev.dbd.main;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import com.cmn.err.SystemException;
 import com.cmn.err.UserException;
 import com.dev.dbd.module.DevDbdModule;
@@ -43,7 +46,7 @@ public class DeleteLastRepVer {
   @Autowired
   private DevDbdModule devDbdModule;
 
-  private static Logger logger = Logger.getLogger(DeleteLastRepVer.class);
+  private static Logger logger = LogManager.getLogger(DeleteLastRepVer.class);
 
   /**
     *  개발기에 쿼리를 배포하는 메서드
@@ -53,7 +56,7 @@ public class DeleteLastRepVer {
     */
   @RequestMapping(value="/dev/dbd/main/DeleteLastRepVer", method=RequestMethod.POST)
   @ResponseBody
-  public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validation(request, response);
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("query_num", Integer.parseInt(request.getParameter("query_num")));

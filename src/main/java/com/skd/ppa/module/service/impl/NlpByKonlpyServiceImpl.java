@@ -18,7 +18,8 @@ import java.util.List;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONSerializer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ import com.cmn.err.SystemException;
  */
 @Service("nlpByKonlpyService")
 public class NlpByKonlpyServiceImpl implements NlpByKonlpyService {
-  private static Logger logger = Logger.getLogger(NlpByKonlpyServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(NlpByKonlpyServiceImpl.class);
   private static final String KONLPY_NOUN_EXE = "keyword_for_proposal.py";
   private static final String KONLPY_MORPHEME_EXE = "morpheme_analysis.py";
   private static final String KONLPY_DETAIL_EXE = "keyword_for_proposal_by_raw.py";
@@ -52,6 +53,7 @@ public class NlpByKonlpyServiceImpl implements NlpByKonlpyService {
    *  @throws 기타 익셉션
    */
   public JSONArray getNounList(String str) throws Exception {
+    logger.debug("Start method of NlpByKonlpyServiceImpl.getNounList");
     List<String> list = new ArrayList<String>();
     list.add(str);
     return returnPythonExe(list, KONLPY_NOUN_EXE);

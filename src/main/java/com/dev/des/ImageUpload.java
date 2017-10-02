@@ -7,19 +7,19 @@
  *
  * @Copyright by 이민석
  */
-package com.dev.des.image_manage;
+package com.dev.des;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +48,7 @@ public class ImageUpload {
   @Autowired
   private FileControlService fileControlService;
   
-  private static Logger logger = Logger.getLogger(ImageUpload.class);
+  private static Logger logger = LogManager.getLogger(ImageUpload.class);
   
   /**
     *  개발기에 쿼리를 배포하는 메서드
@@ -56,11 +56,11 @@ public class ImageUpload {
     *  @param response - 서블릿 응답이 정의된 response
     *  @return - 데이터 없는 Map
     */
+  @SuppressWarnings("rawtypes") 
   @RequestMapping(value="/dev/des/image_manage/ImageUpload", method=RequestMethod.POST)
   @ResponseBody
-  public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validation(request, response);
-    List<Map<String, Object>> outputList = new ArrayList<Map<String, Object>>();
     Map<String, Object> outputMap = null;
     Map<String, Object> inputMap = new HashMap<String, Object>();
     outputMap = fileControlService.insertFile(request);

@@ -15,13 +15,18 @@ import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import com.cmn.err.SystemException;
 
 /**
@@ -35,7 +40,7 @@ public class GetQueryInfo {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(GetQueryInfo.class);
+  private static Logger logger = LogManager.getLogger(GetQueryInfo.class);
 
   /**
     *  Google OAuth 로그인을 위하여 링크 정보를 가져오는 method
@@ -45,7 +50,7 @@ public class GetQueryInfo {
     */
   @RequestMapping(value="/dev/dbd/main/GetQueryInfo", method=RequestMethod.POST)
   @ResponseBody
-  public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validation(request, response);
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("query_num", Integer.parseInt(request.getParameter("query_num")));
@@ -80,7 +85,6 @@ public class GetQueryInfo {
     *  @return - 없음  
     */
   private void validation(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    int temp = 0;
     if (request.getParameter("query_num") == null) {
       throw systemException.systemException(3, "query_num");
     }

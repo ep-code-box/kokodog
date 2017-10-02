@@ -9,13 +9,13 @@
  */
 package com.skd.ppa.main.dao.impl;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.sql.SQLException;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -33,7 +33,7 @@ public class GetProdChatDaoImpl implements GetProdChatDao {
   @Autowired
   private SqlSession sqlSession;
 
-  private static Logger logger = Logger.getLogger(GetProdChatDaoImpl.class);
+  private static Logger logger = LogManager.getLogger(GetProdChatDaoImpl.class);
   /**
    *  이 메서드는 사용자가 현재 대화를 어디까지 진행하고 있는지를 알려준다.
    *  @param inputMap - DB 조회를 위한 인풋 데이터(필수로 conv_num 과 user_num이 포함되어야 한다.)

@@ -23,7 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONSerializer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,7 @@ public class ImgOcrServiceImpl implements ImgOcrService {
   
   private String imgOcrPythonStr = "ocr.py";
   
-  private static Logger logger = Logger.getLogger(ImgOcrServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(ImgOcrServiceImpl.class);
 
   /**
    *  이 메서드는 String 형태로 전달받은 byte stream 이미지를
@@ -61,6 +62,7 @@ public class ImgOcrServiceImpl implements ImgOcrService {
    *  @throws 기타 예외
    */
   public JSONArray getImgOcrInfoByImgWithStr(byte[] img) throws Exception {
+    logger.debug("Start method of ImgOcrServiceImpl.getImgOcrInfoByImgWithStr");
     List<String> inputList = new ArrayList<String>();
     ServletRequestAttributes sra = null;
     String realPath = null;

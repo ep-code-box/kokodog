@@ -14,29 +14,24 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.HashMap;
-import java.lang.StackTraceElement;
 import java.text.SimpleDateFormat;
 import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.http.ResponseEntity;
 
 import com.cmn.err.UserException;
-import com.cmn.err.SystemException;
 import com.cmn.err.KokodogException;
-import com.cmn.cmn.component.AddoptInfoComponent;
 import com.cmn.cmn.service.MessageService;
 import com.cmn.cmn.service.GetServerTimeService;
 
@@ -57,7 +52,7 @@ public class KokodogExceptionResolver {
   @Autowired
   private GetServerTimeService getServerTimeService;
   
-  private static Logger logger = Logger.getLogger(KokodogExceptionResolver.class);
+  private static Logger logger = LogManager.getLogger(KokodogExceptionResolver.class);
 
   /**
     *  사용자 선택에 따른 오류 출력을 처리한다.
@@ -82,9 +77,9 @@ public class KokodogExceptionResolver {
       returnMap.put("error_num", ex.getMessageNum());
       returnMap.put("error_nm", ex.getMessage());
       if (ex.getErrTyp() != 0) {
-        return (Object)(new ResponseEntity<Map>(returnMap, HttpStatus.valueOf(ex.getErrTyp())));
+        return (Object)(new ResponseEntity<Map<String, Object>>(returnMap, HttpStatus.valueOf(ex.getErrTyp())));
       } else {
-        return (Object)(new ResponseEntity<Map>(returnMap, HttpStatus.INTERNAL_SERVER_ERROR));
+        return (Object)(new ResponseEntity<Map<String, Object>>(returnMap, HttpStatus.INTERNAL_SERVER_ERROR));
       }
     } else {
       ModelAndView mav = new ModelAndView();
@@ -103,10 +98,12 @@ public class KokodogExceptionResolver {
     *  @param request - 서블릿 Request
     *  @param ex - Exception 이 발생한 클래스
     */
+  @SuppressWarnings("unchecked")
   private void printLogForUserException(HttpServletRequest request, UserException ex) throws Exception {
-    Enumeration param = request.getParameterNames();
+    Enumeration<String> param = null;
     String queryParam = "";
-    while (param.hasMoreElements()) {
+    param = request.getParameterNames();
+    while (param.hasMoreElements() == true) {
       String key = param.nextElement() + "";
       queryParam = queryParam + URLEncoder.encode(key, "UTF-8") + "=" + URLEncoder.encode(request.getParameter(key), "UTF-8") + "&";
     }
@@ -135,10 +132,12 @@ public class KokodogExceptionResolver {
     *  @param request - 서블릿 Request
     *  @param ex - Exception 이 발생한 클래스
     */
+  @SuppressWarnings("unchecked")
   private void printLogForSystemException(HttpServletRequest request, KokodogException ex) throws Exception {
-    Enumeration param = request.getParameterNames();
+    Enumeration<String> param = null;
     String queryParam = "";
-    while (param.hasMoreElements()){
+    param = request.getParameterNames();
+    while (param.hasMoreElements() == true){
       String key = param.nextElement() + "";
       queryParam = queryParam + URLEncoder.encode(key, "UTF-8") + "=" + URLEncoder.encode(request.getParameter(key), "UTF-8") + "&";
     }
@@ -169,10 +168,12 @@ public class KokodogExceptionResolver {
     *  @param ex - Exception 이 발생한 클래스
     *  @return - 결과를 표현할 모델
     */
+  @SuppressWarnings("unchecked")
   @ExceptionHandler(Exception.class)
   public Object exception(HttpServletRequest request, HttpServletResponse response, Exception ex) throws Exception {
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    Enumeration param = request.getParameterNames();
+    Enumeration<String> param = null;
+    param = request.getParameterNames();
     String queryParam = "";
     while (param.hasMoreElements()){
       String key = param.nextElement() + "";
@@ -204,7 +205,7 @@ public class KokodogExceptionResolver {
       returnMap.put("error_nm", outputMap.get("msg"));
       returnMap.put("error_sub_nm", ex.getMessage());
       response.setStatus(((Integer)returnMap.get("err_typ")).intValue());
-      return (Object)(new ResponseEntity<Map>(returnMap, HttpStatus.INTERNAL_SERVER_ERROR));
+      return (Object)(new ResponseEntity<Map<String, Object>>(returnMap, HttpStatus.INTERNAL_SERVER_ERROR));
     } else {
       ModelAndView mav = new ModelAndView();
       mav.setViewName("cmn/err/err_500");

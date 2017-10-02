@@ -4,22 +4,21 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.cmn.err.SystemException;
 import com.cmn.cmn.service.GetDataFromURLService;
@@ -35,13 +34,14 @@ public class GeocodeByText {
   @Autowired
   private GetDataFromURLService getDataFromURLService;
   
-  private static Logger logger = Logger.getLogger(GeocodeByText.class);
+  private static Logger logger = LogManager.getLogger(GeocodeByText.class);
 	/**
 	 * @param args
 	 */
   @RequestMapping(value="/nav/pss/main/GeocodeByText", method=RequestMethod.POST)
   @ResponseBody
-  public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of GeocodeByTest.main[/nav/pss/main/GeocodeByText");
     validation(request, response);
     Map<String, Object> inputMaps = new HashMap<String, Object>();
     Map<String, Object> returnMaps = new HashMap<String, Object>();

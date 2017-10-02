@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +33,14 @@ public class GetAppLogListController {
   @Autowired
   private UserException userException;
   
-  private static Logger logger = Logger.getLogger(GetAppLogListController.class);
+  private static Logger logger = LogManager.getLogger(GetAppLogListController.class);
   
   private static final long MAX_LOG_CNT = 1000L;
 
   @RequestMapping(value="/opr/inf/main/GetAppLogList", method=RequestMethod.POST)
   @ResponseBody
-  public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of GetAppLogListController.main[/opr/inf/main/GetAppLogList]");
     validation(request, response);
     List<String> logLevelList = new ArrayList<String>();
     Map<String, Object> returnMap = null;
@@ -97,9 +99,8 @@ public class GetAppLogListController {
       throw systemException.systemException(14, "종료시각이 시작시각보다 작습니다.");
     }
     if (request.getParameter("seq") != null) {
-      long tempSeq = 0L;
       try {
-        tempSeq = Long.parseLong(request.getParameter("seq"));
+        Long.parseLong(request.getParameter("seq"));
       } catch (NumberFormatException e) {
         throw systemException.systemException(9, "seq", request.getParameter("seq"));
       }
@@ -135,7 +136,6 @@ public class GetAppLogListController {
       }
     }
     Map<String, Object> inputMap = new HashMap<String, Object>();
-    Map<String, Object> outputMap = null;
     inputMap.put("from_datetime", new Date(Long.parseLong(request.getParameter("from_datetime"))));
     inputMap.put("to_datetime", new Date(Long.parseLong(request.getParameter("to_datetime"))));
     if (request.getParameter("log_typ_cd") != null) {

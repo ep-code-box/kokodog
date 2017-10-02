@@ -9,13 +9,14 @@
  */
 package com.cmn.err.err_401.dao.impl;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.sql.SQLException;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -30,7 +31,7 @@ public class GetPageAuthDaoImpl implements GetPageAuthDao {
   @Autowired
   private SqlSession sqlSession;
 
-  private static Logger logger = Logger.getLogger(GetPageAuthDaoImpl.class);
+  private static Logger logger = LogManager.getLogger(GetPageAuthDaoImpl.class);
   /**
    *  해당 경로에 해당하는 권한을 모두 가져온다.
    *  @param inputMap - 프로그램(pgm), 업무(task), 페이지(page)를 담고 있는 맵

@@ -4,14 +4,13 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
-import java.util.TimeZone;
 import java.text.SimpleDateFormat;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.apache.ibatis.session.SqlSession;
 
 import com.cmn.cmn.batch.Batch;
@@ -27,8 +26,6 @@ import com.cmn.cmn.batch.Batch;
   *  ) ENGINE=MyISAM DEFAULT CHARSET=utf8;<br/>
   */
 public class CpuMonitorBatch extends Batch {
-  private static Logger logger = Logger.getLogger(CpuMonitorBatch.class);
-
   public void run(long batchRunTime, String param) throws Exception {
     addLog("============   Start method of CpuMonitorBatch.run   ============");
     addLog(" Parameter - batchRunTime[" + batchRunTime + "], param[" + param + "]");
@@ -71,7 +68,7 @@ public class CpuMonitorBatch extends Batch {
 }
 
 class CPUCheckProcessThread extends Thread {
-  private static Logger logger = Logger.getLogger(CPUCheckProcessThread.class);
+  private static Logger logger = LogManager.getLogger(CPUCheckProcessThread.class);
 
   private long batchRunTime = 0L;
   private SqlSession sqlSession;
@@ -91,6 +88,7 @@ class CPUCheckProcessThread extends Thread {
     BufferedReader stdOut = null;
     Process process = null;
     SimpleDateFormat format = null;
+    format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     try {
       outputMap = sqlSession.selectOne("com.opr.inf.batch.getCPUCnt");
       cpuCnt = ((Long)outputMap.get("cpu_cnt")).intValue();

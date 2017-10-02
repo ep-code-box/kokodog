@@ -14,7 +14,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +40,7 @@ public class SkdOcrMainDeletePastFileUploadController {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(SkdOcrMainDeletePastFileUploadController.class);
+  private static Logger logger = LogManager.getLogger(SkdOcrMainDeletePastFileUploadController.class);
   
   /**
    *  해당 메서드는 /skd/ocr/main/GetPastFileUploadList URL을 통해 호출된다.
@@ -54,6 +55,7 @@ public class SkdOcrMainDeletePastFileUploadController {
   @RequestMapping(value="/skd/ocr/main/DeletePastFileUpload", method=RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of SkdOcrMainDeletePastFileUploadController.main[/skd/ocr/main/DeletePastFileUpload]");
     validationCheck(request, response);
     getPastFileUploadForOcrService.deletePastFileUpload(request.getParameter("file_key"));
     return new HashMap<String, Object>();

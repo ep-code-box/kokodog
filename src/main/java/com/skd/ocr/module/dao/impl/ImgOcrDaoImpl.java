@@ -13,7 +13,9 @@ import java.util.Map;
 import java.sql.SQLException;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -36,7 +38,7 @@ public class ImgOcrDaoImpl implements ImgOcrDao {
   @Autowired
   private SqlSession sqlSession;
 
-  private static Logger logger = Logger.getLogger(ImgOcrDaoImpl.class);
+  private static Logger logger = LogManager.getLogger(ImgOcrDaoImpl.class);
   /**
    *  이 메서드는 OCR을 위한 이미지를 업로드했을 시
    *  업로드한 이미지 관리를 위하여 대상 파일을

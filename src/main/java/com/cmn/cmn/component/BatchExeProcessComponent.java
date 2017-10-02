@@ -16,10 +16,10 @@ import java.text.SimpleDateFormat;
 
 import java.lang.Class;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.apache.ibatis.session.SqlSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +56,7 @@ public class BatchExeProcessComponent {
   @Autowired
   private UserException userException;
   
-  private static Logger logger = Logger.getLogger(BatchExeProcessDao.class);
+  private static Logger logger = LogManager.getLogger(BatchExeProcessDao.class);
 
   /**
    *  실제로 비동기로 수행되며 배치를 수행하는 역할을 한다.
@@ -73,11 +73,7 @@ public class BatchExeProcessComponent {
     Map<String, Object> inputMap = null;
     String report = null;
     Batch batch = null;
-    Class<Batch> clasBatch = null;
-    Class clas = null;
-    Constructor<Batch> constructor = null;
-    Object object = null;
-    Method method = null;
+    Class<Batch> clas = null;
     try {
       inputMap = new HashMap<String, Object>();
       inputMap.clear();
@@ -90,12 +86,12 @@ public class BatchExeProcessComponent {
       errorLogForInternalLogic(batchNum, exeDateTime, e);      
     }
     try {
-      clas = Class.forName(className);
+      clas = (Class<Batch>)Class.forName(className);
     } catch (ClassNotFoundException e) {
       errorLogForBatch(batchNum, exeDateTime, new Exception("수행하고자 하는 Batch 프로그램이 없습니다."), null);      
     }
     try {
-      batch = (Batch)((Constructor<Batch>)(((Class<Batch>)clas).getConstructor())).newInstance();
+      batch = (Batch)((Constructor<Batch>)(clas.getConstructor())).newInstance();
     } catch (ClassCastException e) {
       errorLogForBatch(batchNum, exeDateTime, new Exception("수행하고자 하는 Batch 프로그램이 \"com.cmn.cmn.batch.Batch\"를 상속받아 구현되지 않음."), null);
     } catch (Exception e) {

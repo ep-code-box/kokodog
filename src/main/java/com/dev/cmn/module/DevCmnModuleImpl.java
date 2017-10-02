@@ -3,10 +3,13 @@ package com.dev.cmn.module;
 import java.util.Map;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import com.dev.cmn.module.DevCmnModule;
 
 @Service("devCmnModule")
@@ -14,7 +17,7 @@ public class DevCmnModuleImpl implements DevCmnModule {
   @Autowired
   private SqlSession sqlSession;
   
-  private static Logger logger = Logger.getLogger(DevCmnModuleImpl.class);
+  private static Logger logger = LogManager.getLogger(DevCmnModuleImpl.class);
   
   public void distResultInsert(int sourceNum, int repVer, int instance, int distType, HttpServletRequest request) throws Exception {
     Map<String, Object> inputMap = new HashMap<String, Object>();

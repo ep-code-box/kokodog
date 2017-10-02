@@ -1,23 +1,25 @@
 package com.cmn.err;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedList;
+import org.apache.ibatis.session.SqlSession;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
 import com.cmn.err.KokodogException;
 
+@SuppressWarnings("serial")
 @Component
 public class SystemException extends KokodogException {
   @Autowired
   private SqlSession sqlSession;
   
-  private static Logger logger = Logger.getLogger(SystemException.class);
+  private static Logger logger = LogManager.getLogger(SystemException.class);
 
   public SystemException systemException(int messageNum, String... msg) throws Exception {
+    logger.debug("Start method of SystemException.systemException");
     super.kokodogException(messageNum, sqlSession, msg);
     return this;
   }

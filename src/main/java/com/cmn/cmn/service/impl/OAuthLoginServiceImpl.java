@@ -9,9 +9,9 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
   @Autowired
   private GetGoogleLoginOAuthRedirectUriService getGoogleLoginOAuthRedirectUriService;
   
-  private static Logger logger = Logger.getLogger(OAuthLoginServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(OAuthLoginServiceImpl.class);
   
   public Map<String, Object> getAccessTokenByCode(String code, String requestUrl) throws Exception {
     List<Map<String, Object>> outputList = oAuthLoginDao.getGoogleLoginOAuthTokenParameter();
@@ -190,10 +190,6 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
       systemCallDtm = GregorianCalendar.getInstance().getTimeInMillis();
     }
     inputMap.put("user_num", userNum);
-    Map<String, Object> outputMap = null;
-    String accessToken = null;
-    outputMap = oAuthLoginDao.getAccessTokenByUserNum(inputMap);
-    accessToken = (String)outputMap.get("access_token");
     inputMap.clear();
     inputMap.put("user_num", userNum);
     inputMap.put("now_dtm", new Date(systemCallDtm));

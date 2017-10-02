@@ -5,7 +5,9 @@ import java.util.Map;
 import java.sql.SQLException;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -17,7 +19,7 @@ public class OAuthLoginDaoImpl implements OAuthLoginDao {
   @Autowired
   private SqlSession sqlSession;
   
-  private static Logger logger = Logger.getLogger(OAuthLoginDaoImpl.class);
+  private static Logger logger = LogManager.getLogger(OAuthLoginDaoImpl.class);
   
   public List<Map<String, Object>> getGoogleLoginOAuthTokenParameter() throws SQLException {
     logger.debug("============   Start method of GetGoogleLoginDaoImpl.getGoogleLoginOAuthTokenParameter   ============");

@@ -11,13 +11,13 @@ package com.cmn.cmn.controller;
 
 import java.math.BigDecimal;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +41,7 @@ public class FileControlController {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(FileControlController.class);
+  private static Logger logger = LogManager.getLogger(FileControlController.class);
   
   /**
    *  파일 다운로드를 수행하는 함수이며, /FileDown path를 통해 이 메서드가 수행된다.
@@ -54,6 +54,7 @@ public class FileControlController {
   public String fileDownload(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validation(request, response);
     Map<String, Object> inputMap = new HashMap<String, Object>();
+    logger.debug("Start controller of com.cmn.cmn.controller.fileDownload[/FileDown]");
     Map<String, Object> outputMap = null;
     int fileNum = 0;
     String fileNm = null;

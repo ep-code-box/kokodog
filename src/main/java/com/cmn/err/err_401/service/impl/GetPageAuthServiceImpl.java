@@ -9,16 +9,14 @@
  */
 package com.cmn.err.err_401.service.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONArray;
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,16 +33,19 @@ import com.cmn.err.err_401.dao.GetPageAuthDao;
  */
 @Service("getPageAuthService")
 public class GetPageAuthServiceImpl implements GetPageAuthService {
+  @Autowired
+  private GetPageAuthDao getPageAuthDao;
+  
+  private static final Logger logger = LogManager.getLogger(GetPageAuthServiceImpl.class);
+
   /**
    *  요청 request 별로 갖고 있는 권한 리스트를 불러온다.
    *  @param path - 패스 리스트로 정의된다.
    *  @return List 타입으로 내부 요소는 Map<String, Object> 형태를 가지며 file_key, 등록일시, 파일명을 결과로 전달한다.
    *  @throws 기타 Exception
    */
-  
-  @Autowired
-  private GetPageAuthDao getPageAuthDao;
   public List<Map<String, Object>> getAuthListByPath(String path, int userNum) throws Exception {
+    logger.debug("Start method of GetPageAuthServiceImpl.getAuthListByPatch");
     String[] pathSplit = path.split("/");
     int startPos = 0;
     Map<String, Object> inputMap = new HashMap<String, Object>();

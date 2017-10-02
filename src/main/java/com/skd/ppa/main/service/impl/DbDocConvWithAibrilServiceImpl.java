@@ -15,7 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class DbDocConvWithAibrilServiceImpl implements DbDocConvWithAibrilServic
   @Autowired
   private DbDocConvWithAibrilDao dbDocConvWithAibrilDao;
   
-  private static Logger logger = Logger.getLogger(DbDocConvWithAibrilServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(DbDocConvWithAibrilServiceImpl.class);
   
   /**
    *  이 메쏘드는 MS word, Presentation, Excel의 문서를
@@ -54,6 +55,7 @@ public class DbDocConvWithAibrilServiceImpl implements DbDocConvWithAibrilServic
    *  @throws 기타 모든 예외
    */
   public void convToHtml(String fileKey) throws Exception {
+    logger.debug("Start method of DbDocConvWithAibrilServiceImpl.convToHtml");
     ServletRequestAttributes sra = null;
     HttpServletRequest request = null;
     Map<String, Object> inputMap = new HashMap<String, Object>();

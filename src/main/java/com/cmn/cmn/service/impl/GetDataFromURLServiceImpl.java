@@ -10,7 +10,6 @@
 package com.cmn.cmn.service.impl;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
@@ -23,7 +22,8 @@ import java.util.List;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.stereotype.Service;
 
@@ -37,7 +37,7 @@ import com.cmn.cmn.service.GetDataFromURLService;
  */
 @Service("getDataFromURLService")
 public class GetDataFromURLServiceImpl implements GetDataFromURLService {
-  private static Logger logger = Logger.getLogger(GetDataFromURLServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(GetDataFromURLServiceImpl.class);
   
   /**
    *  이 메서드는 URL을 호출한 결과를 되돌려받기 위한 함수이다.

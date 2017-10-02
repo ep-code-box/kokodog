@@ -20,7 +20,8 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ public class GetProdChatServiceImpl implements GetProdChatService {
   private static final String URL = "https://gateway.aibril-watson.kr/conversation/api/v1/workspaces/794a6b19-d9b3-495a-af13-e0ce2a993d7a/message?version=2017-05-26";
   private static final String USER= "7e406e3e-7f66-44ed-8473-fd6fc1f0f888";
   private static final String PASSWORD = "rQ3Bk6FqdxmR";
+  private static final Logger logger = LogManager.getLogger(GetProdChatServiceImpl.class);
 
   @Autowired
   private GetDataFromURLService getDataFromURLService;
@@ -61,6 +63,7 @@ public class GetProdChatServiceImpl implements GetProdChatService {
    *  @throws 기타 예외
    */
   public String getProdChat(String text, int userNum) throws Exception {
+    logger.debug("Start method of GetProdChatServiceImpl.getProdChat");
     boolean isFirstData = false;
     ServletRequestAttributes sra = null;
     HttpServletRequest request = null;

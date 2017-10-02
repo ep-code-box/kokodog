@@ -21,7 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import com.cmn.err.SystemException;
 
 /**
@@ -35,7 +38,7 @@ public class GetTaskList {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(GetTaskList.class);
+  private static Logger logger = LogManager.getLogger(GetTaskList.class);
 
   /**
     *  서비스 개발을 위해 전체 업무 리스트를 가져오는 쿼리
@@ -45,7 +48,7 @@ public class GetTaskList {
     */
   @RequestMapping(value="/dev/ser/main/GetTaskList", method=RequestMethod.POST)
   @ResponseBody
-  public List main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public List<Map<String, Object>> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validation(request, response);
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("user_num", request.getSession().getAttribute("user_num"));

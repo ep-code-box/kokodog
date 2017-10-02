@@ -3,7 +3,6 @@ package com.dev.ser.module;
 import java.lang.Process;
 import java.lang.ProcessBuilder;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,11 +11,14 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
-import com.cmn.err.SystemException;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import com.cmn.err.UserException;
 import com.dev.ser.module.DevSerModule;
 import com.dev.cmn.module.DevCmnModule;
@@ -32,7 +34,7 @@ public class DevSerModuleImpl implements DevSerModule {
   @Autowired
   private DevCmnModule devCmnModule;
   
-  private static Logger logger = Logger.getLogger(DevSerModuleImpl.class);
+  private static Logger logger = LogManager.getLogger(DevSerModuleImpl.class);
   
   public void serDist(int serviceNum, int repVer, int instance, HttpServletRequest request) throws Exception {
     Map<String, Object> inputMap = new HashMap<String, Object>();

@@ -5,33 +5,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.FileReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.BufferedWriter;
-import java.io.BufferedReader;
-
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
 import java.nio.channels.FileChannel;
 import java.lang.Process;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONSerializer;
-import net.sf.json.JSONException;
 
 public class TestProcessThread extends Thread {
 	private SqlSession sqlSession;
   private String testKey;
 	private int userNum;
-  private int serviceNum;
-  private int repVer;
 	private String param;
-	private static Logger logger = Logger.getLogger(TestProcessThread.class);
+	private static Logger logger = LogManager.getLogger(TestProcessThread.class);
   
   public TestProcessThread(SqlSession sqlSession, int userNum, String testKey, String param) {
 		super();
@@ -203,7 +196,6 @@ public class TestProcessThread extends Thread {
 		cmdStr[3] = libFilesStr;
 		cmdStr[4] = "-d";
 		cmdStr[5] = devDirStr + "/WEB-INF/classes";
-		String objCompileFile = "";
 		int strPos = 6;
 		for (int i = 0; i < objJavaFiles.length; i++) {
 			if (objJavaFiles[i].getName().length() >= 5 && objJavaFiles[i].getName().substring(objJavaFiles[i].getName().length() - 5).equals(".java") == true) {
@@ -385,7 +377,6 @@ public class TestProcessThread extends Thread {
 		String classDir = dir + "/WEB-INF/classes";
 		String allLibFile = classDir + ":";
 		File[] libFiles = (new File(libDir)).listFiles();
-		Map<String, String> returnMap = new HashMap<String, String>();
 		for (int i = 0; i < libFiles.length; i++) {
 			allLibFile = allLibFile + libDir + "/" + libFiles[i].getName() + ":";
 		}

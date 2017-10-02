@@ -10,10 +10,12 @@
 package com.skd.ppa.main.controller;
 
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +40,7 @@ public class SkdPpaMainGetPastFileUploadListController {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(SkdPpaMainGetPastFileUploadListController.class);
+  private static Logger logger = LogManager.getLogger(SkdPpaMainGetPastFileUploadListController.class);
   
   /**
    *  해당 메서드는 /skd/ppa/main/GetPastFileUploadList URL을 통해 호출된다.
@@ -52,7 +54,8 @@ public class SkdPpaMainGetPastFileUploadListController {
    */
   @RequestMapping(value="/skd/ppa/main/GetPastFileUploadList", method=RequestMethod.POST)
   @ResponseBody
-  public List main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public List<Map<String, Object>> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of SkdPpaMainGetPastFileUploadListController.main[/skd/ppa/main/GetPastFileUploadList]");
     validationCheck(request, response);
     return getPastFileUploadService.getPastFileUploadList();
   }

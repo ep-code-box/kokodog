@@ -1,4 +1,4 @@
-package com.opr.inf.main;
+package com.opr.inf.main.controller;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.cmn.err.SystemException;
 import com.cmn.err.UserException;
@@ -25,11 +26,12 @@ public class SetChangeToPCController {
   @Autowired
   private UserException userException;
   
-  private static Logger logger = Logger.getLogger(SetChangeToPCController.class);
+  private static Logger logger = LogManager.getLogger(SetChangeToPCController.class);
   
   @RequestMapping(value="/opr/inf/main/SetChangeToPC", method=RequestMethod.POST)
   @ResponseBody
-  public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of SetChangeToPCController.main[/opr/inf/main/SetChangeToPC]");
     request.getSession().setAttribute("is_mobile", "N");
     return new HashMap<String, Object>();
   }

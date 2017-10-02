@@ -7,7 +7,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.cmn.cmn.service.GetCodeValService;
 import com.cmn.cmn.dao.GetCodeValDao;
@@ -17,9 +18,10 @@ public class GetCodeValServiceImpl implements GetCodeValService {
   @Autowired
   private GetCodeValDao getCodeValDao;
   
-  private static Logger logger = Logger.getLogger(GetCodeValServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(GetCodeValServiceImpl.class);
 
   public Map<Integer, String> getCodeVal(int cdNum) throws Exception {
+    logger.debug("============   Start method of GetCodeValServiceImpl.getCodeVal   ============");
     int i = 0;
     Map<String, Object> inputMap = new HashMap<String, Object>();
     List<Map<String, Object>> outputList = null;

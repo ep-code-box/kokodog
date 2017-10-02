@@ -12,16 +12,20 @@ package com.dev.dbd.main;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import com.cmn.err.SystemException;
 import com.cmn.err.UserException;
 import com.dev.dbd.module.DevDbdModule;
@@ -43,7 +47,7 @@ public class DistributeQuery {
   @Autowired
   private DevDbdModule devDbdModule;
 
-  private static Logger logger = Logger.getLogger(DistributeQuery.class);
+  private static Logger logger = LogManager.getLogger(DistributeQuery.class);
 
   /**
     *  개발기에 쿼리를 배포하는 메서드
@@ -53,7 +57,8 @@ public class DistributeQuery {
     */
   @RequestMapping(value="/dev/dbd/main/DistributeQuery", method=RequestMethod.POST)
   @ResponseBody
-  public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of DistributeQuery.main[/dev/dbd/main/DistributeQuery]");
     validation(request, response);
     devDbdModule.dbdDist(Integer.parseInt(request.getParameter("query_num")), 
                         (request.getParameter("rep_ver") == null) ? 0 : Integer.parseInt(request.getParameter("rep_ver")),

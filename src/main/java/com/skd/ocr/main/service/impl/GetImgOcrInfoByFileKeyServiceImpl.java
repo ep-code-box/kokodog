@@ -16,7 +16,8 @@ import java.util.Map;
 
 import net.sf.json.JSONArray;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,8 @@ public class GetImgOcrInfoByFileKeyServiceImpl implements GetImgOcrInfoByFileKey
   
   @Autowired
   private FileControlService fileControlService;
+  
+  private static final Logger logger = LogManager.getLogger(GetImgOcrInfoByFileKeyServiceImpl.class);
   /**
    *  기존에 등록하였던 파일을 재조회하여 다시 처리하기 위한 서비스이다.
    *  DB에 담겨 있는 전체 파일 업로드 파일 리스트를 file_key와 파일명, 등록일시를 기준으로
@@ -46,6 +49,7 @@ public class GetImgOcrInfoByFileKeyServiceImpl implements GetImgOcrInfoByFileKey
    *  @throws 기타 Exception
    */
   public List<Map<String, Object>> getImgOcrByFileKey(String fileKey) throws Exception {
+    logger.debug("Start method of GetImgOcrInfoByFileKeyServiceImpl.getImgOcrByFileKey");
     int i = 0;
     int j = 0;
     List<Map<String, Object>> outputList = new ArrayList<Map<String, Object>>();

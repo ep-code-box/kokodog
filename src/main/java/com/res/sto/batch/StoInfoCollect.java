@@ -9,8 +9,9 @@ import java.util.GregorianCalendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
-import org.apache.log4j.Logger;
 import org.apache.ibatis.session.SqlSession;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.cmn.cmn.batch.Batch;
 import com.cmn.cmn.service.GetDataFromURLService;
@@ -18,10 +19,9 @@ import com.cmn.cmn.service.impl.GetDataFromURLServiceImpl;
 
 public class StoInfoCollect extends Batch {
   
-  private static Logger logger = Logger.getLogger(StoInfoCollect.class);
+  private static Logger logger = LogManager.getLogger(StoInfoCollect.class);
   private String report = "";
   private String dateStr = "";
-  private String timeStr = "";
   private Calendar dateTime;
   
   @Override
@@ -48,7 +48,6 @@ public class StoInfoCollect extends Batch {
     SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd");
     this.sqlSession = sqlSession;
     this.dateStr = sdf2.format(exeDateTime);
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     this.dateTime = new GregorianCalendar();
     this.dateTime.setTime(exeDateTime);
   }
@@ -65,7 +64,6 @@ public class StoInfoCollect extends Batch {
     addLog("============   Start method of StoInfoCollect.getStockCorpInfo   ============");
     GetDataFromURLService getDataFromURLService = new GetDataFromURLServiceImpl();
     String data = (String)getDataFromURLService.getDataFromURL("https://m.nhqv.com/codes/jcode.js", new ArrayList<Map<String, String>>(), "GET", "EUC-KR", GetDataFromURLService.TYPE_STRING);
-    String tempStr = "";
     int index = 0;
     String stockNum = null;
     String[] stockInfo = new String[12];
@@ -74,11 +72,9 @@ public class StoInfoCollect extends Batch {
     Map<String, String> stockMap = new HashMap<String, String>();
     List<Map<String, Object>> outputList = null;
     SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
-    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
     boolean isInfoChanged = false;
     boolean isNewInfo = false;
     int i = 0;
-    int j = 0;
     int numberOfTotalCount = 0;
     int numberOfInsert = 0;
     int numberOfUpdate = 0;
@@ -179,5 +175,6 @@ public class StoInfoCollect extends Batch {
     report += "Update : " + numberOfUpdate + "\n";
     report += "Delete : " + numberOfDelete + "\n";
     report += "=======================================\n";
+    setReport(report);
   }
 }

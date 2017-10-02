@@ -4,15 +4,14 @@ import java.util.Map;
 import java.util.List;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import org.apache.ibatis.session.SqlSession;
 
-import com.cmn.err.SystemException;
-import com.cmn.err.UserException;
 import com.opr.inf.main.dao.GetAppLogListDao;
 
 @Repository("getAppLogListDao")
@@ -20,7 +19,7 @@ public class GetAppLogListDaoImpl implements GetAppLogListDao {
   @Autowired
   private SqlSession sqlSession;
   
-  private static Logger logger = Logger.getLogger(GetAppLogListDaoImpl.class);
+  private static Logger logger = LogManager.getLogger(GetAppLogListDaoImpl.class);
   
   public List<Map<String, Object>> getAppLogList(Map<String, Object> inputMap) throws SQLException {
     logger.debug("============   Start method of GetAppLogListService.getAppLogList   ============");

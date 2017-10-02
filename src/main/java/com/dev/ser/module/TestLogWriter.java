@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.io.InputStream;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class TestLogWriter extends Thread {
 	SqlSession sqlSession;
@@ -13,7 +15,7 @@ public class TestLogWriter extends Thread {
 	int logType;
 	boolean isClose;
 	InputStream is;
-	private static Logger logger = Logger.getLogger(TestLogWriter.class);
+	private static Logger logger = LogManager.getLogger(TestLogWriter.class);
 	
 	public TestLogWriter(SqlSession sqlSession, String testKey, int logType, InputStream is) {
 		this.sqlSession = sqlSession;

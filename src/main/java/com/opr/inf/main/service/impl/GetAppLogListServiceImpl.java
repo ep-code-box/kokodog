@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.sql.Timestamp;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,10 +33,8 @@ public class GetAppLogListServiceImpl implements GetAppLogListService {
   @Autowired
   private GetServerTimeService getServerTimeService;
   
-  private static Logger logger = Logger.getLogger(GetAppLogListServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(GetAppLogListServiceImpl.class);
   
-  private static final long MAX_LOG_CNT = 1000L;
-
   public Map<String, Object> getAppLogList(long fromDatetime, long toDatetime, int logTypCd, String filterTxt, long startSeq, List<String> logLevelList) throws Exception {
     logger.debug("============   Start method of GetAppLogListService.getAppLogList   ============");
     logger.debug(" Parameter - fromDatetime[" + fromDatetime + "], toDatetime[" + toDatetime + "], logTypCd[" + logTypCd + "], filterText[" + filterTxt + "], startSeq["

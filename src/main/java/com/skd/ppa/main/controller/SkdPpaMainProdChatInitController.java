@@ -11,11 +11,11 @@ package com.skd.ppa.main.controller;
 
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +40,7 @@ public class SkdPpaMainProdChatInitController {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(SkdPpaMainProdChatInitController.class);
+  private static Logger logger = LogManager.getLogger(SkdPpaMainProdChatInitController.class);
   
   /**
    *  해당 메서드는 /skd/ppa/main/ProdChat URL을 통해 호출된다.
@@ -54,6 +54,7 @@ public class SkdPpaMainProdChatInitController {
   @RequestMapping(value="/skd/ppa/main/ProdChatInit", method=RequestMethod.POST)
   @ResponseBody
   public List<Map<String, Object>> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of SkdPpaMainProdChatInitController.main[/skd/ppa/main/ProdChatInit]");
     validationCheck(request, response);
     return getProdChatService.getProdInitChat(((Integer)request.getSession().getAttribute("user_num")).intValue());
   }

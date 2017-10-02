@@ -8,7 +8,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.math.BigDecimal;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,9 +30,7 @@ public class GetSystemInfoDataServiceImpl implements GetSystemInfoDataService {
   @Autowired
   private GetSystemInfoDataDao getSystemInfoDataDao;
   
-  private static Logger logger = Logger.getLogger(GetSystemInfoDataServiceImpl.class);
-  
-  private static final int MAX_DIFF_TIME = 2 * 24 * 60 * 60;
+  private static Logger logger = LogManager.getLogger(GetSystemInfoDataServiceImpl.class);
   
   public List<Map<String, Object>> getSystemInfoData(long fromTime, long toTime, int cnt) throws Exception {
     logger.debug("============   Start method of GetSystemInfoDataServiceImpl.getSystemInfoData   ============");

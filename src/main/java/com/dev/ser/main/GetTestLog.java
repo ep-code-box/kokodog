@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-import java.lang.StackTraceElement;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,15 +14,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONSerializer;
-import net.sf.json.JSONException;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.cmn.err.SystemException;
 import com.cmn.err.UserException;
-import com.dev.ser.module.TestProcessThread;
 
 
 @Controller
@@ -39,11 +35,12 @@ public class GetTestLog {
   private UserException userException;
 
 	/** Application Log를 관리해주는 객체 */
-	private static Logger logger = Logger.getLogger(GetTestLog.class);
+	private static Logger logger = LogManager.getLogger(GetTestLog.class);
 	
   @RequestMapping(value = "/dev/ser/main/GetTestLog", method=RequestMethod.POST)
   @ResponseBody
-  public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of GetTestLog.main[/dev/ser/main/GetTestLog]");
     validation(request,response);
     Map<String, Object> inputMap = new HashMap<String, Object>();
 		Map<String, Object> outputMap = null;

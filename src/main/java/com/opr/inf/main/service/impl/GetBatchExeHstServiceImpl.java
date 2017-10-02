@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.sql.Timestamp;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class GetBatchExeHstServiceImpl implements GetBatchExeHstService {
   @Autowired
   private GetBatchExeHstDao getBatchExeHstDao;
   
-  private static Logger logger = Logger.getLogger(GetBatchExeHstServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(GetBatchExeHstServiceImpl.class);
   
   public List<Map<String, Object>> getBatchExeHst(long fromDatetime, long toDatetime) throws Exception {
     logger.debug("============   Start method of GetBatchExeHstServiceImpl.getBatchExeHst   ============");

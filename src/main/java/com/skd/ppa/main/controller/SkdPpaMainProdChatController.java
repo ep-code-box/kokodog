@@ -14,7 +14,8 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +40,7 @@ public class SkdPpaMainProdChatController {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(SkdPpaMainProdChatController.class);
+  private static Logger logger = LogManager.getLogger(SkdPpaMainProdChatController.class);
   
   /**
    *  해당 메서드는 /skd/ppa/main/ProdChat URL을 통해 호출된다.
@@ -53,6 +54,7 @@ public class SkdPpaMainProdChatController {
   @RequestMapping(value="/skd/ppa/main/ProdChat", method=RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of SkdPpaMainProdChatController.main[/skd/ppa/main/ProdChat]");
     validationCheck(request, response);
     Map<String, Object> returnMap = new HashMap<String, Object>();
     returnMap.put("text", getProdChatService.getProdChat(request.getParameter("text"), ((Integer)request.getSession().getAttribute("user_num")).intValue()));

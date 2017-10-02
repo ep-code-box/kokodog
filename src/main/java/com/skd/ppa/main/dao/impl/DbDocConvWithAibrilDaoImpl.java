@@ -13,7 +13,9 @@ import java.util.Map;
 import java.sql.SQLException;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -29,7 +31,7 @@ public class DbDocConvWithAibrilDaoImpl implements DbDocConvWithAibrilDao {
   @Autowired
   private SqlSession sqlSession;
 
-  private static Logger logger = Logger.getLogger(DbDocConvWithAibrilDaoImpl.class);
+  private static Logger logger = LogManager.getLogger(DbDocConvWithAibrilDaoImpl.class);
   /**
    *  이 메서드는 문서를 html 형식으로 변환된 결과를 저장하는 역할을 수행한다.
    */

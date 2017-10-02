@@ -12,7 +12,8 @@ package com.skd.ppa.main.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +39,7 @@ public class SkdPpaMainGetConvHtmlController {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(SkdPpaMainGetConvHtmlController.class);
+  private static Logger logger = LogManager.getLogger(SkdPpaMainGetConvHtmlController.class);
   
   /**
    *  해당 메서드는 /skd/ppa/main/ConvHtmlPage URL을 통해 호출된다.
@@ -52,6 +53,7 @@ public class SkdPpaMainGetConvHtmlController {
   @RequestMapping(value="/skd/ppa/main/GetConvHtmlPage", method=RequestMethod.POST, produces="text/html;charset=utf8")
   @ResponseBody
   public String main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of SkdPpaMainGetConvHtmlController.main[/skd/ppa/main/GetConvHtmlPage]");
     validationCheck(request, response);
     return getConvHtmlService.getHtml(request.getParameter("file_key"));
   }

@@ -15,7 +15,10 @@ import java.util.Map;
 import java.sql.SQLException;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +27,8 @@ import com.cmn.err.SystemException;
 
 @Repository("getGoogleLoginLinkURLDao")
 public class GetGoogleLoginLinkURLDaoImpl implements GetGoogleLoginLinkURLDao {
+  private static Logger logger = LogManager.getLogger(GetGoogleLoginLinkURLDaoImpl.class);
+
   @Autowired
   private SqlSession sqlSession;
   
@@ -36,6 +41,7 @@ public class GetGoogleLoginLinkURLDaoImpl implements GetGoogleLoginLinkURLDao {
     *  @throws SQLException - DB 조회 시 발생하는 SQLException으로 정의된다.
     */
   public List<Map<String, Object>> getGoogleLoginOAuthParameter() throws SQLException {
+    logger.debug("============   Start method of GetGoogleLoginLinkURLDaoImpl.getGoogleLoginOAuthParameter   ============");
     return sqlSession.selectList("com.cmn.cmn.login.getGoogleLoginOAuthParameter");
   }
 }
