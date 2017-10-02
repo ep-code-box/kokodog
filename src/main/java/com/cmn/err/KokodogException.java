@@ -3,20 +3,20 @@ package com.cmn.err;
 import java.lang.RuntimeException;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedList;
-import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
 
+import org.apache.ibatis.session.SqlSession;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
+@SuppressWarnings("serial")
 public class KokodogException extends RuntimeException {
-  private static Logger logger = Logger.getLogger(KokodogException.class);
+  private static Logger logger = LogManager.getLogger(KokodogException.class);
 
   private int messageNum;
   private String message;
   private int errTyp;
-  
+
   public KokodogException kokodogException(int messageNum, SqlSession sqlSession, String[] msg) throws Exception {
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("msg_num", messageNum);

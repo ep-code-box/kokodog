@@ -11,11 +11,11 @@ package com.skd.ppa.main.controller;
 
 import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +44,7 @@ public class SkdPpaMainFileUploadController {
   @Autowired
   private SystemException systemException;
 
-  private static Logger logger = Logger.getLogger(SkdPpaMainFileUploadController.class);
+  private static Logger logger = LogManager.getLogger(SkdPpaMainFileUploadController.class);
   
   /**
    *  해당 메서드는 /skd/ppa/main/FileUpload URL을 통해 호출된다.
@@ -55,11 +55,13 @@ public class SkdPpaMainFileUploadController {
    *  @return Map 타입의 업로드 된 파일의 파일 번호를 담고 있는 형태의 리스트
    *  @throws 기타 Exception
    */
+  @SuppressWarnings("unchecked")
   @RequestMapping(value="/skd/ppa/main/FileUpload", method=RequestMethod.POST)
   @ResponseBody
   public Object main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of SkdPpaMainFileUploadController.main[/skd/ppa/main/FileUpload]");
     validationCheck(request, response);
-    return (Map)((List)fileControlService.insertFile(request).get("__img_info")).get(0);
+    return (Map<Object, Object>)((List<Object>)fileControlService.insertFile(request).get("__img_info")).get(0);
   }
 
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {

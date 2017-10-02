@@ -14,23 +14,27 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.Iterator;
 import java.text.SimpleDateFormat;
 import java.sql.Timestamp;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+
+import org.apache.ibatis.session.SqlSession;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
 import org.springframework.jdbc.BadSqlGrammarException;
+
 import com.cmn.err.SystemException;
 import com.cmn.err.UserException;
 import com.dev.dbd.module.DevDbdModule;
@@ -52,7 +56,7 @@ public class TestQuery {
   @Autowired
   private DevDbdModule devDbdModule;
 
-  private static Logger logger = Logger.getLogger(TestQuery.class);
+  private static Logger logger = LogManager.getLogger(TestQuery.class);
 
   /**
     *  개발기에 쿼리를 배포하는 메서드
@@ -62,7 +66,7 @@ public class TestQuery {
     */
   @RequestMapping(value="/dev/dbd/main/TestQuery", method=RequestMethod.POST)
   @ResponseBody
-  public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validation(request, response);
     Map<String, Object> inputMap = new HashMap<String, Object>();
     JSONArray jsonArray = JSONArray.fromObject(request.getParameter("query_param"));
@@ -167,7 +171,7 @@ public class TestQuery {
       throw systemException.systemException(3, "query_param");
     }
     try {
-      JSONArray jsonArray = JSONArray.fromObject(request.getParameter("query_param"));
+      JSONArray.fromObject(request.getParameter("query_param"));
     } catch (JSONException e) {
       throw systemException.systemException(9, "query_param", request.getParameter("query_param"));
     }

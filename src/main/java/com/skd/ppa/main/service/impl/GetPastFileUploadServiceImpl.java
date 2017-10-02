@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,8 @@ import com.skd.ppa.main.dao.GetPastFileUploadDao;
 public class GetPastFileUploadServiceImpl implements GetPastFileUploadService {
   @Autowired
   private GetPastFileUploadDao getPastFileUploadDao;
+  
+  private static final Logger logger = LogManager.getLogger(GetPastFileUploadServiceImpl.class);
   /**
    *  기존에 등록하였던 파일을 재조회하여 다시 처리하기 위한 서비스이다.
    *  DB에 담겨 있는 전체 파일 업로드 파일 리스트를 file_key와 파일명, 등록일시를 기준으로
@@ -43,6 +46,7 @@ public class GetPastFileUploadServiceImpl implements GetPastFileUploadService {
    *  @throws 기타 Exception
    */
   public List<Map<String, Object>> getPastFileUploadList() throws Exception {
+    logger.debug("Start method of GetPastFileUploadServiceImpl.getPastFileUploadList");
     return getPastFileUploadDao.getPastFileUpload();
   }
   

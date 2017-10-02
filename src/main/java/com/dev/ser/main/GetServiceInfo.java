@@ -15,13 +15,18 @@ import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import com.cmn.err.SystemException;
 
 /**
@@ -35,7 +40,7 @@ public class GetServiceInfo {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(GetServiceInfo.class);
+  private static Logger logger = LogManager.getLogger(GetServiceInfo.class);
 
   /**
     *  선택된 서비스의 소스 및 정보를 가져오기 위해 호출 시 main 처이
@@ -45,7 +50,7 @@ public class GetServiceInfo {
     */
   @RequestMapping(value="/dev/ser/main/GetServiceInfo", method=RequestMethod.POST)
   @ResponseBody
-  public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validation(request, response);
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("service_num", Integer.parseInt(request.getParameter("service_num")));

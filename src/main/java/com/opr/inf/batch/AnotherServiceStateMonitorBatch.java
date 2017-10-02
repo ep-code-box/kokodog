@@ -8,12 +8,13 @@ import java.util.Map;
 import java.util.HashMap;
 import java.lang.Process;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.cmn.cmn.batch.Batch;
 
 public class AnotherServiceStateMonitorBatch extends Batch {
-  private static Logger logger = Logger.getLogger(AnotherServiceStateMonitorBatch.class);
+  private static Logger logger = LogManager.getLogger(AnotherServiceStateMonitorBatch.class);
   
   public void run(long batchRunTime, String param) throws Exception {
     checkAnotherServerState(batchRunTime);

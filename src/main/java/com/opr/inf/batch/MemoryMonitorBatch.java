@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.text.SimpleDateFormat;
 
-import org.apache.log4j.Logger;
-
 import com.cmn.cmn.batch.Batch;
 
 /**
@@ -22,8 +20,6 @@ import com.cmn.cmn.batch.Batch;
   *  ) ENGINE=MyISAM DEFAULT CHARSET=utf8;<br/>
   */
 public class MemoryMonitorBatch extends Batch {
-  private static Logger logger = Logger.getLogger(MemoryMonitorBatch.class);
-
   public void run(long batchRunTime, String param) throws Exception {
     addLog("============   Start method of MemoryMonitorBatch.run   ============");
     addLog(" Parameter - batchRunTime[" + batchRunTime + "], param[" + param + "]");

@@ -14,7 +14,8 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +41,7 @@ public class SkdPpaMainConvHtmlController {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(SkdPpaMainConvHtmlController.class);
+  private static Logger logger = LogManager.getLogger(SkdPpaMainConvHtmlController.class);
   
   /**
    *  해당 메서드는 /skd/ppa/main/GetConvToHtml URL을 통해 호출된다.
@@ -54,6 +55,7 @@ public class SkdPpaMainConvHtmlController {
   @RequestMapping(value="/skd/ppa/main/ConvToHtml", method=RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of SkdPpaMainConvHtmlController.main[/skd/ppa/main/ConvToHtml");
     validationCheck(request, response);
     dbDocConvWithAibrilService.convToHtml(request.getParameter("file_key"));
     return new HashMap<String, Object>();

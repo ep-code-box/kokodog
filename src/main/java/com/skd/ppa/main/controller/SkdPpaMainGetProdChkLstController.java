@@ -11,13 +11,12 @@
  */
 package com.skd.ppa.main.controller;
 
-import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +41,7 @@ public class SkdPpaMainGetProdChkLstController {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(SkdPpaMainGetProdChkLstController.class);
+  private static Logger logger = LogManager.getLogger(SkdPpaMainGetProdChkLstController.class);
   
   /**
    *  해당 메서드는 /skd/ppa/main/GetProdChkLst URL을 통해 호출된다.
@@ -55,6 +54,7 @@ public class SkdPpaMainGetProdChkLstController {
   @RequestMapping(value="/skd/ppa/main/GetProdChkLst", method=RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of SkdPpaMainGetProdChkLstController.main[/skd/ppa/main/GetProdChkLst]");
     validationCheck(request, response);
     Map<String, Object> returnMap = null;
     returnMap = docNlpService.getProdChkLstDetail(request.getParameter("file_key"));

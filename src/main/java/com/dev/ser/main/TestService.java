@@ -2,7 +2,6 @@ package com.dev.ser.main;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,9 +12,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
 
-import net.sf.json.JSONArray;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import net.sf.json.JSONSerializer;
 import net.sf.json.JSONException;
 
@@ -40,14 +40,13 @@ public class TestService {
 	private GetRandomStringArrayService getRandomStringArrayService;
 
 	/** Application Log를 관리해주는 객체 */
-	private static Logger logger = Logger.getLogger(TestService.class);
+	private static Logger logger = LogManager.getLogger(TestService.class);
 	
   @RequestMapping(value="/dev/ser/main/TestService", method=RequestMethod.POST)
   @ResponseBody
-  public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validation(request,response);
     Map<String, Object> inputMap = new HashMap<String, Object>();
-    List<Map<String, Object>> outputList = null;
     Map<String, Object> outputMap = null;
 		Map<String, Object> returnMap = new HashMap<String, Object>();
     String randomStr = null;
@@ -111,7 +110,7 @@ public class TestService {
     }
 		if (request.getParameter("parameter") != null) {
 			try {
-				JSONArray parameterJsonArray = (JSONArray)JSONSerializer.toJSON(request.getParameter("parameter"));
+				JSONSerializer.toJSON(request.getParameter("parameter"));
 			} catch (JSONException e) {
 				throw systemException.systemException(9, "parameter", request.getParameter("parameter"));  
 			}

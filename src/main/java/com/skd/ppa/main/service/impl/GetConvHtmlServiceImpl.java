@@ -12,14 +12,14 @@ package com.skd.ppa.main.service.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.skd.ppa.main.service.GetConvHtmlService;
 import com.skd.ppa.main.dao.GetConvHtmlDao;
-import com.cmn.err.SystemException;
 
 /**
  *  이 객체는 문서 변환 프로세스를 통해 변환되어 저장된 HTML 정보를
@@ -29,6 +29,8 @@ import com.cmn.err.SystemException;
 public class GetConvHtmlServiceImpl implements GetConvHtmlService {
   @Autowired
   private GetConvHtmlDao getConvHtmlDao;
+  
+  private static final Logger logger = LogManager.getLogger(GetConvHtmlServiceImpl.class);
   /**
    *  이 메서드는 문서 변환 프로세스를 통해 변환되어 저장된 HTML 정보를
    *  돌려주는 역할을 수행한다.
@@ -37,6 +39,7 @@ public class GetConvHtmlServiceImpl implements GetConvHtmlService {
    *  @throws 기타 익셉션
    */
   public String getHtml(String fileKey) throws Exception {
+    logger.debug("Start method of GetConvHtmlServiceImpl.getHtml");
     Map<String, Object> inputMap = new HashMap<String, Object>();
     Map<String, Object> outputMap = null;
     inputMap.put("file_key", fileKey);

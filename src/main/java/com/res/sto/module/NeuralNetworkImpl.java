@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
-import java.net.URLEncoder;
 import java.security.SecureRandom;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
-import com.cmn.err.SystemException;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import com.res.sto.module.NeuralNetwork;
 
 public class NeuralNetworkImpl implements NeuralNetwork {
@@ -23,9 +23,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
   public static final int UNIT_RANDOM = 1;
   public static final int ZERO = 2;
   private static final double MULTIPLE_FACTOR = 0.5;
-  private static final double WEIGHT_INIT_VALUE = 0.0;
   
-  private boolean isBasicActivationFunction;
   private int nnNum;
   private int userNum = 0;
   private double[][][] weight;
@@ -33,9 +31,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
   private Object nowDtm;
   private int activationFunction;
   
-  private SqlSession sqlSession;
-  
-  private static Logger logger = Logger.getLogger(NeuralNetworkImpl.class);
+  private static Logger logger = LogManager.getLogger(NeuralNetworkImpl.class);
   
   public NeuralNetworkImpl() {
     
@@ -63,7 +59,6 @@ public class NeuralNetworkImpl implements NeuralNetwork {
       setNowDtm();
     }
     Random random = SecureRandom.getInstance("SHA1PRNG");
-    isBasicActivationFunction = true;
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("user_num", this.userNum);
     inputMap.put("input_size", inputSize);
@@ -113,7 +108,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
           inputMap.put("input_num", j + 1);
           inputMap.put("output_num", k + 1);
           inputMap.put("now_dtm", this.nowDtm);
-          if (initValueMethod == this.ZERO) {
+          if (initValueMethod == NeuralNetworkImpl.ZERO) {
             inputMap.put("weight", 0.0);
           } else {
             inputMap.put("weight", random.nextDouble() * 2 - 1);
@@ -137,7 +132,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
         inputMap.put("layer_num", i);
         inputMap.put("output_num", j + 1);
         inputMap.put("now_dtm", this.nowDtm);
-        if (initValueMethod == this.ZERO) {
+        if (initValueMethod == NeuralNetworkImpl.ZERO) {
           inputMap.put("bias", 0.0);
         } else {
           inputMap.put("bias", random.nextDouble() * 2 - 1);
@@ -232,8 +227,6 @@ public class NeuralNetworkImpl implements NeuralNetwork {
     if (this.weight[0].length != input.length) {
       throw new Exception("Input is not proper value");
     }
-    Map<String, Object> inputMap = new HashMap<String, Object>();
-    List<Map<String, Object>> outputList = new ArrayList<Map<String, Object>>();
     double[] inputTemp = null;
     double[] outputTemp = null;
     inputTemp = new double[this.weight[0].length];
@@ -346,15 +339,15 @@ public class NeuralNetworkImpl implements NeuralNetwork {
       for (j = 0; j < this.weight[this.weight.length - i - 1].length; j++) {
         for(k = 0; k < this.weight[this.weight.length - i - 1][j].length; k++) {
           if (i != this.weight.length - 1) {
-            tempWeight[j][k] = weight[this.weight.length - i - 1][j][k] - this.MULTIPLE_FACTOR * a[this.weight.length - i - 2][j] * delta[k];
+            tempWeight[j][k] = weight[this.weight.length - i - 1][j][k] - NeuralNetworkImpl.MULTIPLE_FACTOR * a[this.weight.length - i - 2][j] * delta[k];
           } else {
-            tempWeight[j][k] = weight[this.weight.length - i - 1][j][k] - this.MULTIPLE_FACTOR * input[j] * delta[k];              
+            tempWeight[j][k] = weight[this.weight.length - i - 1][j][k] - NeuralNetworkImpl.MULTIPLE_FACTOR * input[j] * delta[k];              
           }
           logger.debug("value of weight[" + (this.weight.length - i - 1) + "][" + j + "][" + k + "] - " + tempWeight[j][k]);
         }
       }
       for (j = 0; j < this.weight[this.weight.length - i - 1][0].length; j++) {
-        bias[this.weight.length - i - 1][j] = bias[this.weight.length - i - 1][j] - this.MULTIPLE_FACTOR * delta[j];
+        bias[this.weight.length - i - 1][j] = bias[this.weight.length - i - 1][j] - NeuralNetworkImpl.MULTIPLE_FACTOR * delta[j];
         logger.debug("value of bias[" + (this.weight.length - i - 1) + "][" + j + "] - " + bias[this.weight.length - i - 1][j]);        
       }
     }
@@ -377,8 +370,6 @@ public class NeuralNetworkImpl implements NeuralNetwork {
     double[] output = null;
     int i = 0;
     int j = 0;
-    int inputNum = 0;
-    int outputNum = 0;
     output = new double[this.weight[layerNum][0].length];
     for (i = 0; i < output.length; i++) {
       output[i] = 0.0;

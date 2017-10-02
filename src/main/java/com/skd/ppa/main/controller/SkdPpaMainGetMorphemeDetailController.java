@@ -9,11 +9,13 @@
  */
 package com.skd.ppa.main.controller;
 
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import net.sf.json.JSONArray;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +41,7 @@ public class SkdPpaMainGetMorphemeDetailController {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(SkdPpaMainGetMorphemeDetailController.class);
+  private static Logger logger = LogManager.getLogger(SkdPpaMainGetMorphemeDetailController.class);
   
   /**
    *  해당 메서드는 /skd/ppa/main/ConvHtmlPage URL을 통해 호출된다.
@@ -52,7 +54,8 @@ public class SkdPpaMainGetMorphemeDetailController {
    */
   @RequestMapping(value="/skd/ppa/main/GetMorphemeDetailList", method=RequestMethod.POST)
   @ResponseBody
-  public List main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public JSONArray main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of SkdPpaMainGetMorphemeDetailController.main[/skd/ppa/main/GetMorphemeDetailList]");
     validationCheck(request, response);
     return docNlpService.getMorphemeDetail(request.getParameter("file_key"));
   }

@@ -21,7 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import com.cmn.err.SystemException;
 
 /**
@@ -35,7 +38,7 @@ public class GetServiceList {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(GetServiceList.class);
+  private static Logger logger = LogManager.getLogger(GetServiceList.class);
 
   /**
     *  서비스 개발을 위해 전체 페이지 리스트를 가져오는 쿼리
@@ -45,7 +48,7 @@ public class GetServiceList {
     */
   @RequestMapping(value="/dev/ser/main/GetServiceList", method=RequestMethod.POST)
   @ResponseBody
-  public List main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public List<Map<String, Object>> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validation(request, response);
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("pgm_num", Integer.parseInt(request.getParameter("pgm_num")));

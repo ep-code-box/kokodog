@@ -5,7 +5,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,11 +29,12 @@ public class GetBatchExeHstController {
   @Autowired
   private GetBatchExeHstService getBatchExeHstService;
   
-  private static Logger logger = Logger.getLogger(GetBatchExeHstController.class);
+  private static Logger logger = LogManager.getLogger(GetBatchExeHstController.class);
   
   @RequestMapping(value="/opr/inf/main/GetBatchExeHst", method=RequestMethod.POST)
   @ResponseBody
-  public List main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public List<Map<String, Object>> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of GetBatchExeHstController.main[/opr/inf/main/GetBatchExeHst]");
     validation(request, response);
     List<Map<String, Object>> outputList = null;
     outputList = getBatchExeHstService.getBatchExeHst(Long.parseLong(request.getParameter("from_datetime")), Long.parseLong(request.getParameter("to_datetime")));

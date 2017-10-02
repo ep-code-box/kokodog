@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.json.JSONArray;
-import net.sf.json.JSONSerializer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,7 +41,7 @@ import com.cmn.err.SystemException;
  */
 @Service("docNlpService")
 public class DocNlpServiceImpl implements DocNlpService {
-  private static Logger logger = Logger.getLogger(DocNlpServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(DocNlpServiceImpl.class);
   
   @Autowired
   private DocConvWithAibrilService docConvWithAibrilService;
@@ -68,6 +68,7 @@ public class DocNlpServiceImpl implements DocNlpService {
    *  @throws 기타 익셉션
    */
   public JSONArray getNounList(FileInputStream fis) throws Exception {
+    logger.debug("Start method of DocNlpServiceImpl.getNounList");
     return nlpByKonlpyService.getNounList(docConvWithAibrilService.convToHtml(fis));
   }
 
@@ -114,13 +115,11 @@ public class DocNlpServiceImpl implements DocNlpService {
    *       chk_lst_yn : 문서 내 요소 체크리스트 포함 여부
    *  @throws 기타 익셉션
    */
-  @SuppressWarnings({"rawtypes", "unchecked"})
+  @SuppressWarnings("unchecked")
   public Map<String, Object> getProdChkLstDetail(String fileKey) throws Exception {
     int i = 0;
     int j = 0;
     int k = 0;
-    int index = 0;
-    int tmpInt = 0;
     String[] splitType = null;
     Map<String, Object> returnMap = new HashMap<String, Object>();
     List<Map<String, Object>> outputList = null;
@@ -151,13 +150,12 @@ public class DocNlpServiceImpl implements DocNlpService {
         splitType = jsonMorphemeList.getJSONObject(i).getJSONArray("type").getString(1).split("\\|");
         for (j = 1; j < splitType.length; j++) {
           try {
-            tmpInt = Integer.parseInt(splitType[j]);
+            Integer.parseInt(splitType[j]);
           } catch (NumberFormatException e) {
             throw userException.userException(3, splitType[i]);
           }
           for (k = 0; k < outputList.size(); k++) {
             if (((Integer)outputList.get(k).get("lst_num")).intValue() == Integer.parseInt(splitType[j])) {
-              index = k;
               break;
             }
           }

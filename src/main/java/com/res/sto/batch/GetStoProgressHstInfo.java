@@ -9,8 +9,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.text.SimpleDateFormat;
 
-import org.apache.log4j.Logger;
-import org.apache.ibatis.session.SqlSession;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -22,7 +22,7 @@ import com.cmn.cmn.service.GetDataFromURLService;
 import com.cmn.cmn.service.impl.GetDataFromURLServiceImpl;
 
 public class GetStoProgressHstInfo extends Batch {  
-  private static Logger logger = Logger.getLogger(GetStoProgressHstInfo.class);
+  private static Logger logger = LogManager.getLogger(GetStoProgressHstInfo.class);
 
   @Override
   public void run(long batchRunTime, String param) throws Exception {

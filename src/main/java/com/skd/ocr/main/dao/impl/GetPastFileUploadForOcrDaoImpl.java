@@ -7,15 +7,16 @@
  *
  * @Copyright by 이민석
  */
-package com.skd.ppa.main.dao.impl;
+package com.skd.ocr.main.dao.impl;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.sql.SQLException;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -31,7 +32,7 @@ public class GetPastFileUploadForOcrDaoImpl implements GetPastFileUploadForOcrDa
   @Autowired
   private SqlSession sqlSession;
 
-  private static Logger logger = Logger.getLogger(GetPastFileUploadForOcrDaoImpl.class);
+  private static Logger logger = LogManager.getLogger(GetPastFileUploadForOcrDaoImpl.class);
   /**
    *  이 메서드는 문서 변환 프로세스를 통해 변환되어 저장된 HTML 정보를
    *  돌려주는 역할을 수행한다.

@@ -8,12 +8,11 @@
  * @Copyright by 이민석
  */
 
-package com.dev.des.image_manage;
+package com.dev.des;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
@@ -22,7 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import com.cmn.err.SystemException;
 import com.cmn.err.UserException;
 
@@ -40,7 +42,7 @@ public class GetImgList {
   @Autowired
   private UserException userException;
   
-  private static Logger logger = Logger.getLogger(GetImgList.class);
+  private static Logger logger = LogManager.getLogger(GetImgList.class);
   private static final int ROW_NUM = 20;
   
   /**
@@ -51,7 +53,7 @@ public class GetImgList {
     */
   @RequestMapping(value="/dev/des/image_manage/GetImgList", method=RequestMethod.POST)
   @ResponseBody
-  public List main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public List<Map<String, Object>> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validation(request, response);
     Map<String, Object> inputMap = new HashMap<String, Object>();
     if (request.getParameter("search_txt") == null) {

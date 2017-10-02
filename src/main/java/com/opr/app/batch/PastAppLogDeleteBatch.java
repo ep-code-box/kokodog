@@ -9,17 +9,6 @@
  */
 package com.opr.app.batch;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Map;
-import java.util.HashMap;
-import java.lang.Process;
-
-import org.apache.log4j.Logger;
-
 import com.cmn.cmn.batch.Batch;
 
 /**
@@ -33,8 +22,6 @@ import com.cmn.cmn.batch.Batch;
  *  이 값을 수정하면 며칠 전에 로그를 삭제할 대상인지 수정 가능하다.
  */
 public class PastAppLogDeleteBatch extends Batch {
-  private static Logger logger = Logger.getLogger(PastAppLogDeleteBatch.class);
-  
 /**
  *  배치를 수행하는 메서드이다.
  *  @param batchRunTime - 배치 수행을 요청받은 시각
@@ -51,20 +38,10 @@ public class PastAppLogDeleteBatch extends Batch {
   private void pastAppLogDeleteBatch(long currentTime) throws Exception {
     addLog("============   Start method of pastAppLogDeleteBatch.pastAppLogDeleteBatch   ============");
     addLog(" Parameter - batchRunTime[" + currentTime + "]");
-    long currentDate = 0L;
     int deleteCnt = 0;
-    currentDate = getDate(currentTime);
     sqlSession.delete("com.opr.app.batch.deletePastAppLog", currentTime);
     setReport("================= Report of Batch PastAppLogDeleteBatch ==============================");
     setReport("Total Delete Count[" + deleteCnt + "]");
     addLog("============   End method of pastAppLogDeleteBatch.pastAppLogDeleteBatch   ============");
-  }
-  
-  private long getDate(long currentTime) throws Exception {
-    Calendar date = GregorianCalendar.getInstance();
-    Calendar currentTimeCalendar = GregorianCalendar.getInstance();
-    currentTimeCalendar.setTimeInMillis(currentTime);
-    date.set(currentTimeCalendar.get(Calendar.YEAR), currentTimeCalendar.get(Calendar.MONTH), currentTimeCalendar.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-    return date.getTimeInMillis() / 1000L * 1000L;
   }
 }

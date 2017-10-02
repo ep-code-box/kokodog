@@ -16,17 +16,21 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.OutputKeys;
+
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
+
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
-import com.cmn.err.SystemException;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import com.cmn.err.UserException;
 import com.dev.dbd.module.DevDbdModule;
 import com.dev.cmn.module.DevCmnModule;
@@ -42,7 +46,7 @@ public class DevDbdModuleImpl implements DevDbdModule {
   @Autowired
   private DevCmnModule devCmnModule;
   
-  private static Logger logger = Logger.getLogger(DevDbdModuleImpl.class);
+  private static Logger logger = LogManager.getLogger(DevDbdModuleImpl.class);
   
   public void dbdDist(int queryNum, int repVer, int instance, HttpServletRequest request) throws Exception {
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -117,7 +121,6 @@ public class DevDbdModuleImpl implements DevDbdModule {
         File fileToMove = new File(url);
         file.renameTo(fileToMove);
       } else {
-        File fileToMove = new File(url);
         file.delete();        
       }
       throw e;

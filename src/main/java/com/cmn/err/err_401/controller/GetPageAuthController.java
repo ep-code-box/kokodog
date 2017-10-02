@@ -11,11 +11,11 @@ package com.cmn.err.err_401.controller;
 
 import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +37,7 @@ public class GetPageAuthController {
   @Autowired
   private SystemException systemException;
 
-  private static Logger logger = Logger.getLogger(GetPageAuthController.class);
+  private static Logger logger = LogManager.getLogger(GetPageAuthController.class);
   
   /**
    *  해당 메서드는 /cmn/err/err_401/GetPagetAuth URL을 통해 호출된다.
@@ -50,6 +50,7 @@ public class GetPageAuthController {
   @RequestMapping(value="/cmn/err/err_401/GetPagetAuth", method=RequestMethod.POST)
   @ResponseBody
   public List<Map<String, Object>> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of GetPagetAuthController.main[/cmn/err/err_401/GetPagetAuth]");
     validationCheck(request, response);
     return getPageAuthService.getAuthListByPath(request.getParameter("path"), ((Integer)request.getSession().getAttribute("user_num")).intValue());
   }

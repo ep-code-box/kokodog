@@ -160,26 +160,4 @@ public class RecurrentNeuralNetworkImpl implements RecurrentNeuralNetwork {
         return x;
     }
   }
-  
-  private double takeDiffFunc(double x) throws Exception {
-    switch (this.actFunc) {
-      case HYPER_TAN:
-        return derivativeOfHyperTan(x);
-      case INV_EXP:
-        return derivativeOfInvExp(x);
-      case LINEAR:
-        return derivativeOfLinear(x);
-      default:
-        return 1.0;
-    }
-  }
-  
-  private double softmax(double[] x, int index) throws Exception {
-    double modulus = 0.0;
-    int i = 0;
-    for (i = 0; i < x.length; i++) {
-      modulus = modulus + Math.exp(x[i]);
-    }
-    return Math.exp(x[index]) / modulus;
-  }
 }

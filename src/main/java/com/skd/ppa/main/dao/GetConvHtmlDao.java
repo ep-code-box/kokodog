@@ -10,7 +10,6 @@
 package com.skd.ppa.main.dao;
 
 import java.util.Map;
-import java.util.HashMap;
 import java.sql.SQLException;
 
 /**
