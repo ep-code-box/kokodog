@@ -21,7 +21,6 @@ import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.stereotype.Controller;
 
 import com.cmn.cmn.service.FileControlService;
@@ -53,7 +52,6 @@ public class FileControlController {
   @RequestMapping(value="/FileDown", produces={"image/*", "audio/*", "video/*", "application/*", "!application/json"})
   public String fileDownload(HttpServletRequest request, HttpServletResponse response) throws Exception {
     validation(request, response);
-    Map<String, Object> inputMap = new HashMap<String, Object>();
     logger.debug("Start controller of com.cmn.cmn.controller.fileDownload[/FileDown]");
     Map<String, Object> outputMap = null;
     int fileNum = 0;
