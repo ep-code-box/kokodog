@@ -133,6 +133,18 @@ public class BatchExeManageComponent {
   @Async
   public void backgroundProcess() {
     logger.debug("============   Start method of BatchExeManageComponent.run   ============");
+    int apNum = 0;
+    int containerNum = 0;
+    if (System.getProperty("apnum") == null || System.getProperty("apnum").length() == 0) {
+      apNum = 1;
+    } else {
+      apNum = Integer.parseInt(System.getProperty("apnum"));
+    }
+    if (System.getProperty("containernum") == null || System.getProperty("containernum").length() == 0) {
+      containerNum = 1;
+    } else {
+      containerNum = Integer.parseInt(System.getProperty("containernum"));
+    }
     Map<String, Object> inputMap = new HashMap<String, Object>();
     isClosed = false;
     long lastMin = 0L;
@@ -147,8 +159,8 @@ public class BatchExeManageComponent {
     try {
       inputMap.put("datetime", new Date(new Date().getTime() / 1000L / 60L * 1000L * 60L));
       inputMap.put("user_id", 0);
-      inputMap.put("ap_num", System.getProperty("apnum"));
-      inputMap.put("container_num", System.getProperty("containernum"));
+      inputMap.put("ap_num", apNum);
+      inputMap.put("container_num", containerNum);
       batchExeManageDao.updateBatchLockDateTimeToN(inputMap);
     } catch (Exception e) {
       StackTraceElement[] ste = e.getStackTrace();
@@ -167,13 +179,13 @@ public class BatchExeManageComponent {
       try {
         lastSecondTemp = getServerTimeService.getServerTime() / 1000L;
         if (lastSecondTemp / 60L > lastMin) {
-          batchProcess(lastSecondTemp / 60L * 60L, Integer.parseInt(System.getProperty("apnum")), Integer.parseInt(System.getProperty("containernum")));
+          batchProcess(lastSecondTemp / 60L * 60L, apNum, containerNum);
           lastMin = lastSecondTemp / 60L;
         }
         Thread.sleep(1000);
       } catch (InterruptedException e) {
-        inputMap.put("ap_num", System.getProperty("apnum"));
-        inputMap.put("container_num", System.getProperty("containernum"));
+        inputMap.put("ap_num", apNum);
+        inputMap.put("container_num", containerNum);
         batchExeManageDao.updateAllBatchExeError(inputMap);
       } catch (Exception e) {
         StackTraceElement[] ste = e.getStackTrace();
@@ -207,8 +219,8 @@ public class BatchExeManageComponent {
     boolean allBatchProcess = false;
     inputMap.put("datetime", new Date(currentMin * 1000L));
     inputMap.put("user_id", 0);
-    inputMap.put("ap_num", System.getProperty("apnum"));
-    inputMap.put("container_num", System.getProperty("containernum"));
+    inputMap.put("ap_num", apNum);
+    inputMap.put("container_num", containerNum);
     long tmpServerTime = 0L;
     long batchCheckCurTime = getServerTimeService.getServerTime();
     do {
@@ -224,8 +236,8 @@ public class BatchExeManageComponent {
       if (tmpServerTime - ((Date)outputMap.get("datetime")).getTime() > 1000L * 60L * 2L) {
         inputMap.put("datetime", new Date(currentMin * 1000L));
         inputMap.put("user_id", 0);
-        inputMap.put("ap_num", System.getProperty("apnum"));
-        inputMap.put("container_num", System.getProperty("containernum"));
+        inputMap.put("ap_num", apNum);
+        inputMap.put("container_num", containerNum);
         batchExeManageDao.updateBatchLockDateTimeToYWithY(inputMap);
       } else {
         return;
