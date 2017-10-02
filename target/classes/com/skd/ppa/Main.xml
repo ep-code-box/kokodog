@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skd.ppa.main">
+  <insert id="insertConvDocHtml" parameterType="HashMap">
+    INSERT INTO skd_ppa_file_to_html_result
+    (
+      file_num
+    , eff_end_dtm
+    , audit_id
+    , audit_dtm
+    , html
+    , eff_sta_dtm
+    )
+    SELECT cf.file_num AS file_num
+         , '9999-12-31 23:59:59' AS eff_end_dtm
+         , #{user_num} AS audit_id
+         , NOW() AS audit_dtm
+         , #{html} AS html
+         , #{now_dtm} AS eff_sta_dtm
+    FROM   cmn_file cf
+    WHERE  cf.file_key = #{file_key}
+    AND    NOT EXISTS (SELECT * FROM skd_ppa_file_to_html_result WHERE file_num = cf.file_num AND NOW() BETWEEN eff_sta_dtm AND eff_end_dtm)
+  </insert>
+  <select id="getHtml" parameterType="HashMap" resultType="HashMap">
+    SELECT spfthr.html AS html
+    FROM   skd_ppa_file_to_html_result spfthr
+         , cmn_file cf
+    WHERE  cf.file_key = #{file_key}
+    AND    NOW() BETWEEN cf.eff_sta_dtm AND cf.eff_end_dtm
+    AND    cf.file_num = spfthr.file_num
+    AND    NOW() BETWEEN spfthr.eff_sta_dtm AND spfthr.eff_end_dtm
+  </select>
+  <select id="getPastFileUpload" parameterType="HashMap" resultType="HashMap">
+    SELECT cf.file_nm AS file_nm
+         , cf.file_key AS file_key
+         , cf.eff_sta_dtm AS eff_sta_dtm
+    FROM   cmn_file cf
+         , skd_ppa_file_to_html_result spfthr
+    WHERE  NOW() BETWEEN cf.eff_sta_dtm AND cf.eff_end_dtm
+    AND    cf.file_num = spfthr.file_num
+    AND    NOW() BETWEEN spfthr.eff_sta_dtm AND spfthr.eff_end_dtm
+    ORDER BY cf.eff_sta_dtm
+  </select>
+  <update id="deletePastFileUpload" parameterType="HashMap">
+    UPDATE skd_ppa_file_to_html_result
+    SET    audit_id = #{user_num}
+         , audit_dtm = NOW()
+         , eff_end_dtm = #{now_dtm} - INTERVAL 1 SECOND
+    WHERE  file_num = (SELECT cf.file_num
+                       FROM   cmn_file cf
+                       WHERE  cf.file_key = #{file_key}
+                       AND    NOW() BETWEEN cf.eff_sta_dtm AND cf.eff_end_dtm
+                      )
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
+  <select id="getChatIdAndSeq" parameterType="HashMap" resultType="HashMap">
+    SELECT spcs.conv_num AS conv_num
+         , spcs.conv_id AS conv_id
+         , (SELECT MAX(spcd.dialog_counter)
+            FROM   skd_ppa_conv_dtl spcd
+            WHERE  spcd.user_num = spcs.user_num
+            AND    spcd.conv_num = spcs.conv_num
+           ) AS dialog_counter
+         , (SELECT spcd.dialog_stack
+            FROM   skd_ppa_conv_dtl spcd
+            WHERE  spcd.user_num = spcs.user_num
+            AND    spcd.conv_num = spcs.conv_num
+            AND    spcd.dialog_counter = (SELECT MAX(spcd2.dialog_counter)
+                                          FROM   skd_ppa_conv_dtl spcd2
+                                          WHERE  spcd2.user_num = spcd.user_num
+                                          AND    spcd2.conv_num = spcd.conv_num
+                                         )
+           ) AS dialog_stack
+    FROM   skd_ppa_conv_spc spcs
+    WHERE  spcs.user_num = #{user_num}
+    AND    NOW() BETWEEN spcs.eff_sta_dtm AND spcs.eff_end_dtm
+  </select>
+  <insert id="insertChatSeq" parameterType="HashMap">
+    INSERT INTO skd_ppa_conv_dtl
+    (
+      user_num
+    , conv_num
+    , dialog_counter
+    , eff_end_dtm
+    , audit_id
+    , audit_dtm
+    , text
+    , nodes_visited
+    , log_messages
+    , dialog_stack
+    , _node_output_map
+    , etc
+    , eff_sta_dtm
+    , conv_main_cd
+    )
+    VALUES
+    (
+      #{user_num}
+    , #{conv_num}
+    , #{dialog_counter}
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , #{text}
+    , #{nodes_visited}
+    , #{log_messages}
+    , #{dialog_stack}
+    , #{_node_output_map}
+    , #{etc}
+    , #{now_dtm}
+    , #{conv_main_cd}
+    )
+  </insert>
+  <insert id="insertConvSpc" parameterType="HashMap">
+    INSERT INTO skd_ppa_conv_spc
+    (
+      user_num
+    , conv_num
+    , eff_end_dtm
+    , audit_id
+    , audit_dtm
+    , conv_id
+    , eff_sta_dtm
+    )
+    VALUES
+    (
+      #{user_num}
+    , #{conv_num}
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , NULL
+    , #{now_dtm}
+    )
+  </insert>
+  <update id="updateConvSpcConvId" parameterType="HashMap">
+    UPDATE skd_ppa_conv_spc
+    SET    conv_id = #{conv_id}
+         , audit_id = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  user_num = #{user_num}
+    AND    conv_num = #{conv_num}
+  </update>
+  <update id="updateConvSpcPastEndDataUpdateToNow" parameterType="HashMap">
+    UPDATE skd_ppa_conv_spc
+    SET    eff_end_dtm = #{now_dtm} - INTERVAL 1 SECOND
+         , audit_id = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  user_num = #{user_num}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
+  <select id="getMaxConvNum" parameterType="HashMap" resultType="HashMap">
+    SELECT IFNULL(MAX(spcs.conv_num), 0) AS max_num
+    FROM   skd_ppa_conv_spc spcs
+    WHERE  spcs.user_num = #{user_num}
+  </select>
+  <select id="getInitProdChat" parameterType="HashMap" resultType="HashMap">
+    SELECT spcd.text AS text
+         , spcd.conv_main_cd AS conv_main_cd
+    FROM   skd_ppa_conv_spc spcs
+         , skd_ppa_conv_dtl spcd
+    WHERE  spcs.user_num = #{user_num}
+    AND    spcs.conv_num = spcd.conv_num
+    AND    spcs.user_num = spcd.user_num
+    AND    NOW() BETWEEN spcs.eff_sta_dtm AND spcs.eff_end_dtm
+    AND    NOW() BETWEEN spcd.eff_sta_dtm AND spcd.eff_end_dtm
+    ORDER BY spcd.dialog_counter DESC, spcd.eff_sta_dtm DESC
+    LIMIT 0, 30
+  </select>
+  <select id="getAllProdChkList" parameterType="HashMap" resultType="HashMap">
+    SELECT spcl.lst_num AS lst_num
+         , spcl.chk_lst_nm AS chk_lst_nm
+         , spcl.chk_lst_memo AS chk_lst_memo
+    FROM   skd_ppa_chk_lst spcl
+    WHERE  NOW() BETWEEN spcl.eff_sta_dtm AND spcl.eff_end_dtm
+    ORDER BY spcl.lst_num
+  </select>
+</mapper>

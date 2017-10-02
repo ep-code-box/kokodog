@@ -42,8 +42,12 @@ import com.cmn.cmn.service.GetServerTimeService;
 
 /**
  *  이 객체는 서블릿 수행 과정 중에 Exception이 발생하였을 때
- *  오류에 대한 로그를 출력하고
- *  오류 결과를 리턴하는 역할을 한다.
+ *  오류에 대한 로그를 출력하고 오류 결과를 리턴하는 역할을 한다.
+ *  Kokodog 시스템에 정의되어 있는 Exception은 모두 KokodogException을 상속받아 작성하도록 되어 있으며
+ *  KokodogException의 하위 class로 정의되어 있는 Exception은 warning 이하의 로그 레벨로 출력이 이뤄지며
+ *  기타 Exception들은 error 레벨 이상의 로그 레벨로 출력한다.<br/>
+ *  Database에 저장된 err_typ에 따라 오류 번호를 되돌려주며
+ *  오류 번호에 없는 항목은 500 오류를 리턴함으로써 일반적인 오류임을 강조한다.
  */
 @ControllerAdvice
 public class KokodogExceptionResolver {
@@ -56,7 +60,7 @@ public class KokodogExceptionResolver {
   private static Logger logger = Logger.getLogger(KokodogExceptionResolver.class);
 
   /**
-    *  사용자 선택에 따른 오류 출력
+    *  사용자 선택에 따른 오류 출력을 처리한다.
     *  @param request - 서블릿 Request
     *  @param response - 서블릿 응답이 정의된 response
     *  @param ex - Exception 이 발생한 클래스
@@ -127,7 +131,7 @@ public class KokodogExceptionResolver {
   }
   
   /**
-    *  사용자 오류로 인한 디버그 오류를 출력한다.
+    *  시스템 오류로 인한 디버그 오류를 출력한다.
     *  @param request - 서블릿 Request
     *  @param ex - Exception 이 발생한 클래스
     */
