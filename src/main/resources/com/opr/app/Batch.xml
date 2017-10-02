@@ -5,7 +5,7 @@
     DELETE
     FROM   cmn_app_log
     WHERE  log_typ NOT IN ('ERROR', 'WARN', 'FATAL')
-    AND    datetime &lt; #{currentTime} - INTERVAL (SELECT CAST(ccd.cd_seq_name AS unsigned int)
+    AND    datetime &lt; #{current_time} - INTERVAL (SELECT CAST(ccd.cd_seq_name AS unsigned int)
                                                     FROM   cmn_cd_dtl ccd
                                                     WHERE  ccd.cd_num = 32
                                                     AND    NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
