@@ -4,12 +4,12 @@ import java.util.Map;
 import java.sql.SQLException;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import org.apache.ibatis.session.SqlSession;
 
 import com.cmn.cmn.dao.FileControlDao;
 
@@ -18,7 +18,7 @@ public class FileControlDaoImpl implements FileControlDao {
   @Autowired
   private SqlSession sqlSession;
 
-  private static Logger logger = Logger.getLogger(FileControlDaoImpl.class);
+  private static Logger logger = LogManager.getLogger(FileControlDaoImpl.class);
   
   public Map<String, Object> getIsExistFileKeyByKey(Map<String, Object> inputMap) throws SQLException {
     logger.debug("============   Start method of FileControlDaoImpl.getIsExistFileKeyByKey   ============");

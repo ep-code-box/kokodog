@@ -4,13 +4,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Service;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.cmn.cmn.service.GetRequestURLService;
 
 @Service("getRequestURLService")
 public class GetRequestURLServiceImpl implements GetRequestURLService {
-  private static Logger logger = Logger.getLogger(GetRequestURLServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(GetRequestURLServiceImpl.class);
   
   public String getRequestURL(HttpServletRequest request) throws Exception {
     logger.debug("============   Start method of GetRequestURLServiceImpl.getRequestURL   ============");

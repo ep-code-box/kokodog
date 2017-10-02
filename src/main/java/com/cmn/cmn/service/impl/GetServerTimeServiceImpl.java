@@ -14,8 +14,9 @@ import java.util.Date;
 import java.util.Map;
 import java.sql.SQLException;
 
-import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -28,6 +29,8 @@ import com.cmn.err.SystemException;
   */
 @Repository("getServerTimeService")
 public class GetServerTimeServiceImpl implements GetServerTimeService {
+  private static Logger logger = LogManager.getLogger(GetServerTimeServiceImpl.class);
+
   @Autowired
   private GetServerTimeDao getServerTimeDao;
   
@@ -35,6 +38,7 @@ public class GetServerTimeServiceImpl implements GetServerTimeService {
   private SystemException systemException;
   
   public long getServerTime() throws SQLException {
+    logger.debug("============   Start method of GetServerTimeServiceImpl.getServerTime   ============");
     return ((Date)(((Map<String, Object>)getServerTimeDao.getServerTime()).get("datetime"))).getTime();
   }  
 }

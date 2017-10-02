@@ -21,7 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.annotation.PreDestroy;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -75,7 +76,7 @@ public class AddoptInfoComponent {
   private boolean isClosed = false;
   private long prevDay = 0L;
     
-  private static Logger logger = Logger.getLogger(AddoptInfoComponent.class);
+  private static Logger logger = LogManager.getLogger(AddoptInfoComponent.class);
 
   /**
    *  이 메서드는 종료 신호 전까지 Connection 정보를 모니터링 하여 DB에 적재해준다.

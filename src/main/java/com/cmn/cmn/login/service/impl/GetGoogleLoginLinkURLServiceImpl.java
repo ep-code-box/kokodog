@@ -11,15 +11,14 @@
 package com.cmn.cmn.login.service.impl;
 
 import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
 import java.net.URLEncoder;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.cmn.err.SystemException;
 
 import com.cmn.cmn.login.service.GetGoogleLoginLinkURLService;
 import com.cmn.cmn.service.GetGoogleLoginOAuthRedirectUriService;
@@ -38,9 +37,10 @@ public class GetGoogleLoginLinkURLServiceImpl implements GetGoogleLoginLinkURLSe
   @Autowired
   private GetGoogleLoginOAuthRedirectUriService getGoogleLoginOAuthRedirectUriService;
 
-  private static Logger logger = Logger.getLogger(GetGoogleLoginLinkURLServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(GetGoogleLoginLinkURLServiceImpl.class);
 
   public String getGoogleLoginLinkURL(String scheme, String serverName, int serverPort, String redirectUrlParam) throws Exception {
+    logger.debug("============   Start method of GetGoogleLoginLinkURLServiceImpl.getGoogleLoginLinkURL   ============");
     List<Map<String, Object>> outputList = getGoogleLoginLinkURLDao.getGoogleLoginOAuthParameter();
     int i = 0;
     String parameter = "";

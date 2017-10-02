@@ -3,14 +3,12 @@ package com.cmn.cmn.service.impl;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.cmn.cmn.service.ConnLogService;
 import com.cmn.cmn.dao.ConnLogDao;
@@ -24,7 +22,7 @@ public class ConnLogServiceImpl implements ConnLogService {
   @Autowired
   private GetServerTimeService getServerTimeService;
   
-  private static Logger logger = Logger.getLogger(ConnLogServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(ConnLogServiceImpl.class);
 
   public long insertConnLog(long systemCallDtm, int userNum, String remoteAddr, String requesrURL, String queryString, String method) throws Exception {
     logger.debug("============   Start method of InterceptorComponent.preHandle   ============");

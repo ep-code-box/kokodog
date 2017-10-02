@@ -13,7 +13,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +30,7 @@ import com.cmn.err.SystemException;
  */
 @Controller
 public class GetCommonCodeController {
-  private static Logger logger = Logger.getLogger(GetCommonCodeController.class);
+  private static Logger logger = LogManager.getLogger(GetCommonCodeController.class);
   
   @Autowired
   private GetCodeValService getCodeValService;
@@ -46,7 +47,8 @@ public class GetCommonCodeController {
     */
   @RequestMapping(value="/cmn/cmn/main/GetCommonCode", method=RequestMethod.POST)
   @ResponseBody
-  public Map main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<Integer, String> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start of controller com.cmn.cmn.controller.GetCommonCodeController[/cmn/cmn/main/GetCommonCode]");
     validationCheck(request, response);
     return getCodeValService.getCodeVal(Integer.parseInt(request.getParameter("code")));
   }

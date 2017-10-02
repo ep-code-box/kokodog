@@ -19,7 +19,8 @@ import java.security.SecureRandom;
 
 import javax.annotation.PreDestroy;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -95,7 +96,7 @@ public class BatchExeManageComponent {
   @Autowired
   private AddoptInfoComponent addoptInfoComponent;
   private boolean isClosed;
-  private static Logger logger = Logger.getLogger(BatchExeManageComponent.class);
+  private static Logger logger = LogManager.getLogger(BatchExeManageComponent.class);
   private static boolean isFirstRunning = true;
 
   /** 

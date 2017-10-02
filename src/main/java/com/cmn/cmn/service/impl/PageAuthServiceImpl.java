@@ -2,12 +2,12 @@ package com.cmn.cmn.service.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.cmn.cmn.service.PageAuthService;
 import com.cmn.cmn.dao.PageAuthDao;
@@ -17,9 +17,10 @@ public class PageAuthServiceImpl implements PageAuthService {
   @Autowired
   private PageAuthDao pageAuthDao;
   
-  private static Logger logger = Logger.getLogger(PageAuthServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(PageAuthServiceImpl.class);
 
   public boolean getIsLoginAuth(String pgmAbb, String taskAbb, String pageAbb, int userNum) throws Exception {
+    logger.debug("============   Start method of PageAuthServiceImpl.getErrMessageByMessageNum   ============");
     Map<String, Object> inputMap = new HashMap<String, Object>();
     Map<String, Object> outputMap = null;
     inputMap.put("pgm_abb", pgmAbb);

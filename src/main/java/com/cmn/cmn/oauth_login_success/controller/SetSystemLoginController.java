@@ -1,7 +1,6 @@
 package com.cmn.cmn.oauth_login_success.controller;
 
 import java.util.Map;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -11,7 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.cmn.cmn.service.OAuthLoginService;
 import com.cmn.cmn.service.GetRequestURLService;
@@ -28,10 +28,11 @@ public class SetSystemLoginController {
   @Autowired
   private LoginSessionService loginSessionService;
   
-  private static Logger logger = Logger.getLogger(SetSystemLoginController.class);
+  private static Logger logger = LogManager.getLogger(SetSystemLoginController.class);
 
   @RequestMapping(value="/cmn/cmn/oauth_login_success", method=RequestMethod.GET)
   public ModelAndView oauthLoginSuccess(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("============   Start method of SetSystemLoginController.oauthLoginSuccess   ============");
     validation(request, response);
     Map<String, Object> outputMap = null;
     String requestUrl = null;

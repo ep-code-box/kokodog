@@ -2,15 +2,17 @@ package com.cmn.cmn.service.impl;
 
 import org.springframework.stereotype.Service;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.cmn.cmn.service.GetRandomStringArrayService;
 
 @Service("getRandomStringArrayService")
 public class GetRandomStringArrayServiceImpl implements GetRandomStringArrayService {
-  private static Logger logger = Logger.getLogger(GetRandomStringArrayServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(GetRandomStringArrayServiceImpl.class);
 
   public String getRandomStringArray(int n) throws Exception {
+    logger.debug("============   Start method of GetRandomStringArrayServiceImpl.getRandomStringArray   ============");
     String returnStr = "";
     for (int i = 0; i < n; i++) {
       int randomValue = (int)(Math.random() * (10 + 26 + 26));

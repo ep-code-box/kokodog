@@ -1,11 +1,12 @@
 package com.cmn.cmn.dao.impl;
 
-import java.util.List;
 import java.util.Map;
 import java.sql.SQLException;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -17,7 +18,7 @@ public class MessageDaoImpl implements MessageDao {
   @Autowired
   private SqlSession sqlSession;
   
-  private static Logger logger = Logger.getLogger(MessageDaoImpl.class);
+  private static Logger logger = LogManager.getLogger(MessageDaoImpl.class);
   
   public Map<String, Object> getErrMessageByMessageNum(Map<String, Object> inputMap) throws SQLException {
     logger.debug("============   Start method of MessageDaoImpl.getErrMessageByMessageNum   ============");

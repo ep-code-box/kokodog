@@ -14,7 +14,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.ibatis.session.SqlSession;
 
@@ -68,7 +69,7 @@ import org.apache.ibatis.session.SqlSession;
  *  ) ENGINE=MyISAM DEFAULT CHARSET=utf8;<br/>
  */
 public abstract class Batch {
-  private static Logger logger = Logger.getLogger(Batch.class);
+  private static Logger logger = LogManager.getLogger(Batch.class);
   protected SqlSession sqlSession;
   private String report;
   private int errNum = 0;

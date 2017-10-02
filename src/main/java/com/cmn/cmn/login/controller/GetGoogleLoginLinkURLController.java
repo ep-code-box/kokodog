@@ -16,12 +16,13 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cmn.err.SystemException;
@@ -40,7 +41,7 @@ public class GetGoogleLoginLinkURLController {
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(GetGoogleLoginLinkURLController.class);
+  private static Logger logger = LogManager.getLogger(GetGoogleLoginLinkURLController.class);
 
   /**
     *  Google OAuth 로그인을 위하여 링크 정보를 가져오는 method
@@ -50,7 +51,8 @@ public class GetGoogleLoginLinkURLController {
     */
   @RequestMapping(value="/cmn/cmn/login/GetGoogleLoginLinkURL", method=RequestMethod.POST)
   @ResponseBody
-  public Map getGoogleLoginLinkURL(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> getGoogleLoginLinkURL(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    logger.debug("Start method of com.cmn.cmn.login.controller.GetGoogleLoginLinkURLController.getGoogleLoginLinkURL[/cmn/cmn/login/GetGoogleLoginLinkURL]");
     validation(request, response);
     Map<String, Object> returnMap = new HashMap<String, Object>();
     String parameter = getGoogleLoginLinkURLService.getGoogleLoginLinkURL(request.getScheme(), request.getServerName(), request.getServerPort(), request.getParameter("redirect_url"));

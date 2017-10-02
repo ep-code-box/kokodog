@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +34,10 @@ public class FileControlServiceImpl implements FileControlService {
   
   private static int FILE_DIV_SIZE = 1024 * 1024 * 7;
 
-  private static Logger logger = Logger.getLogger(FileControlServiceImpl.class);
+  private static Logger logger = LogManager.getLogger(FileControlServiceImpl.class);
   
   private static long FILE_MAX_SIZE = 2 * 1024 * 1024 * 1024;
   private static int FILE_THREADHOLD_SIZE = 1 * 1024 * 1024;
-  private static long FILE_MAX_MEMORY_SIZE = 10 * 1024;
   private static String UPLOAD_DIR = "/home/leems83/data/webappdev/ROOT/WEB-INF/files";
 
   public Map<String, Object> insertFile(HttpServletRequest request) throws Exception {
@@ -51,8 +52,8 @@ public class FileControlServiceImpl implements FileControlService {
     String fileName = null;
     Map<String, Object> outputMap = null;
     List<Map<String, Object>> outputList = new ArrayList<Map<String, Object>>();
-    List items = null;
-    Iterator iter = null;
+    List<FileItem> items = null;
+    Iterator<FileItem> iter = null;
     items = upload.parseRequest(request);
     iter = items.iterator();
     try {
@@ -159,12 +160,10 @@ public class FileControlServiceImpl implements FileControlService {
 
   public byte[] getFileContent(String fileKey) throws Exception {
     int fileNum = 0;
-    String fileNm = null;
     int contentCnt = 0;
     Map<String, Object> outputMap = null;
     outputMap = getFileInfo(fileKey);
     fileNum = ((Long)outputMap.get("file_num")).intValue();
-    fileNm = (String)outputMap.get("file_nm");
     contentCnt = ((Long)outputMap.get("content_cnt")).intValue();
     byte[] fileContent = getFileContent(fileNum, 1);
     byte[] fileContentNext = null;

@@ -14,7 +14,10 @@ import java.util.Map;
 import java.sql.SQLException;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -34,7 +37,7 @@ public class GetGoogleLoginOAuthRedirectUriDaoImpl implements GetGoogleLoginOAut
   @Autowired
   private SystemException systemException;
   
-  private static Logger logger = Logger.getLogger(GetGoogleLoginOAuthRedirectUriDaoImpl.class);
+  private static Logger logger = LogManager.getLogger(GetGoogleLoginOAuthRedirectUriDaoImpl.class);
 
   public Map<String, Object> getGoogleLoginOAuthRedirectUri() throws SQLException {
     logger.debug("============   Start method of GetGoogleLoginOAuthRedirectUriDaoImpl.getGoogleLoginOAuthRedirectUri   ============");
