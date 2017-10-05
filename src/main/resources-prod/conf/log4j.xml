@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="error">
+  <appenders>
+    <Jdbc name="databaseAppender" tableName="cmn_app_log">
+      <ConnectionFactory class="com.cmn.cmn.component.ConnectionFactory" method="getDatabaseConnection"/>
+      <Column name="datetime" pattern="%d{yyyy-MM-dd HH:mm:ss}"/>
+      <Column name="millisec" pattern="%d{SSS}"/>
+      <Column name="log_typ" pattern="%level"/>
+      <Column name="class_nm" pattern="%logger"/>
+      <Column name="method_nm" pattern="%M"/>
+      <Column name="log_msg" pattern="%message"/>
+    </Jdbc>
+  </appenders>
+  <Loggers>
+    <Logger name="com" level="warn" additivity="false">
+      <AppenderRef ref="databaseAppender"/>
+    </Logger>
+    <Root level="warn">
+      <appender-ref ref="databaseAppender"/>
+    </Root>
+  </Loggers>
+</configuration>
