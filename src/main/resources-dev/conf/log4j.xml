@@ -12,10 +12,7 @@
     </Jdbc>
   </appenders>
   <Loggers>
-    <Logger name="com" level="debug" additivity="false">
-      <AppenderRef ref="databaseAppender" />
-    </Logger>
-    <Root level="warn">
+    <Root level="info">
       <appender-ref ref="databaseAppender"/>
     </Root>
   </Loggers>
