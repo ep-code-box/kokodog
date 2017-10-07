@@ -13,20 +13,17 @@
   <context:annotation-config/>
   <context:component-scan base-package="com"/>
   <bean id="bouncyCastleProvider" class="org.bouncycastle.jce.provider.BouncyCastleProvider"/>
-  <bean id="environmentVariablesConfiguration" class="org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig">
+  <bean id="environmentVariablesConfiguration" class="com.cmn.cmn.component.KokodogEnvironmentStringPBEConfig">
     <property name="provider" ref="bouncyCastleProvider" />
     <property name="algorithm" value="PBEWITHSHA256AND256BITAES-CBC-BC"/>
-    <property name="passwordEnvName" value="APP_ENCRYPTION_PASSWORD"/>
   </bean>
   <bean id="configurationEncryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
     <property name="config" ref="environmentVariablesConfiguration"/>
-    <property name="password" value="YC9yuF8U3N8JMUX9U000NKOqkbSdE5Wu0BewBSlhX9MrZId5YebzFKNgvsTcU04S"/>
   </bean>
   <bean id="propertyConfigurer" class="org.jasypt.spring3.properties.EncryptablePropertyPlaceholderConfigurer">
     <constructor-arg ref="configurationEncryptor"/>
 	  <property name="locations">
 	    <list>
-	      <value>classpath:/conf/key.properties</value>
         <value>classpath:/conf/jdbc.properties</value>
       </list>
 	  </property>
