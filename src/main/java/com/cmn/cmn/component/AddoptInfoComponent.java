@@ -120,6 +120,10 @@ public class AddoptInfoComponent {
           }
         }
         Thread.sleep(1000);
+      } catch (InterruptedException e) {
+        if (this.isClosed == true) {
+          return;
+        }
       } catch (Exception e) {
         StackTraceElement[] ste = e.getStackTrace();
         logger.error("=================     Internal Exception Start    ==================");
