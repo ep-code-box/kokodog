@@ -1,8 +1,15 @@
 package com.skd.ppa.main.service;
 
+import java.net.MalformedURLException;
+import java.io.File;
+
 import org.apache.ibatis.session.SqlSession;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -22,6 +29,13 @@ public class DbDocConvWithAibrilServiceTest {
   
   @Autowired
   private SqlSession sqlSession;
+
+  private static final Logger logger = LogManager.getLogger(DbDocConvWithAibrilServiceTest.class);
+
+  @BeforeClass
+  public static void setLogger() throws MalformedURLException {
+    System.setProperty("log4j.configurationFile", "src/main/resources/conf/log4j.xml");
+  }
 
   @Test(timeout=50000)
   @Transactional
