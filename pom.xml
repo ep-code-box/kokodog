@@ -26,9 +26,24 @@
       <version>2.9.1</version>
     </dependency>
     <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-web</artifactId>
+      <version>2.9.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.9.1</version>
+    </dependency>
+    <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
       <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+      <version>1.6</version>
     </dependency>
     <dependency>
       <groupId>mysql</groupId>
@@ -75,6 +90,11 @@
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
       <version>1.3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.2</version>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -176,20 +196,33 @@
       <artifactId>jasypt-spring3</artifactId>
       <version>1.9.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.58</version>
+    </dependency>
   </dependencies>
   <profiles>
     <profile>
+      <id>local</id>
+      <properties>
+        <env>local</env>
+        <webappHost>localhost</webappHost>
+      </properties>
+    </profile>
+    <profile>
       <id>dev</id>
       <properties>
-        <webappDirectory>webappdev/ROOT</webappDirectory>
-        <confDirectory>conf_dev</confDirectory>
+        <env>dev</env>
+        <webappHost>kokodogdev.fun25.co.kr</webappHost>
+        <repositoryId>dev.security.info</repositoryId>
       </properties>
     </profile>
     <profile>
       <id>prod</id>
       <properties>
-        <webappDirectory>webapps/ROOT</webappDirectory>
-        <confDirectory>conf_prod</confDirectory>
+        <env>prod</env>
+        <webappHost>kokodog.fun25.co.kr</webappHost>
       </properties>
     </profile>
   </profiles>
@@ -198,6 +231,9 @@
       <resource>
         <directory>src/main/resources</directory>
       </resource>
+      <resource>
+        <directory>src/main/resources-${env}</directory>
+      </resource>
     </resources>
     <plugins>
       <plugin>
@@ -205,57 +241,24 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>2.4</version>
         <configuration>
-           <compilerVersion>1.8</compilerVersion>
-           <encoding>UTF-8</encoding>
-           <warSourceDirectory>src/main/webapp</warSourceDirectory>
-           <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-<!--           <webappDirectory>${webappRootDirectory}/${webappDirectory}</webappDirectory>-->
-           <goals>
-             <goal>exploded</goal>
-           </goals>
+          <compilerVersion>1.8</compilerVersion>
+          <encoding>UTF-8</encoding>
+          <warSourceDirectory>src/main/webapp</warSourceDirectory>
+          <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-clean-plugin</artifactId>
-        <version>2.4</version>
-          <configuration>
-            <failOnError>false</failOnError>
-          </configuration>
-          <executions>
-            <execution>
-              <id>auto-clean</id>
-              <phase>initialize</phase>
-              <goals>
-                <goal>clean</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-<!--
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-          <executions>
-            <execution>
-              <phase>package</phase>
-              <goals>
-                <goal>run</goal>
-              </goals>
-              <configuration>
-                <tasks>
-                  <delete>
-                    <fileset dir="${webappRootDirectory}/${webappDirectory}/WEB-INF/classes/conf/" includes="*"/>
-                  </delete>
-                  <copy todir="${webappRootDirectory}/${webappDirectory}/WEB-INF/classes/conf/">
-                    <fileset dir="${webappRootDirectory}/${webappDirectory}/WEB-INF/classes/${confDirectory}"/>
-                  </copy>
-                  <delete  dir="${webappRootDirectory}/${webappDirectory}/WEB-INF/classes/conf_dev/" includes="*"/>
-                  <delete  dir="${webappRootDirectory}/${webappDirectory}/WEB-INF/classes/conf_prod/" includes="*"/>
-                </tasks>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        -->
+	      <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+	      <version>2.2</version>
+        <configuration>
+          <settingsKey>devsecurityinfo</settingsKey>
+          <url>http://${webappHost}/manager/text</url>
+          <path>/ROOT</path>
+          <username>leems83</username>
+          <password>${deploy_password}</password>
+        </configuration>
+	    </plugin>
     </plugins>
     <finalName>ROOT</finalName>
   </build>
