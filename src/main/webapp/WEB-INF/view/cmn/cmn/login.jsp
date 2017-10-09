@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="/js/jquery-widgets-demo/jqwidgets/styles/jqx.base.css" type="text/css"/>
+    <link rel="stylesheet" href="/js/jqwidgets/styles/jqx.base.css" type="text/css"/>
     <script type="text/javascript" src="/js/jquery/jquery-3.2.1.js"></script>
     <script type="text/javascript" src="/js/jqwidgets/jqxcore.js"></script>
     <script type="text/javascript" src="/js/jqwidgets/jqxloader.js"></script>
