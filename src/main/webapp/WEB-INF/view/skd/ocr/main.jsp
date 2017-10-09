@@ -102,7 +102,6 @@
           filtermode: "default",
           columns: [
             {text: "No", datafield: "no", width: 50, cellsalign: "right"},
-            {text: "hier", datafield: "hier", width: 200, cellsalign: "left"},
             {text: "좌표", datafield: "cord", cellsalign: "left", width: 200},
             {text: "문구", datafield: "text", cellsalign: "left"}
           ]
