@@ -8,15 +8,8 @@ var g_body_obj = [];
 
 function cmnSyncCall(tpNm, param, callbackFunc, callbackVar, callbackErr) {
   if (g_is_loader_exist === false) {
-    var body_obj = $("<div>").children();
-    for (var i = 0; i < body_obj.length; i++) {
-      if (body_obj[i].css("zIndex") > 0) {
-        g_body_obj.push({body_obj: body_obj[i], zIndex: body_obj[i].css("zIndex")});
-//        body_obj[i].css("zIndex", 0);
-      }
-    }
-    $("<div>", {id: "_cmn_loader"}).appendTo("body");
-    $("div#_cmn_loader").jqxLoader({width: 100, height: 60, imagePosition: "top"});
+    $("<div>", {id: "_cmn_loader", css: {zIndex: 5000}}).appendTo("body");
+    $("div#_cmn_loader").jqxLoader({width: 100, height: 60, imagePosition: "top", isModal: true});
     g_is_loader_exist = true;
   }
   openLoader();
