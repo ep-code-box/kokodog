@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig;
 
@@ -13,8 +14,18 @@ public class KokodogEnvironmentStringPBEConfig extends EnvironmentStringPBEConfi
     String line = null;
     String data = "";
     boolean firstRead = true;
+    String realPath = null;
     try {
-      br = new BufferedReader(new FileReader(this.getClass().getResource("/").getPath() + "conf/key.properties"));
+      realPath =  this.getClass().getResource("/").toURI().getPath();
+    } catch (URISyntaxException e) {
+      realPath = "";
+    }
+    try {
+      if (realPath.length() != 0 && realPath.charAt(realPath.length() - 1) != '/') {
+        realPath = realPath + "/";
+      }
+      realPath = realPath + "../classes";
+      br = new BufferedReader(new FileReader(realPath + "/conf/key.properties"));
       while ((line = br.readLine()) != null) {
         if (firstRead == true) {
           data = data + line;
@@ -29,8 +40,6 @@ public class KokodogEnvironmentStringPBEConfig extends EnvironmentStringPBEConfi
     } catch (IOException e) {
       data = "KOKODOG_BRACE";      
     }
-    System.out.println("=========PATH : " + this.getClass().getResource("/").getPath());
-    System.out.println("======================== " + data);
     super.setPassword(data);
   }
 }

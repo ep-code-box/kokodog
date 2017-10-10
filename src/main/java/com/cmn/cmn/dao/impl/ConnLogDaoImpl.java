@@ -40,4 +40,8 @@ public class ConnLogDaoImpl implements ConnLogDao {
     logger.debug(" Parameter - inputMap[" + inputMap + "]");    
     sqlSession.insert("com.cmn.cmn.updateConnEndLog", inputMap);
   }
+  
+  public void checkConnectValid() throws SQLException {
+    sqlSession.selectOne("com.cmn.cmn.checkConnectValid");
+  }
 }

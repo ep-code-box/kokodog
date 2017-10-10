@@ -63,4 +63,8 @@ public class ConnLogServiceImpl implements ConnLogService {
   public void updateTimeoutConnEndLog(long systemCallDtm, long systemEndDtm, long seq, int userNum) throws Exception {
     updateConnEndLog(systemCallDtm, systemEndDtm, 408, "Request time out.", seq, userNum);
   }
+  
+  public void checkConnectValid() throws Exception {
+    connLogDao.checkConnectValid();
+  }
 }

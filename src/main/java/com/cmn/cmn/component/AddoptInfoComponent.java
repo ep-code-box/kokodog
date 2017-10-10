@@ -88,6 +88,7 @@ public class AddoptInfoComponent {
     connList = new ArrayList<Map<String, Object>>();
     isClosed = false;
     int i = 0;
+    int threadTime = 0;
     while (isClosed == false) {
       try {
         logger.debug("AddoptInfoComponnet.run running...");
@@ -118,6 +119,11 @@ public class AddoptInfoComponent {
                                                    , connList.get(i).get("user_num") == null ? 0 : ((Integer)connList.get(i).get("user_num")).intValue());
             connList.remove(i);
           }
+        }
+        threadTime++;
+        if (threadTime >= 120) {
+          threadTime = 0;
+          connLogService.checkConnectValid();
         }
         Thread.sleep(1000);
       } catch (InterruptedException e) {
