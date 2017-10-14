@@ -87,4 +87,8 @@ public class ConnLogDaoImpl implements ConnLogDao {
       sqlSession.update("com.cmn.cmn.updateConnEndLog", inputMap);
     }
   }
+  
+  public void checkConnectValid() throws SQLException {
+    sqlSession.selectOne("com.cmn.cmn.checkConnectValid");
+  }
 }

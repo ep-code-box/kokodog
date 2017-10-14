@@ -613,4 +613,7 @@
                 ELSE 'N'
            END AS is_page_exists
   </select>
+  <select id="checkConnectValid" parameterType="HashMap" resultType="HashMap">
+    SELECT 1
+  </select>
 </mapper>
