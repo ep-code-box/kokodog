@@ -15,22 +15,27 @@ public class KokodogEnvironmentStringPBEConfig extends EnvironmentStringPBEConfi
     boolean firstRead = true;
     try {
       br = new BufferedReader(new FileReader(this.getClass().getResource("/").getPath() + "conf/key.properties"));
-      while ((line = br.readLine()) != null) {
-        if (firstRead == true) {
-          data = data + line;
-          firstRead = false;
-        } else {
-          data = data + "\n" + line;
-        }
-
-      }
     } catch (FileNotFoundException e) {
-      data = "KOKODOG_BRACE";
-    } catch (IOException e) {
-      data = "KOKODOG_BRACE";      
+      try {
+        br = new BufferedReader(new FileReader(this.getClass().getResource("/").getPath() + "../classes/conf/key.properties"));
+      } catch (FileNotFoundException e2) {
+        data = "KOKODOG_BRACE";
+      }
     }
-    System.out.println("=========PATH : " + this.getClass().getResource("/").getPath());
-    System.out.println("======================== " + data);
+    if ("KOKODOG_BRACE".equals(data) == false) {
+      try {
+        while ((line = br.readLine()) != null) {
+          if (firstRead == true) {
+            data = data + line;
+            firstRead = false;
+          } else {
+            data = data + "\n" + line;
+          }
+        }
+      } catch (IOException e) {
+        data = "KOKODOG_BRACE";      
+      }
+    }
     super.setPassword(data);
   }
 }
