@@ -33,12 +33,9 @@ public class KokodogEnvironmentStringPBEConfig extends EnvironmentStringPBEConfi
         } else {
           data = data + "\n" + line;
         }
-
       }
-    } catch (FileNotFoundException e) {
-      data = "KOKODOG_BRACE";
     } catch (IOException e) {
-      data = "KOKODOG_BRACE";      
+      data = "KOKODOG_BRACE";
     }
     super.setPassword(data);
   }
