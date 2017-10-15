@@ -27,7 +27,8 @@
     <property name="suffix" value=".jsp"/>
   </bean>
   <aop:config proxy-target-class="true">
-    <aop:pointcut id="serviceOperation" expression="execution(* com..*.*(..)) &amp;&amp; !execution(* com.cmn.cmn.component.AddoptInfoComponent.*(..))"/>
+    <aop:pointcut id="serviceOperation" expression="execution(* com..*.*(..)) &amp;&amp; !execution(* com.cmn.cmn.component.AddoptInfoComponent.*(..))
+                                                    &amp;&amp; !execution(* com.cmn.cmn.component.BatchExeManageComponent.*(..))"/>
     <aop:advisor id="transactionAdvisor" pointcut-ref="serviceOperation" advice-ref="txAdvice"/>
   </aop:config>
   <tx:advice id="txAdvice" transaction-manager="transactionManager">
