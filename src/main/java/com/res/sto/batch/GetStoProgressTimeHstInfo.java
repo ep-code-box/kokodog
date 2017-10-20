@@ -1,6 +1,8 @@
 /* 인코딩 확인*/
 package com.res.sto.batch;
 
+import java.io.IOException;
+import java.net.ConnectException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -69,8 +71,17 @@ public class GetStoProgressTimeHstInfo extends Batch{
         elements = null;
         data = null;
         url = "http://finance.daum.net/item/quote_hhmm_sub.daum?page=" + (j + 1) + "&code=" + stockNum;
-        data = (String)getDataFromURLService.getDataFromURL(url, array, "GET", "UTF-8", GetDataFromURLService.TYPE_STRING);
-        if (data.trim().equals("") == true) {
+        for (k = 0; k < 3; k++) {
+          try {
+            data = (String)getDataFromURLService.getDataFromURL(url, array, "GET", "UTF-8", GetDataFromURLService.TYPE_STRING);
+            break;
+          } catch (ConnectException e) {
+            Thread.sleep(10000);
+          } catch (IOException e) {
+            Thread.sleep(10000);
+          }
+        }
+        if (data.trim().equals("") == true || k == 3) {
           break;
         }
         doc = Jsoup.parse(data);
