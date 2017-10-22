@@ -168,4 +168,11 @@ public abstract class Batch {
   public int getBatchNum() {
     return this.batchNum;
   }
+  
+  /**
+   *  배치 수행 후 오류 발생을 대비하여 쿼리 롤백을 진행한다.
+   */
+  public void rollback() {
+    sqlSession.rollback();
+  }
 }
