@@ -107,6 +107,7 @@ public class BatchExeProcessComponent {
     try {
       batch.run(exeDateTime, param);
     } catch (Exception e) {
+      batch.rollback();
       errorLogForBatch(batchNum, exeDateTime, e, batch);
     }
     try {

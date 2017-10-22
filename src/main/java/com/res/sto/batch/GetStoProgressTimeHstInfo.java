@@ -127,6 +127,7 @@ public class GetStoProgressTimeHstInfo extends Batch{
           isStockInserted = true;
         }
       }
+      sqlSession.commit();
       if (isStockInserted == true) {
         insertStockCnt++;
       }
