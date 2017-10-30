@@ -121,6 +121,8 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     Map<String, String> pgmInfo = getPgmTaskPageName(request.getRequestURI(), request.getMethod());
     if ("GET".equals(request.getMethod()) == true && pgmInfo.get("pgm") != null && pgmInfo.get("pgm").equals("FileDown") == true) {
       return true;
+    } else if ("favicon.ico".equals(pgmInfo.get("pgm")) == true) {
+      return true;
     }
     if (isPageExists(pgmInfo.get("pgm"), pgmInfo.get("task"), pgmInfo.get("page")) == false) {
       throw userException.userException(1);
