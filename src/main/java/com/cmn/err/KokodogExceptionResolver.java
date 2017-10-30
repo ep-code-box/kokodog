@@ -183,7 +183,11 @@ public class KokodogExceptionResolver {
       queryParam = queryParam.substring(0, queryParam.length() - 1);
     }
     logger.error("=================     Internal Exception Start    ==================");
-    logger.error("Exception Start Dtm[" + format.format(new Date(((Long)request.getAttribute("system_call_dtm")).longValue())) + "]");
+    if (request.getAttribute("system_call_dtm") != null) {
+      logger.error("Exception Start Dtm[" + format.format(new Date(((Long)request.getAttribute("system_call_dtm")).longValue())) + "]");
+    } else {
+      logger.error("Exception Start Dtm[" + format.format(new Date()) + "]");      
+    }
     logger.error("Request URI[" + request.getRequestURL().toString() + "]");
     logger.error("Query String[" + queryParam + "]");
     logger.error("UserNum[" + request.getSession().getAttribute("user_num") + "]");

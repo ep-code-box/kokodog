@@ -71,10 +71,12 @@ import org.apache.ibatis.session.SqlSession;
 public abstract class Batch {
   private static Logger logger = LogManager.getLogger(Batch.class);
   protected SqlSession sqlSession;
+  protected SqlSession sqlSessionForLog;
   private String report;
   private int errNum = 0;
   private int batchNum = 0;
   private long exeDtm = 0L;
+  protected static boolean checkProcessEnd = false;
   
   /**
    *  Batch 프로세스 수행 생성자
@@ -83,14 +85,18 @@ public abstract class Batch {
     logger.debug("============   Start constructor of Batch(Parameter - null)   ============");
   }
   
+  public static void setCheckProcessEnd() {
+    checkProcessEnd = true;
+  }
   /**
    *  Batch 프로세스 수행 시 DB에 접근하기 위한 sqlSession을 전달받는 메서드
    *  일반적인 배치에서는 사용해서는 안되며, Manage에서만 사용하도록 구현되어 있다.
    *  @param sqlSession : DB Connection Pool을 관리하는 객체
    */
-  public void setSqlSession(SqlSession sqlSession) {
+  public void setSqlSession(SqlSession sqlSession, SqlSession sqlSessionForLog) {
     logger.debug("============   Start method of Batch.setSqlSession   ============");
     this.sqlSession = sqlSession;
+    this.sqlSessionForLog = sqlSessionForLog;
   }
   
   /**
@@ -123,7 +129,8 @@ public abstract class Batch {
     inputMap.put("proc_log", str);
     inputMap.put("batch_num", batchNum);
     inputMap.put("exe_dtm", new Date(exeDtm));
-    sqlSession.update("com.cmn.cmn.batch.updateBatchAddLog", inputMap);
+    sqlSessionForLog.update("com.cmn.cmn.batch.updateBatchAddLog", inputMap);
+    sqlSessionForLog.getConnection().commit();
   }
   
   /**

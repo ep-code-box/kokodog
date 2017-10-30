@@ -76,8 +76,12 @@ public class GetStoProgressTimeHstInfo extends Batch{
             data = (String)getDataFromURLService.getDataFromURL(url, array, "GET", "UTF-8", GetDataFromURLService.TYPE_STRING);
             break;
           } catch (ConnectException e) {
+            addLog("Fail to get DB Data for stockNum[" + stockNum + "], page[" + (j + 1) + "]");
+            addLog(e.getMessage());
             Thread.sleep(10000);
           } catch (IOException e) {
+            addLog("Fail to get DB Data for stockNum[" + stockNum + "], page[" + (j + 1) + "]");
+            addLog(e.getMessage());
             Thread.sleep(10000);
           }
         }
@@ -127,10 +131,11 @@ public class GetStoProgressTimeHstInfo extends Batch{
           isStockInserted = true;
         }
       }
-      sqlSession.commit();
       if (isStockInserted == true) {
         insertStockCnt++;
       }
+      sqlSession.getConnection().commit();
+      System.out.println("After commit");
     }
     setReport("==========================================\nData Insert Count : " + insertDataCnt + "\nStock Insert Count : " + insertStockCnt + "\n===========================================\n");
   }

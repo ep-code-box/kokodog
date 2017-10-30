@@ -42,6 +42,7 @@
     SELECT rssci.stock_num AS stock_num
     FROM   res_sto_stock_corp_info rssci
     WHERE  #{date} BETWEEN rssci.eff_sta_dt AND rssci.eff_end_dt
+    ORDER BY stock_num
   </select>
   <select id="getResStoIsExistStockInfo" parameterType="HashMap" resultType="HashMap">
     SELECT CASE WHEN EXISTS (SELECT *

@@ -23,11 +23,9 @@ public class MemoryMonitorBatch extends Batch {
   public void run(long batchRunTime, String param) throws Exception {
     addLog("============   Start method of MemoryMonitorBatch.run   ============");
     addLog(" Parameter - batchRunTime[" + batchRunTime + "], param[" + param + "]");
-    Map<String, Object> outputMap = new HashMap<String, Object>();
     SimpleDateFormat format = null;
     format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    outputMap = sqlSession.selectOne("com.cmn.cmn.getServerTime");
-    long currentTime = (((Date)outputMap.get("datetime")).getTime() / 1000L / 10L) * 1000L * 10L;
+    long currentTime = (System.currentTimeMillis() / 1000L / 10L) * 1000L * 10L;
     addLog("Real Start time - " + currentTime);
     long lastInsertBatchTime = 0L;
     Calendar batchRunTimeCal = Calendar.getInstance();
@@ -48,10 +46,15 @@ public class MemoryMonitorBatch extends Batch {
       insertMemoryValue(currentTime, Integer.parseInt(System.getProperty("apnum")), Integer.parseInt(System.getProperty("containernum")));
       lastInsertBatchTime = currentTime;
       while (lastInsertBatchTime / 1000L / 10L >= currentTime / 1000L / 10L) {
-        outputMap = sqlSession.selectOne("com.cmn.cmn.getServerTime");
-        currentTime = (((Date)outputMap.get("datetime")).getTime() / 1000L / 10L) * 1000L * 10L;
+        currentTime = (System.currentTimeMillis() / 1000L / 10L) * 1000L * 10L;
         currentTimeCal.setTimeInMillis(currentTime);
         Thread.sleep(1000);
+        if (checkProcessEnd == true) {
+          break;
+        }
+      }
+      if (checkProcessEnd == true) {
+        break;
       }
       if (currentTime % (1000L * 60L * 60L) == 0) {
         addLog("    Start memory check for time - " + format.format(new Date(currentTime)));
@@ -68,6 +71,7 @@ public class MemoryMonitorBatch extends Batch {
     inputMap.put("free_memory", Runtime.getRuntime().freeMemory());
     inputMap.put("total_memory", Runtime.getRuntime().totalMemory());
     sqlSession.insert("com.opr.inf.batch.insertMemoryInfo", inputMap);
+    sqlSession.getConnection().commit();
     inputMap.clear();
   }
   
@@ -91,5 +95,6 @@ public class MemoryMonitorBatch extends Batch {
     inputMap.put("batch_num", getBatchNum());
     inputMap.put("exe_dtm", new Date(batchRunTime));
     sqlSession.delete("com.opr.inf.batch.deleteBatchHist", inputMap);
+    sqlSession.getConnection().commit();
   }
 }

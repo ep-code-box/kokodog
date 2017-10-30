@@ -21,8 +21,10 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.scheduling.annotation.Async;
 
@@ -48,7 +50,8 @@ import com.cmn.err.UserException;
 @Component
 public class BatchExeProcessComponent {
   @Autowired
-  private SqlSession sqlSession;
+  @Qualifier("sqlSessionFactoryForBatch")
+  private SqlSessionFactory sqlSessionFactoryForBatch;
   
   @Autowired
   private BatchExeProcessDao batchExeProcessDao;
@@ -74,52 +77,103 @@ public class BatchExeProcessComponent {
     String report = null;
     Batch batch = null;
     Class<Batch> clas = null;
+    SqlSession sqlSessionForBatch = null;
+    SqlSession sqlSessionForLog = null;
     try {
+      sqlSessionForLog = sqlSessionFactoryForBatch.openSession();
+      sqlSessionForLog.getConnection().setAutoCommit(false);
       inputMap = new HashMap<String, Object>();
       inputMap.clear();
       inputMap.put("batch_num", batchNum);
       inputMap.put("exe_dtm", new Date(exeDateTime));
       inputMap.put("ap_num", System.getProperty("apnum"));
       inputMap.put("container_num", System.getProperty("containernum"));
-      batchExeProcessDao.insertBatchExeProcess(inputMap);
+      sqlSessionForLog.insert("com.cmn.cmn.insertBatchExeProcess", inputMap);
+      sqlSessionForLog.getConnection().commit();
     } catch (Exception e) {
-      errorLogForInternalLogic(batchNum, exeDateTime, e);      
+      errorLogForInternalLogic(batchNum, exeDateTime, e);
+      if (sqlSessionForLog != null) {
+        sqlSessionForLog.close();
+      }
+      return;
     }
     try {
       clas = (Class<Batch>)Class.forName(className);
     } catch (ClassNotFoundException e) {
-      errorLogForBatch(batchNum, exeDateTime, new Exception("수행하고자 하는 Batch 프로그램이 없습니다."), null);      
+      errorLogForBatch(batchNum, exeDateTime, new Exception("수행하고자 하는 Batch 프로그램이 없습니다."), null, sqlSessionForLog);
+      if (sqlSessionForLog != null) {
+        sqlSessionForLog.close();
+      }
+      return;
     }
     try {
       batch = (Batch)((Constructor<Batch>)(clas.getConstructor())).newInstance();
     } catch (ClassCastException e) {
-      errorLogForBatch(batchNum, exeDateTime, new Exception("수행하고자 하는 Batch 프로그램이 \"com.cmn.cmn.batch.Batch\"를 상속받아 구현되지 않음."), null);
+      errorLogForBatch(batchNum, exeDateTime, new Exception("수행하고자 하는 Batch 프로그램이 \"com.cmn.cmn.batch.Batch\"를 상속받아 구현되지 않음."), null, sqlSessionForLog);
+      if (sqlSessionForLog != null) {
+        sqlSessionForLog.close();
+      }
+      return;
     } catch (Exception e) {
       errorLogForInternalLogic(batchNum, exeDateTime, e);      
+      if (sqlSessionForLog != null) {
+        sqlSessionForLog.close();
+      }
+      return;
     }
     try {
       batch.setBatchNum(batchNum);
-      batch.setSqlSession(sqlSession);
+      sqlSessionForBatch = sqlSessionFactoryForBatch.openSession();
+      sqlSessionForBatch.getConnection().setAutoCommit(false);
+      batch.setSqlSession(sqlSessionForBatch, sqlSessionForLog);
       batch.setExeDtm(exeDateTime);
     } catch (Exception e) {
-      errorLogForInternalLogic(batchNum, exeDateTime, e);      
+      errorLogForInternalLogic(batchNum, exeDateTime, e);
+      if (sqlSessionForBatch != null) {
+        sqlSessionForBatch.close();
+      }
+      if (sqlSessionForLog != null) {
+        sqlSessionForLog.close();
+      }
+      return;
     }
     try {
       batch.run(exeDateTime, param);
     } catch (Exception e) {
-      batch.rollback();
-      errorLogForBatch(batchNum, exeDateTime, e, batch);
+      try {
+        sqlSessionForBatch.getConnection().rollback();
+      } catch (Exception e2) {
+        errorLogForInternalLogic(batchNum, exeDateTime, e2);
+      }
+      errorLogForBatch(batchNum, exeDateTime, e, batch, sqlSessionForLog);
+      if (sqlSessionForBatch != null) {
+        sqlSessionForBatch.close();
+      }
+      if (sqlSessionForLog != null) {
+        sqlSessionForLog.close();
+      }
+      return;
     }
     try {
+      sqlSessionForBatch.getConnection().commit();
+      sqlSessionForLog.getConnection().commit();
       report = batch.getReport();
       inputMap.clear();
       inputMap.put("batch_num", batchNum);
       inputMap.put("exe_dtm", new Date(exeDateTime));
       inputMap.put("batch_result_report", report);
-      batchExeProcessDao.updateBatchFinishResult(inputMap);
+      sqlSessionForLog.update("com.cmn.cmn.updateBatchFinishResult", inputMap);
+      sqlSessionForLog.getConnection().commit();
       inputMap.clear();
     } catch (Exception e) {
       errorLogForInternalLogic(batchNum, exeDateTime, e);
+    } finally {
+      if (sqlSessionForBatch != null) {
+        sqlSessionForBatch.close();
+      }
+      if (sqlSessionForLog != null) {
+        sqlSessionForLog.close();
+      }
     }
   }
   
@@ -139,7 +193,7 @@ public class BatchExeProcessComponent {
     logger.error("=================      Internal Exception End     ==================");    
   }
 
-  private void errorLogForBatch(int batchNum, long exeDateTime, Exception e, Batch batch) {
+  private void errorLogForBatch(int batchNum, long exeDateTime, Exception e, Batch batch, SqlSession sqlSessionForLog) {
     Map<String, Object> inputMap = null;
     inputMap = new HashMap<String, Object>();
     String errReport = "";
@@ -166,7 +220,8 @@ public class BatchExeProcessComponent {
       inputMap.put("err_num", batch.getErrNum());
     }
     try {
-      batchExeProcessDao.updateErrReport(inputMap);
+      sqlSessionForLog.update("com.cmn.cmn.updateErrReport", inputMap);
+      sqlSessionForLog.getConnection().commit();
     } catch (Exception e2) {
       errorLogForInternalLogic(batchNum, exeDateTime, e2);
     }
