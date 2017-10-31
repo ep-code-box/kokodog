@@ -182,7 +182,12 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
         responseNum = 500;
         errMsg = ex.getMessage();
       } else {
-        responseNum = 200;
+        if (request.getAttribute("_REQUEST_RESPONSE_STATUS") == null) {
+          responseNum = 200;          
+        } else {
+          responseNum = ((Integer)request.getAttribute("_REQUEST_RESPONSE_STATUS")).intValue();
+          errMsg = (String)request.getAttribute("_REQUEST_ERR_MESSGE");
+        }
       }
     }
     addoptInfoComponent.endConnUpdate(request, response, getServerTimeService.getServerTime(), responseNum, errMsg, ((Long)request.getAttribute("_REQUEST_CONN_SEQ")).longValue()
@@ -195,7 +200,7 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     *  @param response - 서블릿 응답이 정의된 response
     */
   private void checkLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    logger.debug("============   Start method of InterceptorComponent.getPgmTaskPageName   ============");
+    logger.debug("============   Start method of InterceptorComponent.checkLogin   ============");
     Map<String, Object> outputMap = null;
     boolean isAccessTokenExist = false;
     String refreshToken = null;
