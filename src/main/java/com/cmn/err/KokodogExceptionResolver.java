@@ -85,10 +85,11 @@ public class KokodogExceptionResolver {
       ModelAndView mav = new ModelAndView();
       if (ex.getErrTyp() != 0) {
         mav.setViewName("cmn/err/err_" + ex.getErrTyp());
+        response.setStatus(ex.getErrTyp());
       } else {
         mav.setViewName("cmn/err/err_500");
+        response.setStatus(500);
       }
-      response.setStatus(ex.getErrTyp());
       return mav;
     }
   }
@@ -173,6 +174,10 @@ public class KokodogExceptionResolver {
   public Object exception(HttpServletRequest request, HttpServletResponse response, Exception ex) throws Exception {
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Enumeration<String> param = null;
+    request.setAttribute("sytem_call_end_dtm", getServerTimeService.getServerTime());
+    request.setAttribute("_REQUEST_RESPONSE_STATUS", ((KokodogException)ex).getErrTyp());
+    request.setAttribute("_REQUEST_ERR_MESSGE", ((KokodogException)ex).getMessage());
+    request.setAttribute("_REQUEST_FINISH", "Y");
     param = request.getParameterNames();
     String queryParam = "";
     while (param.hasMoreElements()){
@@ -183,7 +188,11 @@ public class KokodogExceptionResolver {
       queryParam = queryParam.substring(0, queryParam.length() - 1);
     }
     logger.error("=================     Internal Exception Start    ==================");
-    logger.error("Exception Start Dtm[" + format.format(new Date(((Long)request.getAttribute("system_call_dtm")).longValue())) + "]");
+    if (request.getAttribute("system_call_dtm") != null) {
+      logger.error("Exception Start Dtm[" + format.format(new Date(((Long)request.getAttribute("system_call_dtm")).longValue())) + "]");
+    } else {
+      logger.error("Exception Start Dtm[" + format.format(new Date()) + "]");      
+    }
     logger.error("Request URI[" + request.getRequestURL().toString() + "]");
     logger.error("Query String[" + queryParam + "]");
     logger.error("UserNum[" + request.getSession().getAttribute("user_num") + "]");
@@ -202,6 +211,7 @@ public class KokodogExceptionResolver {
     Map<String, Object> outputMap = messageService.getErrMessageByMessageNum(8);
     if (request.getMethod().equals("GET") == false) {
       Map<String, Object> returnMap = new HashMap<String, Object>();
+      returnMap.put("error_num", 99999);
       returnMap.put("error_nm", outputMap.get("msg"));
       returnMap.put("error_sub_nm", ex.getMessage());
       response.setStatus(((Integer)returnMap.get("err_typ")).intValue());

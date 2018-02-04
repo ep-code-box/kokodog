@@ -1148,66 +1148,6 @@
     AND    cbeh.exe_dtm = #{exe_dtm}
     AND    cbeh.batch_exe_state = 1
   </update>
-  <select id="getCmnNextCatalinaDir" parameterType="HashMap" resultType="HashMap">
-    SELECT ccd3.cd_seq_name AS dir
-         , CAST(ccd1.cd_seq_name AS DECIMAL) AS ap_num
-         , CAST(ccd2.cd_seq_name AS DECIMAL) AS container_num
-    FROM   cmn_cd_dtl ccd1
-         , cmn_cd_dtl ccd2
-         , cmn_cd_dtl ccd3
-    WHERE  NOW() BETWEEN ccd1.eff_sta_dtm AND ccd1.eff_end_dtm
-    AND    ccd1.cd_num = 23
-    AND    ccd1.cd_seq_name = CONCAT(#{ap_num})
-    AND    NOW() BETWEEN ccd2.eff_sta_dtm AND ccd2.eff_end_dtm
-    AND    ccd2.cd_num = 24
-    AND    ccd2.cd_seq_name = CONCAT(#{container_num} + 1)
-    AND    ccd2.cd_seq = ccd1.cd_seq
-    AND    NOW() BETWEEN ccd3.eff_sta_dtm AND ccd3.eff_end_dtm
-    AND    ccd3.cd_num = 25
-    AND    ccd3.cd_seq = ccd2.cd_seq
-    UNION ALL
-    SELECT ccd3.cd_seq_name AS dir
-         , CAST(ccd1.cd_seq_name AS DECIMAL) AS ap_num
-         , 1 AS container_num
-    FROM   cmn_cd_dtl ccd1
-         , cmn_cd_dtl ccd2
-         , cmn_cd_dtl ccd3
-    WHERE  NOW() BETWEEN ccd1.eff_sta_dtm AND ccd1.eff_end_dtm
-    AND    ccd1.cd_num = 23
-    AND    ccd1.cd_seq_name = CONCAT(#{ap_num})
-    AND    NOW() BETWEEN ccd2.eff_sta_dtm AND ccd2.eff_end_dtm
-    AND    ccd2.cd_num = 24
-    AND    #{container_num} = (SELECT MAX(CAST(ccd4.cd_seq_name AS DECIMAL))
-                               FROM   cmn_cd_dtl ccd4
-                                    , cmn_cd_dtl ccd5
-                               WHERE  NOW() BETWEEN ccd5.eff_sta_dtm AND ccd5.eff_end_dtm
-                               AND    ccd5.cd_num = 23
-                               AND    ccd5.cd_seq_name = ccd1.cd_seq_name
-                               AND    NOW() BETWEEN ccd4.eff_sta_dtm AND ccd4.eff_end_dtm
-                               AND    ccd4.cd_num = 24
-                               AND    ccd4.cd_seq = ccd5.cd_seq
-                              )
-    AND    ccd2.cd_seq = ccd1.cd_seq
-    AND    ccd2.cd_seq_name = '1'
-    AND    NOW() BETWEEN ccd3.eff_sta_dtm AND ccd3.eff_end_dtm
-    AND    ccd3.cd_num = 25
-    AND    ccd3.cd_seq = ccd2.cd_seq
-  </select>
-  <insert id="insertCmnAutoRecoveryHst" parameterType="HashMap">
-    INSERT INTO cmn_auto_recovery_hst
-    (datetime,
-     ap_num,
-     container_num,
-     audit_id,
-     audit_dtm
-    ) VALUES (
-     #{datetime},
-     #{ap_num},
-     #{container_num},
-     #{user_num},
-     NOW()
-    )
-  </insert>
   <insert id="insertCmnBatchProcessHst" parameterType="HashMap">
     INSERT INTO cmn_batch_proc_attm_hst
     (datetime,

@@ -10,12 +10,15 @@
 package com.cmn.cmn.component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
 import com.cmn.cmn.component.BatchExeManageComponent;
+
+import com.cmn.cmn.batch.Batch;
 
 /**
  *  이 객체는 Spring 기동 시에 com.cmn.cmn.batch.BatchExeManageComponent class의 backgroundProcess 메서드를 비동기로
@@ -35,5 +38,10 @@ public class BatchExeManageComponentMain {
   @PostConstruct
   public void postConstruct() {
     batchExeManageComponent.backgroundProcess();
+  }
+  
+  @PreDestroy
+  public void preDestroy() {
+    Batch.setCheckProcessEnd();
   }
 }

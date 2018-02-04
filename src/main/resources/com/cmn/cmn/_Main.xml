@@ -8,7 +8,7 @@
     AND    NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
   </select>
   <select id="getServerTime" resultType="HashMap">
-    SELECT NOW(3) AS datetime
+    SELECT SYSDATE() AS datetime
   </select>
   <update id="updateAllBatchExeError" parameterType="HashMap">
     UPDATE cmn_batch_exe_hst
