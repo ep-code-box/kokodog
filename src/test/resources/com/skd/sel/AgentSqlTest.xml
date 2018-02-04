@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skd.sel.agentTest">
+  <insert id="insertTestScnrioData" parameterType="HashMap">
+    INSERT INTO skd_sel_test_scnrio
+    (
+      scnrio_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , scnrio_nm
+    , op_typ_cd
+    , scnrio_desc
+    , seq_num
+    , src_cd
+    , eff_sta_dtm
+    )
+    SELECT IFNULL(MAX(ssts.scnrio_num) + 1, 1) AS scnrio_num
+         , '9999-12-31 23:59:59' AS eff_end_dtm
+         , #{user_num} AS audit_num
+         , NOW() AS audit_dtm
+         , #{scnrio_nm} AS scnrio_nm
+         , #{op_typ_cd} AS op_typ_cd
+         , #{scnrio_desc} AS scnrio_desc
+         , #{seq_num} AS seq_num
+         , #{src_cd} AS src_cd
+         , #{eff_sta_dtm} AS eff_sta_dtm
+    FROM   skd_sel_test_scnrio ssts
+  </insert>
+  <select id="getInsertedTestAgentData" parameterType="HashMap" resultType="HashMap">
+    SELECT MAX(ssts.scnrio_num) AS scnrio_num
+    FROM   skd_sel_test_scnrio ssts
+  </select>
+  <insert id="insertTestPlanData" parameterType="HashMap">
+    INSERT INTO skd_sel_test_plan
+    (
+      scnrio_num
+    , test_seq_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , sta_dt
+    , end_dt
+    , sta_tm
+    , end_tm
+    , exec_cycl
+    , wkday_exec_yn
+    , hkday_exec_yn
+    , eff_sta_dtm
+    ) VALUE (
+      #{scnrio_num}
+    , 1
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , #{sta_dt}
+    , #{end_dt}
+    , #{sta_tm}
+    , #{end_tm}
+    , #{exec_cycl}
+    , #{wkday_exec_yn}
+    , #{hkday_exec_yn}
+    , #{eff_sta_dtm}
+    )
+  </insert>
+  <insert id="insertTestCaseData" parameterType="HashMap">
+    INSERT INTO skd_sel_test_case
+    (
+      scnrio_num
+    , case_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , case_nm
+    , case_desc
+    , seq_num
+    , eff_sta_dtm
+    ) VALUE (
+      #{scnrio_num}
+    , 1
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , #{case_nm}
+    , #{case_desc}
+    , 1
+    , #{eff_sta_dtm}
+    )
+  </insert>
+  <insert id="insertTestInputData" parameterType="HashMap">
+    INSERT INTO skd_sel_test_input
+    (
+      scnrio_num
+    , input_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , input_nm
+    , input_desc
+    , eff_sta_dtm
+    ) VALUE (
+      #{scnrio_num}
+    , #{input_num}
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , #{input_nm}
+    , #{input_desc}
+    , #{eff_sta_dtm}
+    )
+  </insert>
+  <insert id="insertTestCaseInputData" parameterType="HashMap">
+    INSERT INTO skd_sel_test_case_input
+    (
+      scnrio_num
+    , case_num
+    , input_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , input_val
+    , eff_sta_dtm
+    ) VALUE (
+      #{scnrio_num}
+    , #{case_num}
+    , #{input_num}
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , #{input_val}
+    , #{eff_sta_dtm}
+    )
+  </insert>
+</mapper>

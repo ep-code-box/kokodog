@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skd.sel.agent">
+  <select id="getAllPlannedScnrio" parameterType="HashMap" resultType="HashMap">
+    SELECT ssts.scnrio_num AS scnrio_num
+         , CASE WHEN sstp.exec_cycl IS NULL
+                THEN STR_TO_DATE(CONCAT(DATE_FORMAT(CURDATE(), '%Y%m%d'), DATE_FORMAT(IFNULL(sstp.sta_tm, STR_TO_DATE('000000', '%H%i%s')), '%H%i%s')), '%Y%m%d%H%i%s')
+                ELSE STR_TO_DATE(CONCAT(DATE_FORMAT(CURDATE(), '%Y%m%d'), DATE_FORMAT(DATE_ADD(IFNULL(sstp.sta_tm, STR_TO_DATE('000000', '%H%i%s')), INTERVAL ci.int_num MINUTE), '%H%i%s')), '%Y%m%d%H%i%s')
+           END AS exec_expt_dtm
+    FROM   skd_sel_test_scnrio ssts
+         , skd_sel_test_plan sstp
+         , cmn_int ci
+    WHERE  1 = 1
+    AND    ci.int_num &lt;= (24 * 60)
+    AND    ci.int_num &gt;= 0
+    AND    ssts.scnrio_num = sstp.scnrio_num
+    AND    NOW() BETWEEN ssts.eff_sta_dtm AND ssts.eff_end_dtm
+    AND    NOW() BETWEEN sstp.eff_sta_dtm AND sstp.eff_end_dtm
+    AND    ((sstp.exec_cycl IS NULL
+             AND ci.int_num = 0
+            ) OR ci.int_num MOD sstp.exec_cycl = 0
+           )
+    AND    TIMESTAMPDIFF(MINUTE, IFNULL(sstp.sta_tm, STR_TO_DATE('000000', '%H%i%s')), IFNULL(sstp.end_tm, STR_TO_DATE('235959', '%H%i%s'))) &gt;= ci.int_num
+    AND    DATE_FORMAT(DATE_ADD(IFNULL(sstp.sta_tm, STR_TO_DATE('000000', '%H%i%s')), INTERVAL ci.int_num MINUTE), '%H%i%s') &lt;= DATE_FORMAT(NOW(), '%H%i%s')
+    AND    CURDATE() BETWEEN IFNULL(sstp.sta_dt, DATE_FORMAT('1900-01-01', '%Y%m%d')) AND IFNULL(sstp.end_dt, DATE_FORMAT('9999-12-31', '%Y%m%d'))
+    AND    CASE WHEN sstp.exec_cycl IS NULL
+                THEN STR_TO_DATE(CONCAT(DATE_FORMAT(CURDATE(), '%Y%m%d'), DATE_FORMAT(IFNULL(sstp.sta_tm, STR_TO_DATE('000000', '%H%i%s')), '%H%i%s')), '%Y%m%d%H%i%s')
+                ELSE STR_TO_DATE(CONCAT(DATE_FORMAT(CURDATE(), '%Y%m%d'), DATE_FORMAT(DATE_ADD(IFNULL(sstp.sta_tm, STR_TO_DATE('000000', '%H%i%s')), INTERVAL ci.int_num MINUTE), '%H%i%s')), '%Y%m%d%H%i%s')
+           END BETWEEN sstp.eff_sta_dtm AND sstp.eff_end_dtm
+    AND    CASE WHEN sstp.exec_cycl IS NULL
+                THEN STR_TO_DATE(CONCAT(DATE_FORMAT(CURDATE(), '%Y%m%d'), DATE_FORMAT(IFNULL(sstp.sta_tm, STR_TO_DATE('000000', '%H%i%s')), '%H%i%s')), '%Y%m%d%H%i%s')
+                ELSE STR_TO_DATE(CONCAT(DATE_FORMAT(CURDATE(), '%Y%m%d'), DATE_FORMAT(DATE_ADD(IFNULL(sstp.sta_tm, STR_TO_DATE('000000', '%H%i%s')), INTERVAL ci.int_num MINUTE), '%H%i%s')), '%Y%m%d%H%i%s')
+           END BETWEEN ssts.eff_sta_dtm AND ssts.eff_end_dtm
+    AND    NOT EXISTS (SELECT *
+                       FROM   skd_sel_test_rslt_spc sstr
+                       WHERE  sstr.scnrio_num = ssts.scnrio_num
+                       AND    ((sstp.exec_cycl IS NULL
+                                AND CONCAT(DATE_FORMAT(CURDATE(), '%Y%m%d'), IFNULL(sstp.sta_tm, STR_TO_DATE('000000', '%H%i%s'))) = DATE_FORMAT(sstr.test_expt_dtm, '%Y%m%d%H%i%s')
+                                ) OR CONCAT(DATE_FORMAT(CURDATE(), '%Y%m%d'), DATE_ADD(IFNULL(sstp.sta_tm, STR_TO_DATE('000000', '%H%i%s')), INTERVAL ci.int_num MINUTE)) = DATE_FORMAT(sstr.test_expt_dtm, '%Y%m%d%H%i%s')
+                               )
+                       )
+    ORDER BY 2, 1
+  </select>
+  <select id="getScnrioInfo" parameterType="HashMap" resultType="HashMap">
+    SELECT ssts.src_cd AS src_cd
+    FROM   skd_sel_test_scnrio ssts
+    WHERE  ssts.scnrio_num = #{scnrio_num}
+    AND    NOW() BETWEEN ssts.eff_sta_dtm AND ssts.eff_end_dtm
+  </select>
+  <select id="getCaseWithScnrio" parameterType="HashMap" resultType="HashMap">
+    SELECT sstc.case_num AS case_num
+    FROM   skd_sel_test_scnrio ssts
+         , skd_sel_test_case sstc
+    WHERE  ssts.scnrio_num = #{scnrio_num}
+    AND    NOW() BETWEEN ssts.eff_sta_dtm AND ssts.eff_end_dtm
+    AND    sstc.scnrio_num = ssts.scnrio_num
+    AND    NOW() BETWEEN sstc.eff_sta_dtm AND sstc.eff_end_dtm
+    ORDER BY sstc.case_num
+  </select>
+  <select id="getInputWithScnrioAndCase" parameterType="HashMap" resultType="HashMap">
+    SELECT sstc.case_num AS case_num
+         , ssti.input_num AS input_num
+         , ssti.input_nm AS input_nm
+         , sstci.input_val AS input_val
+    FROM   skd_sel_test_scnrio ssts
+         , skd_sel_test_case sstc
+         , skd_sel_test_input ssti
+         , skd_sel_test_case_input sstci
+    WHERE  ssts.scnrio_num = #{scnrio_num}
+    AND    NOW() BETWEEN ssts.eff_sta_dtm AND ssts.eff_end_dtm
+    AND    sstc.scnrio_num = ssts.scnrio_num
+    AND    sstc.case_num = #{case_num}
+    AND    NOW() BETWEEN sstc.eff_sta_dtm AND sstc.eff_end_dtm
+    AND    ssti.scnrio_num = ssts.scnrio_num
+    AND    NOW() BETWEEN ssti.eff_sta_dtm AND ssti.eff_end_dtm
+    AND    sstci.scnrio_num = ssts.scnrio_num
+    AND    sstci.case_num = sstc.case_num
+    AND    sstci.input_num = sstci.input_num
+    AND    NOW() BETWEEN sstci.eff_sta_dtm AND sstci.eff_end_dtm
+    ORDER BY sstc.case_num, ssti.input_num
+  </select>
+</mapper>
