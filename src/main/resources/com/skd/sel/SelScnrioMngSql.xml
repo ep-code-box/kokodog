@@ -21,4 +21,10 @@
            AND ssts.rownum &gt;= (IFNULL(#{page_num}, 1) - 1) * 40 + 1
           )
   </select>
+  <select id="getSrcCdByScnrioNum" parameterType="HashMap" resultType="HashMap">
+    SELECT ssts.src_cd AS src_cd
+    FROM   skd_sel_test_scnrio ssts
+    WHERE  ssts.scnrio_num = #{scnrio_num}
+    AND    NOW() BETWEEN ssts.eff_sta_dtm AND ssts.eff_end_dtm
+  </select>
 </mapper>

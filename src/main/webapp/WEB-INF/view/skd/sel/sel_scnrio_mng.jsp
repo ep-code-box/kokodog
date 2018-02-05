@@ -35,6 +35,7 @@
         contentInitLoad();
         contentEventLoad();
         setCodeMirrorEditor();
+        getSncrioLst();
       });
       
       /* jqWidget을 사용하는 각종 함수 들 첫 오픈 처리 */
@@ -66,7 +67,10 @@
         });
         $("div#data_tree_component").jqxTree({
           width: "100%",
-          height: "100%"
+          height: "100%",
+          allowDrag: false,
+          allowDrop: false,
+          checkboxes: false,
         });
         $("div#save_config_window").jqxWindow({
           position: "center",
@@ -96,6 +100,11 @@
 
       /* jqWidget을 사용하는 각종 이벤트들 맵핑 처리 */
       function contentEventLoad() {
+        $("div#data_tree_component").on("itemClick", event_div_data_tree_component_click);
+      }
+      
+      function event_div_data_tree_component_click(event) {
+        cmnSyncCall("GetSrcCdByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", event.args.element).value}, callback, null);
       }
       
       function setCodeMirrorEditor() {
@@ -179,8 +188,22 @@
       }
 
       function callback(data, act, input_param, callbackVar) {
-        if (act == "GetDBIOList") {
+        if (act == "GetScnrioLst") {
+          var i = 0;
+          for (i = 0; i < data.length; i++) {
+            $("div#data_tree_component").jqxTree("addTo", {label: data[i].scnrio_nm, value: data[i].scnrio_num});
+            $("div#data_tree_component").jqxTree("addTo", {label: "temp", value: 0}, $("div#data_tree_component").jqxTree("getItems")[$("div#data_tree_component").jqxTree("getItems").length - 1]);
+          }
         }
+      }
+      
+      function getSncrioLst() {
+        $("div#data_tree_component").jqxTree("clear");
+        getScnrioLstNext(1);
+      }
+      
+      function getScnrioLstNext(page_num) {
+        cmnSyncCall("GetScnrioLst", {sch_txt: $("input#search_text_component").val(), page_num: page_num}, callback, null);
       }
       
     </script>
@@ -224,7 +247,7 @@
                 <li>
                   <a id="help_about">Help</a>
                 </li>
-                <li type='separator'></li>
+                <li type="separator"></li>
                 <li>
                   <a id="help_about">About...</a>
                 </li>
