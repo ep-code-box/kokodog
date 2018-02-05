@@ -34,16 +34,32 @@ public class SkdSelAgentGetCurTestLstController {
    *  해당 메서드는 /skd/sel/agent/GetCurTestLst URL을 통해 호출된다.<br/>
    *  현재 시점 기준으로 셀레니움 테스트를 진행하여야 할 전수 시나리오, 케이스 및
    *  각 소스코드를 모두 가져온다.<br/>
+   *  리턴하는 대상은 다음과 같다.<br/>
+   *  <ul>
+   *  <li> 형식 : JSON 형식(List) </li>
+   *  <li>데이터 리스트</li>
+   *  <ul>
+   *  <li>scniro_num : 시나리오 번호 </li>
+   *  <li>exec_expt_dtm : 수행 예정 시각</li>
+   *  <li>server_dtm : 서버 시각</li>
+   *  <li>test_case : 테스트 케이스</li>
+   *  <ul>
+   *  <li>case_num : 케이스 번호</li>
+   *  <li>src_cd : 소스 코드</li>
+   *  </ul>
+   *  </ul>
+   *  </ul>
    *
-   *  @param request : 서블릿 Request
-   *  @param response : 서블릿 response
-   *  @return List 타입의 업로드 된 파일의 파일 키, 등록일시, 파일명을 갖고 있는 전체 목록
+   *  @param request 서블릿 Request
+   *          필수 파라미터 - 없음
+   *  @param response 서블릿 response
+   *  @return List 타입의 시나리오 번호 전체 리스트
    *  @throws 기타 Exception
    */
   @RequestMapping(value="/skd/sel/agent/GetCurTestLst", method=RequestMethod.POST)
   @ResponseBody
   public List<Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    logger.info("Start method of SkdSelAgentGetCurTestLstController.main[/skd/sel/agent/GetCurTestLst]");
+    logger.debug("Start method of SkdSelAgentGetCurTestLstController.main[/skd/sel/agent/GetCurTestLst]");
     validationCheck(request, response);
     List<Object> outputList = agentSvc.getCurTestLst();
     return outputList;
