@@ -35,7 +35,7 @@ import com.skd.sel.agent.service.AgentSvc;
  * @since   2018.02.03
  * @version 1.0
  */
-@Service("AgentSvcImpl")
+@Service("agentSvc")
 public class AgentSvcImpl implements AgentSvc {
   private static Logger logger = LogManager.getLogger(AgentSvcImpl.class);
   

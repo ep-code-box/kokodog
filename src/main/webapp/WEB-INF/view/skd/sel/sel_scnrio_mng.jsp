@@ -4,16 +4,17 @@
   <head>
     <title>KOKODOG[Selenium 테스트 시나리오/케이스/소스 관리 시스템]</title>
     <link rel="shortcut icon" type="image/x-icon" href="/FileDown?file_key=tId6m0peoFkF2GYcAfAJG48kOE5Djo5ky49MFtnX" />
-    <link rel="stylesheet" href="/css/dev/dbd/main.css"/>
-    <link rel="stylesheet" href="https://jqwidgets.com/public/jqwidgets/styles/jqx.base.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/skd/sel/sel_scnrio_mng.css"/>
+    <link rel="stylesheet" href="/js/jqwidgets/styles/jqx.base.css" type="text/css"/>
     <link href="https://fonts.googleapis.com/css?family=Oxygen+Mono" rel="stylesheet" type="text/css"/>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="https://jqwidgets.com/public/jqwidgets/jqx-all.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="/js/jqwidgets/jqx-all.js"></script>
     <link rel="stylesheet" href="http://codemirror.net/lib/codemirror.css"/>
     <link rel="stylesheet" href="http://codemirror.net/addon/hint/show-hint.css"/>
     <link rel="stylesheet" href="http://codemirror.net/addon/fold/foldgutter.css"/>
     <link rel="stylesheet" href="https://codemirror.net/theme/eclipse.css"/>
     <script src="http://codemirror.net/lib/codemirror.js"></script>
+    <script src="http://codemirror.net/mode/python/python.js"></script>
     <script src="http://codemirror.net/addon/edit/matchbrackets.js"></script>
     <script src="http://codemirror.net/addon/hint/show-hint.js"></script>
     <script src="http://codemirror.net/addon/hint/javascript-hint.js"></script>
@@ -27,18 +28,13 @@
     <script src="http://codemirror.net/mode/xml/xml.js"></script>
     <script src="/js/cmn.js"></script>
     <script type="text/javascript">
-      var editorArray = new Array();
-      var editorNum = 0;
-      var checkUnload = false;
-      var g_rep_ver_drop_down_system_change = false;
-      var g_cmEditorTheme = "eclipse";
+      var gCmEditorTheme = "eclipse";
 
       /* Document 로드 시에 발생하는 시작 함수 */
       $(document).ready(function() {
         contentInitLoad();
         contentEventLoad();
-        $("div#source_data_tab_component").jqxTabs("removeFirst");
-        GetDBIOList(1);
+        setCodeMirrorEditor();
       });
       
       /* jqWidget을 사용하는 각종 함수 들 첫 오픈 처리 */
@@ -68,14 +64,9 @@
           height: "100%",
           width: "100%"
         });
-        $("div#data_list_component").jqxListBox({
+        $("div#data_tree_component").jqxTree({
           width: "100%",
           height: "100%"
-        });
-        $("div#source_data_tab_component").jqxTabs({
-          width: "100%",
-          height: "100%",
-          showCloseButtons: true
         });
         $("div#save_config_window").jqxWindow({
           position: "center",
@@ -101,63 +92,34 @@
           height: "100%",
           width: "100%"          
         });
-        $("div#test_window").jqxWindow({
-          position: "center",
-          showCloseButton: true,
-          resizable: true,
-          isModal: true,
-          modalOpacity: 0.3,
-          draggable: true,
-          autoOpen: false,
-          width: "800px",
-          height: "600px"
-        });
-        $("div#test_input_component").jqxGrid({
-          width: "100%",
-          height: "100%",
-          sortable: true,
-          scrollmode: "logical",
-          editable: true,
-          editmode: "programmatic",
-          columnsresize: true,
-          showtoolbar: false,
-          selectionmode: "singlerow",
-          columns: [
-            {text: "Parameter Name", columntype: "textbox", width: "30%", datafield: "parameter_name"},
-            {text: "Parameter Value", columntype: "textbox", width: "70%", datafield: "parameter_value"}
-          ]
-        });
-        $("div#test_output_component").jqxGrid({
-          width: "100%",
-          height: "100%",
-          sortable: false,
-          scrollmode: "logical",
-          columnsresize: true,
-          editable: false,
-          selectionmode: "singlecell",
-          columns: []
-        });
-        $("div#test_input_component").on("rowclick", function(event) {
-          $("div#test_input_component").jqxGrid("endcelledit", event.args.rowindex, "parameter_value");
-        });
-        $("div#test_input_component").on("rowdoubleclick", function(event) {
-          $("div#test_input_component").jqxGrid("begincelledit", event.args.rowindex, "parameter_value");
-        });
-        $("input#test_ok_but_component").jqxButton({
-          height: "100%",
-          width: "100%"          
-        });
-        $("input#test_cancel_but_component").jqxButton({
-          height: "100%",
-          width: "100%"          
-        });
       }
 
       /* jqWidget을 사용하는 각종 이벤트들 맵핑 처리 */
       function contentEventLoad() {
       }
       
-      /* jsource_data_tab_component(메뉴 상단 아이콘 버튼) 신규 맵핑 처리 */
+      function setCodeMirrorEditor() {
+       var codeMirrorEditor = CodeMirror.fromTextArea($("#text_src_cd")[0], {
+          mode: "python",
+          lineNumbers: true,
+          lineWrapping: true,
+          readOnly: false,
+          foldGutter: {
+            rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.brace, CodeMirror.fold.comment)
+          },
+          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+        });
+        codeMirrorEditor.setOption("theme", gCmEditorTheme);
+        codeMirrorEditor.getWrapperElement().style["font-family"] = "Oxygen Mono";
+        codeMirrorEditor.refresh();
+        codeMirrorEditor.setSize("100%", "100%");
+        codeMirrorEditor.getDoc().setValue("");
+        codeMirrorEditor.getDoc().clearHistory();
+        codeMirrorEditor.on("change", function(cm, changeObj) {
+        });
+      }
+      
+      /* source_data_tab_component(메뉴 상단 아이콘 버튼) 신규 맵핑 처리 */
       function init_top_menu_icon_component_init_tools(type, index, tool, menuToolIninitialization) {
         switch (index) {
           case 0:
@@ -167,7 +129,6 @@
               width: "20px",
               height: "20px"
             });
-            newButton.on("click", event_a_menu_new_click);
             break;
           case 1:
             var saveButton = $("<div>" + "<img src='/FileDown?file_key=GgnS17SPV1IuXIfUZGWXfykXCbOMyeB2S2AGKtWD' title='Save...' style='width:20px;height:20px;'/>" + "</div>");
@@ -176,7 +137,6 @@
               width: "20px",
               height: "20px"
             });
-            saveButton.on("click", event_a_menu_save_click);
             break;
           case 2:
             var saveAsButton = $("<div>" + "<img src='/FileDown?file_key=6Tyvf2KhwkyKKug6IZZmJOvzLcZT4mYWoBK3D5Ke' title='Save As...' style='width:20px;height:20px;'/>" + "</div>");
@@ -185,7 +145,6 @@
               width: "20px",
               height: "20px"
             });
-            saveAsButton.on("click", event_a_menu_save_as_click);
             break;
           case 3:
             var distrubteButton = $("<div>" + "<img src='/FileDown?file_key=zc15PA0zUXEPfRQVPYNOTbcbdUEoJScZZLO8TBYG' title='Deploy' style='width:20px;height:20px;'/>" + "</div>");
@@ -194,7 +153,6 @@
               width: "20px",
               height: "20px"
             });
-            distrubteButton.on("click", event_a_menu_distributequery);
             break;
           case 4:
             var deleteButton = $("<div>" + "<img src='/FileDown?file_key=YwN3sUbnW2f7T2YrLy5lbLUztLD9EWDIyP3v6g4A' title='Ver. Delete' style='width:20px;height:20px;'/>" + "</div>");
@@ -203,7 +161,6 @@
               width: "20px",
               height: "20px"
             });
-            deleteButton.on("click", event_a_menu_deletequery);
             break;
           case 5:
             var testButton = $("<div>" + "<img src='/FileDown?file_key=YwN3sUbnW2f7T2YrLy5lbLUztLD9EWDIyP3v6g4A' title='Test' style='width:20px;height:20px;'/>" + "</div>");
@@ -212,11 +169,9 @@
               width: "20px",
               height: "20px"
             });
-            testButton.on("click", event_a_menu_test);
             break;
           case 6:
             tool.jqxDropDownList({width: "150px", height: "28px", dropDownHeight: "200px"});
-            tool.on("change", event_rep_ver_change);
             break;
           default:
             break;
@@ -288,20 +243,12 @@
             <div class="search_text">
               <input id="search_text_component"/>
             </div>
-            <div class="data_list">
-              <div id="data_list_component"></div>
+            <div class="data_tree">
+              <div id="data_tree_component"></div>
             </div>
           </div>
           <div class="right_splitter">
-            <div class="source_data_tab">
-              <div id="source_data_tab_component">
-                <ul>
-                  <li></li>
-                </ul>
-                <div>
-                </div>
-              </div>
-            </div>
+            <textarea class="text_src_cd" id="text_src_cd"></textarea>
           </div>
         </div>
       </div>
@@ -319,27 +266,6 @@
         </div>
         <div class="save_config_dbio_cancel_but">
           <input id="save_config_dbio_cancel_but_component" value="Cancel"/>
-        </div>
-      </div>
-    </div>
-    <div id="test_window" class="test_window" style="display:none;">
-      <div class="test_window_header">
-        SQL Test
-      </div>
-      <div style="overflow:hidden;" id="testWindowContent">
-        <div class="test_input">
-          <div id="test_input_component">
-          </div>
-        </div>
-        <div class="test_output">
-          <div id="test_output_component">
-          </div>
-        </div>
-        <div class="test_ok_but">
-          <input id="test_ok_but_component" value="Test"/>
-        </div>
-        <div class="test_cancel_but">
-          <input id="test_cancel_but_component" value="Cancel"/>
         </div>
       </div>
     </div>
