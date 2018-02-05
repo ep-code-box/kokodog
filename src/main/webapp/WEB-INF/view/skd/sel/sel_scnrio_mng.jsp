@@ -29,6 +29,7 @@
     <script src="/js/cmn.js"></script>
     <script type="text/javascript">
       var gCmEditorTheme = "eclipse";
+      var codeMirrorEditor;
 
       /* Document 로드 시에 발생하는 시작 함수 */
       $(document).ready(function() {
@@ -104,15 +105,17 @@
       }
       
       function event_div_data_tree_component_click(event) {
-        cmnSyncCall("GetSrcCdByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", event.args.element).value}, callback, null);
+        if ($("div#data_tree_component").jqxTree("getItem", event.args.element).parentElement == null) {
+          cmnSyncCall("GetSrcCdByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", event.args.element).value}, callback, null);
+        }
       }
       
       function setCodeMirrorEditor() {
-       var codeMirrorEditor = CodeMirror.fromTextArea($("#text_src_cd")[0], {
+       codeMirrorEditor = CodeMirror.fromTextArea($("#text_src_cd")[0], {
           mode: "python",
           lineNumbers: true,
           lineWrapping: true,
-          readOnly: false,
+          readOnly: "nocursor",
           foldGutter: {
             rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.brace, CodeMirror.fold.comment)
           },
@@ -194,6 +197,9 @@
             $("div#data_tree_component").jqxTree("addTo", {label: data[i].scnrio_nm, value: data[i].scnrio_num});
             $("div#data_tree_component").jqxTree("addTo", {label: "temp", value: 0}, $("div#data_tree_component").jqxTree("getItems")[$("div#data_tree_component").jqxTree("getItems").length - 1]);
           }
+        } else if (act == "GetSrcCdByScnrioNum") {
+          codeMirrorEditor.getDoc().setValue(data.src_cd);
+          codeMirrorEditor.setOption("readOnly", false);
         }
       }
       
