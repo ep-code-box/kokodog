@@ -79,4 +79,48 @@
     , #{eff_sta_dtm}
     )
   </insert>
+  <insert id="insertTestInputData" parameterType="HashMap">
+    INSERT INTO skd_sel_test_input
+    (
+      scnrio_num
+    , input_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , input_nm
+    , input_desc
+    , eff_sta_dtm
+    ) VALUE (
+      #{scnrio_num}
+    , #{input_num}
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , #{input_nm}
+    , #{input_desc}
+    , #{eff_sta_dtm}
+    )
+  </insert>
+  <insert id="insertTestCaseInputData" parameterType="HashMap">
+    INSERT INTO skd_sel_test_case_input
+    (
+      scnrio_num
+    , case_num
+    , input_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , input_val
+    , eff_sta_dtm
+    ) VALUE (
+      #{scnrio_num}
+    , #{case_num}
+    , #{input_num}
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , #{input_val}
+    , #{eff_sta_dtm}
+    )
+  </insert>
 </mapper>

@@ -73,6 +73,14 @@
           allowDrop: false,
           checkboxes: false,
         });
+        $("div#case_input_component").jqxGrid({
+          columns: [{text: "순번", datafield: "seq", width: 30, editable: false},
+                    {text: "입력명", datafield: "input_nm", width: 100, editable: false},
+                    {text: "입력값", datafield: "input_value", editable: true}
+                   ],
+          width: "100%",
+          height: "100%"
+        });
         $("div#save_config_window").jqxWindow({
           position: "center",
           showCloseButton: true,
@@ -107,12 +115,28 @@
       
       function event_div_data_tree_component_item_click(event) {
         if ($("div#data_tree_component").jqxTree("getItem", event.args.element).parentElement == null) {
+          $("div#div_case_input_rslt").css("display", "none");
+          $("div#div_src_cd").css("display", "block");
           cmnSyncCall("GetSrcCdByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", event.args.element).value}, callback, null);
+        } else {
+          $("div#div_src_cd").css("display", "none");
+          $("div#div_case_input_rslt").css("display", "block");
+          cmnSyncCall("GetTestInpuByCaseNum", {
+            scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getItem", event.args.element).parentElement).value
+            , case_num: $("div#data_tree_component").jqxTree("getItem", event.args.element).value
+          }, callback, null);
         }
       }
       
       function event_div_data_tree_component_expand(event) {
-        cmnASyncCall("GetTestCaseInfoByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", event.args.element).value}, callback, null);
+        if ($("div#data_tree_component").jqxTree("getItem", event.args.element).parentElement == null) {
+          for (var i = 0; i < $("div#data_tree_component").jqxTree("getItems").length; i++) {
+            if ($("div#data_tree_component").jqxTree("getItems")[i].parentElement == event.args.element) {
+              $("div#data_tree_component").jqxTree("removeItem", $("div#data_tree_component").jqxTree("getItems")[i]);
+            }
+          }
+          cmnASyncCall("GetTestCaseInfoByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", event.args.element).value}, callback, null);
+        }
       }
       
       function setCodeMirrorEditor() {
@@ -200,12 +224,22 @@
           var i = 0;
           for (i = 0; i < data.length; i++) {
             $("div#data_tree_component").jqxTree("addTo", {label: data[i].scnrio_nm, value: data[i].scnrio_num});
+            $("div#data_tree_component").jqxTree("addTo", {label: "", value: 0}, $("div#data_tree_component").jqxTree("getItems")[$("div#data_tree_component").jqxTree("getItems").length - 1]);
           }
         } else if (act == "GetSrcCdByScnrioNum") {
           codeMirrorEditor.getDoc().setValue(data.src_cd);
           codeMirrorEditor.setOption("readOnly", false);
         } else if (act == "GetTestCaseInfoByScnrioNum") {
-          $("div#data_tree_component").jqxTree("addTo", {label: "temp", value: 0}, $("div#data_tree_component").jqxTree("getItems")[$("div#data_tree_component").jqxTree("getItems").length - 1]);
+          for (var i = 0; i < $("div#data_tree_component").jqxTree("getItems").length; i++) {
+            if ($("div#data_tree_component").jqxTree("getItems")[i].parentElement == null && $("div#data_tree_component").jqxTree("getItems")[i].value == input_param.scnrio_num) {
+              break;
+            }
+          }
+          for (var i = 0; i < data.length; i++) {
+            $("div#data_tree_component").jqxTree("addTo", {label: data[i].case_nm, value: data[i].case_num}, $("div#data_tree_component").jqxTree("getItems")[i]);
+          }
+        } else if (act == "GetTestInpuByCaseNum") {
+          
         }
       }
       
@@ -217,7 +251,6 @@
       function getScnrioLstNext(page_num) {
         cmnSyncCall("GetScnrioLst", {sch_txt: $("input#search_text_component").val(), page_num: page_num}, callback, null);
       }
-      
     </script>
   </head>
   <body>
@@ -283,7 +316,19 @@
             </div>
           </div>
           <div class="right_splitter">
-            <textarea class="text_src_cd" id="text_src_cd"></textarea>
+            <div class="div_src_cd" id="div_src_cd" style="display:none;">
+              <textarea class="text_src_cd" id="text_src_cd"></textarea>            
+            </div>
+            <div class="div_case_input_rslt" id="div_case_input_rslt" style="display:none;">
+              <div class="case_input">
+                <div id="case_input_component">
+                </div>
+              </div>
+              <div class="rslt_expt">
+                <div id="rslt_expt_component">
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

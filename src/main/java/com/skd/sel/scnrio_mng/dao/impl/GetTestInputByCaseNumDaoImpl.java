@@ -12,10 +12,11 @@ import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.skd.sel.sel_scnrio_mng.dao.GetTestCaseInfoByScnrioNumDao;
+import com.skd.sel.sel_scnrio_mng.dao.GetTestInputByCaseNumDao;
 
 /**
- * 이 클래스는 셀레니움 테스트 플랫폼 시스템에서 시나리오 번호 입력값이 있을 때 테스트 케이스 정보를 가져오기 위한 클래스이다.<br/>
+ * 이 클래스는 셀레니움 테스트 플랫폼 시스템에서 시나리오 번호 및 케이스 번호가 있을 때 그에 해당하는 입력값 리스트를 가져오기 위한
+ * 클래스이다.<br/>
  * 아래 스크립트를 통해 데이터 구조가 마련되어 있어야 해당 클래스의 오류가 발생하지 않는다.<br/>
  * CREATE TABLE skd_sel_test_scnrio (<br/>
  *    scnrio_num INT(10) UNSIGNED NOT NULL COMMENT '시나리오번호'<br/>
@@ -45,34 +46,60 @@ import com.skd.sel.sel_scnrio_mng.dao.GetTestCaseInfoByScnrioNumDao;
  *  , PRIMARY KEY(scnrio_num, case_num, eff_end_dtm)<br/>
  * )  ENGINE=INNODB, COMMENT='셀레니움 테스트 케이스';<br/><br/>
  * 
+ * CREATE TABLE skd_sel_test_input (<br/>
+ *    scnrio_num INT(10) UNSIGNED NOT NULL COMMENT '시나리오번호'<br/>
+ *  , input_num INT(5) UNSIGNED NOT NULL COMMENT '입력번호'<br/>
+ *  , eff_end_dtm DATETIME NOT NULL COMMENT '유효죵료일시'<br/>
+ *  , audit_num INT(10) UNSIGNED NOT NULL COMMENT '권한자번호'<br/>
+ *  , audit_dtm DATETIME NOT NULL COMMENT '권한일시'<br/>
+ *  , INPUT_NM VARCHAR(255) NOT NULL COMMENT '입력명'<br/>
+ *  , INPUT_DESC TEXT(65535) NULL COMMENT '입력상세'<br/>
+ *  , eff_sta_dtm DATETIME NOT NULL COMMENT '유효시작일시'<br/>
+ *  , PRIMARY KEY(scnrio_num, input_num, eff_end_dtm)<br/>
+ *  , INDEX SKD_SEL_TEST_INPUT_N1(scnrio_num, INPUT_NM)<br/>
+ * )  ENGINE=INNODB, COMMENT='셀레니움 테스트 입력';<br/><br/>
+ *
+ * CREATE TABLE skd_sel_test_case_input (<br/>
+ *    scnrio_num INT(10) UNSIGNED NOT NULL COMMENT '시나리오번호'<br/>
+ *  , case_num INT(10) UNSIGNED NOT NULL COMMENT '케이스번호'<br/>
+ *  , input_num INT(5) UNSIGNED NOT NULL COMMENT '입력번호'<br/>
+ *  , eff_end_dtm DATETIME NOT NULL COMMENT '유효죵료일시'<br/>
+ *  , audit_num INT(10) UNSIGNED NOT NULL COMMENT '권한자번호'<br/>
+ *  , audit_dtm DATETIME NOT NULL COMMENT '권한일시'<br/>
+ *  , input_val VARCHAR(255) NOT NULL COMMENT '입력값'<br/>
+ *  , eff_sta_dtm DATETIME NOT NULL COMMENT '유효시작일시'<br/>
+ *  , PRIMARY KEY(scnrio_num, case_num, input_num, eff_end_dtm)<br/>
+ * )  ENGINE=INNODB, COMMENT='셀레니움 테스트 케이스별 입력';<br/><br/>
+ * 
  * @author  Minseok Lee
  * @since   2018.02.03
  * @version 1.0
  */
-@Repository("getTestCaseInfoByScnrioNumDao")
-public class GetTestCaseInfoByScnrioNumDaoImpl implements GetTestCaseInfoByScnrioNumDao {
-  private static Logger logger = LogManager.getLogger(GetTestCaseInfoByScnrioNumDaoImpl.class);
+@Repository("getTestInputByCaseNumDao")
+public class GetTestInputByCaseNumDaoImpl implements GetTestInputByCaseNumDao {
+  private static Logger logger = LogManager.getLogger(GetTestInputByCaseNumDaoImpl.class);
 
   @Autowired
   private SqlSession sqlSession;
   /**
-   * 입력받은 시나리오 번호를 기준으로 테스트 케이스 리스트를 되돌려준다.
+   * 입력받은 시나리오 번호 및 케이스번호를 기준으로 테스트 케이스 입력값 리스트를 되돌려준다.
    *
    * @param inputMap Map형식으로 아래 내용이 포함된다.
    *        scnrio_num : 시나리오 번호(필수)
+   *        case_num : 케이스 번호(필수)
    * @return List 형식으로 아래 내용이 포함된 Map의 리스트를 되돌려준다.
-   *        case_num : 케이스 번호
-   *        case_nm : 케이스명
-   *        case_desc : 케이스 설명
+   *        input_num : 케이스 번호
+   *        input_nm : 케이스명
+   *        input_val : 케이스 설명
    * @exception SQLException SQL 수행 시 발생할 수 있는 예외
    */
-  public List<Map<String, Object>> getTestCaseInfoByScnrioNum(Map<String, Object> inputMap) throws SQLException {
-    logger.debug("============   Start method of GeTestCaseInfoByScnrioNumDaoImpl.getTestCaseInfoByScnrioNum   ============");
+  public List<Map<String, Object>> getTestInputByCaseNum(Map<String, Object> inputMap) throws SQLException {
+    logger.debug("============   Start method of GetTestInputByCaseNumDaoImpl.getTestInputByCaseNum   ============");
     logger.debug("Parameter inputMap[" + inputMap.toString() + "]");
     List<Map<String, Object>> outputList = null;
-    outputList = sqlSession.selectList("com.skd.sel.sel_scnrio_mng.getTestCaseInfoByScnrioNum", inputMap);
+    outputList = sqlSession.selectList("com.skd.sel.sel_scnrio_mng.getTestInputByCaseNum", inputMap);
     logger.debug("Output Map[" + outputList.toString() + "]");
-    logger.debug("============   End method of GeTestCaseInfoByScnrioNumDaoImpl.getTestCaseInfoByScnrioNum   ============");
+    logger.debug("============   End method of GetTestInputByCaseNumDaoImpl.getTestInputByCaseNum   ============");
     return outputList;    
   }
 }
