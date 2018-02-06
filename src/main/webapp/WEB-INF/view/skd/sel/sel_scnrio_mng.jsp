@@ -101,13 +101,18 @@
 
       /* jqWidget을 사용하는 각종 이벤트들 맵핑 처리 */
       function contentEventLoad() {
-        $("div#data_tree_component").on("itemClick", event_div_data_tree_component_click);
+        $("div#data_tree_component").on("itemClick", event_div_data_tree_component_item_click);
+        $("div#data_tree_component").on("expand", event_div_data_tree_component_expand);
       }
       
-      function event_div_data_tree_component_click(event) {
+      function event_div_data_tree_component_item_click(event) {
         if ($("div#data_tree_component").jqxTree("getItem", event.args.element).parentElement == null) {
           cmnSyncCall("GetSrcCdByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", event.args.element).value}, callback, null);
         }
+      }
+      
+      function event_div_data_tree_component_expand(event) {
+        cmnASyncCall("GetTestCaseInfoByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", event.args.element).value}, callback, null);
       }
       
       function setCodeMirrorEditor() {
@@ -195,11 +200,12 @@
           var i = 0;
           for (i = 0; i < data.length; i++) {
             $("div#data_tree_component").jqxTree("addTo", {label: data[i].scnrio_nm, value: data[i].scnrio_num});
-            $("div#data_tree_component").jqxTree("addTo", {label: "temp", value: 0}, $("div#data_tree_component").jqxTree("getItems")[$("div#data_tree_component").jqxTree("getItems").length - 1]);
           }
         } else if (act == "GetSrcCdByScnrioNum") {
           codeMirrorEditor.getDoc().setValue(data.src_cd);
           codeMirrorEditor.setOption("readOnly", false);
+        } else if (act == "GetTestCaseInfoByScnrioNum") {
+          $("div#data_tree_component").jqxTree("addTo", {label: "temp", value: 0}, $("div#data_tree_component").jqxTree("getItems")[$("div#data_tree_component").jqxTree("getItems").length - 1]);
         }
       }
       

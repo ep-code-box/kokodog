@@ -31,4 +31,52 @@
     SELECT MAX(ssts.scnrio_num) AS scnrio_num
     FROM   skd_sel_test_scnrio ssts
   </select>
+  <insert id="insertTempTestCaseData" parameterType="HashMap">
+    INSERT INTO skd_sel_test_case
+    (
+      scnrio_num
+    , case_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , case_nm
+    , case_desc
+    , seq_num
+    , eff_sta_dtm
+    )
+    SELECT IFNULL(MAX(ssts.scnrio_num) + 1, 1) AS scnrio_num
+         , #{case_num}
+         , '9999-12-31 23:59:59' AS eff_end_dtm
+         , #{user_num} AS audit_num
+         , NOW() AS audit_dtm
+         , #{case_nm} AS scnrio_nm
+         , #{case_desc} AS scnrio_desc
+         , #{seq_num} AS seq_num
+         , #{eff_sta_dtm} AS eff_sta_dtm
+    FROM   skd_sel_test_scnrio ssts
+  </insert>
+  <insert id="insertTestCaseData" parameterType="HashMap">
+    INSERT INTO skd_sel_test_case
+    (
+      scnrio_num
+    , case_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , case_nm
+    , case_desc
+    , seq_num
+    , eff_sta_dtm
+    ) VALUE (
+      #{scnrio_num}
+    , 1
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , #{case_nm}
+    , #{case_desc}
+    , 1
+    , #{eff_sta_dtm}
+    )
+  </insert>
 </mapper>

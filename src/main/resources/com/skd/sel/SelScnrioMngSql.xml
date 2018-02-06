@@ -27,4 +27,16 @@
     WHERE  ssts.scnrio_num = #{scnrio_num}
     AND    NOW() BETWEEN ssts.eff_sta_dtm AND ssts.eff_end_dtm
   </select>
+  <select id="getTestCaseInfoByScnrioNum" parameterType="HashMap" resultType="HashMap">
+    SELECT sstc.case_num AS case_num
+         , sstc.case_nm AS case_nm
+         , sstc.case_desc AS case_desc
+    FROM   skd_sel_test_scnrio ssts
+         , skd_sel_test_case sstc
+    WHERE  ssts.scnrio_num = #{scnrio_num}
+    AND    NOW() BETWEEN ssts.eff_sta_dtm AND ssts.eff_end_dtm
+    AND    ssts.scnrio_num = sstc.scnrio_num
+    AND    NOW() BETWEEN sstc.eff_sta_dtm AND sstc.eff_end_dtm
+    ORDER BY sstc.seq_num
+  </select>
 </mapper>

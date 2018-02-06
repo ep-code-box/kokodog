@@ -20,7 +20,7 @@ import com.cmn.err.SystemException;
 /**
  *  이 클래스는 SK 주식회사 C&C DT 프로젝트 일환으로
  *  진행하고 있는 셀레니움을 통한 테스트 자동화를 목적으로 수행한다.<br/>
- *  현재 시점에 테스트를 진행해야 할 소스코드, 시나리오, 케이스 리스트를 서버에서 받아오는 역할을 수행한다.
+ *  전체 시나리오 리스트를 리턴해주는 메서드를 포함한 컨트롤러이다.
  */
 @Controller
 public class SkdSelGetScnrioLstController {
@@ -34,8 +34,8 @@ public class SkdSelGetScnrioLstController {
   
   /**
    *  해당 메서드는 /skd/sel/sel_scnrio_mng/GetScnrioLst URL을 통해 호출된다.<br/>
-   *  현재 시점 기준으로 셀레니움 테스트를 진행하여야 할 전수 시나리오, 케이스 및
-   *  각 소스코드를 모두 가져온다.<br/>
+   *  전체 시나리오 목록을 검색어를 기준으로 리턴해준다.<br/>
+   *  페이징 기능이 있어 페이지별로 40건의 시나리오를 가져오도록 구성되어 있다.<br/>
    *  리턴하는 대상은 다음과 같다.<br/>
    *  <ul>
    *  <li> 형식 : JSON 형식(List) </li>
