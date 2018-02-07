@@ -84,14 +84,14 @@ import com.skd.sel.agent.dao.AgentDao;
  *  , audit_num INT(10) UNSIGNED NOT NULL COMMENT '권한자번호'<br/>
  *  , audit_dtm DATETIME NOT NULL COMMENT '권한일시'<br/>
  *  , rslt_strd VARCHAR(255) NULL COMMENT '결과기준'<br/>
- *  , judg_typ_num INT(2) NOT NULL COMMENT '판별유형번호'<br/>
+ *  , judg_typ_cd INT(2) NOT NULL COMMENT '판별유형코드'<br/>
  *  , eff_sta_dtm DATETIME NOT NULL COMMENT '유효시작일시'<br/>
  *  , PRIMARY KEY(scnrio_num, case_num, test_step_num, eff_end_dtm)<br/>
  *  , INDEX SKD_SEL_TEST_EXPT_RSLT_N1(scnrio_num, case_num, eff_end_dtm, test_step_num)<br/>
  * )  ENGINE=INNODB, COMMENT='셀레니움 테스트 기대 결과';<br/><br/>
  * 
- * Table 6 : SKD_SEL_TEST_RSLT_SPC(셀레니움 테스트 결과 명세)<br/>
- * CREATE TABLE SKD_SEL_TEST_RSLT_SPC (<br/>
+ * Table 6 : skd_sel_test_rslt_spc(셀레니움 테스트 결과 명세)<br/>
+ * CREATE TABLE skd_sel_test_rslt_spc (<br/>
  *    scnrio_num INT(10) UNSIGNED NOT NULL COMMENT '시나리오번호'<br/>
  *  , case_num INT(10) UNSIGNED NOT NULL COMMENT '케이스번호'<br/>
  *  , test_expt_dtm DATETIME NOT NULL COMMENT '테스트예정일시'<br/>

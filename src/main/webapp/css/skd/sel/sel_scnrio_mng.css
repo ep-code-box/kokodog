@@ -166,16 +166,16 @@ body {
 
 .case_input {
   position: absolute;
-  width: 100%;
-  height: 50%;
-  left: 0;
-  top: 0;  
+  right: 2px;
+  height: 49%;
+  left: 2px;
+  top: 2px;
 }
 
 .rslt_expt {
   position: absolute;
-  width: 100%;
-  height: 50%;
-  left: 0;
-  top: 50%;  
+  right: 2px;
+  bottom: 2px;
+  left: 2px;
+  top: 51%;  
 }

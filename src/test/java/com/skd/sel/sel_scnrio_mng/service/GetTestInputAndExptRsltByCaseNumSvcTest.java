@@ -71,24 +71,38 @@ public class GetTestInputAndExptRsltByCaseNumSvcTest {
     testInputMap.put("input_val", "테스트 입력 값");
     testInputMap.put("eff_sta_dtm", new Date(staDtm.getTimeInMillis()));
     insertTestCaseInputData(testInputMap);
+    testInputMap.clear();
+    testInputMap.put("scnrio_num", scnrioNum);
+    testInputMap.put("case_num", 1);
+    testInputMap.put("test_step_num", 1);
+    testInputMap.put("user_num", 0);
+    testInputMap.put("rslt_strd", "테스트 결과 기준");
+    testInputMap.put("judg_typ_cd", 2);
+    testInputMap.put("eff_sta_dtm", new Date(staDtm.getTimeInMillis()));
+    insertTestExptRsltData(testInputMap);
+    testInputMap.clear();
     testInputMap.put("scnrio_num", scnrioNum);
     testInputMap.put("case_num", 1);
     outputMap = getTestInputAndExptRsltByCaseNumSvc.getTestInputAndExptRsltByCaseNum(testInputMap);
     if (outputMap.get("input") == null) {
       Assert.fail("input 데이터가 존재하지 않습니다.");
     }
-/*    if (outputMap.get("input") instanceof List != false) {
-      Assert.fail("Map 내 input 값이 List 타입이 아닙니다.");
-    }
-    if (((List)outputMap.get("input")).get(0) instanceof Map != false) {
-      Assert.fail("Map 내 input 의 첫번째 List의 Map 타입이 아닙니다.");
-    }*/
     if (((List<Map<String, Object>>)outputMap.get("input")).size() != 1) {
       Assert.fail("Map 내 input 값의 size가 예상했던 1이 아닙니다.[" + ((List<Map<String, Object>>)outputMap.get("input")).size() + "]");
     }
     Assert.assertEquals(((List<Map<String, Object>>)outputMap.get("input")).get(0).get("input_num"), 1L);
     Assert.assertEquals(((List<Map<String, Object>>)outputMap.get("input")).get(0).get("input_nm"), "테스트 입력");
     Assert.assertEquals(((List<Map<String, Object>>)outputMap.get("input")).get(0).get("input_val"), "테스트 입력 값");
+    if (outputMap.get("expt_rslt") == null) {
+      Assert.fail("expt_rslt 데이터가 존재하지 않습니다.");
+    }
+    if (((List<Map<String, Object>>)outputMap.get("expt_rslt")).size() != 1) {
+      Assert.fail("Map 내 expt_rslt 값의 size가 예상했던 1이 아닙니다.[" + ((List<Map<String, Object>>)outputMap.get("expt_rslt")).size() + "]");
+    }
+    Assert.assertEquals(((List<Map<String, Object>>)outputMap.get("expt_rslt")).get(0).get("test_step_num"), 1L);
+    Assert.assertEquals(((List<Map<String, Object>>)outputMap.get("expt_rslt")).get(0).get("rslt_strd"), "테스트 결과 기준");
+    Assert.assertEquals(((List<Map<String, Object>>)outputMap.get("expt_rslt")).get(0).get("judg_typ_cd"), 2);
+    Assert.assertEquals(((List<Map<String, Object>>)outputMap.get("expt_rslt")).get(0).get("judg_typ_nm"), "비정상 리턴");
   }
   
   private void insertTempScnrioData(Map<String, Object> testInputMap) throws Exception {
@@ -109,5 +123,9 @@ public class GetTestInputAndExptRsltByCaseNumSvcTest {
 
   private void insertTestCaseInputData(Map<String, Object> inputMap) throws Exception {
     sqlSession.selectOne("com.skd.sel.SelScnrioMngTest.insertTestCaseInputData", inputMap);
+  }
+
+  private void insertTestExptRsltData(Map<String, Object> inputMap) throws Exception {
+    sqlSession.selectOne("com.skd.sel.SelScnrioMngTest.insertTestExptRsltData", inputMap);
   }
 }

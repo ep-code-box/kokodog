@@ -74,9 +74,21 @@
           checkboxes: false,
         });
         $("div#case_input_component").jqxGrid({
-          columns: [{text: "순번", datafield: "seq", width: 30, editable: false},
-                    {text: "입력명", datafield: "input_nm", width: 100, editable: false},
-                    {text: "입력값", datafield: "input_value", editable: true}
+          editable: true,
+          enabletooltips: true,
+          columns: [{text: "순번", datafield: "seq", width: 40, editable: false, columntype: "dropdownlist"},
+                    {text: "입력명", datafield: "input_nm", width: "30%", editable: false, columntype: "textbox"},
+                    {text: "입력값", datafield: "input_val", editable: true, columntype: "textbox"}
+                   ],
+          width: "100%",
+          height: "100%"
+        });
+        $("div#rslt_expt_component").jqxGrid({
+          editable: true,
+          enabletooltips: true,
+          columns: [{text: "순번", datafield: "seq", width: 40, editable: true, columntype: "textbox"},
+                    {text: "판정여부구분", datafield: "input_nm", width: "30%", editable: true, columntype: "dropdownlist"},
+                    {text: "기준문구", datafield: "input_val", editable: true, columntype: "textbox"}
                    ],
           width: "100%",
           height: "100%"
@@ -121,7 +133,7 @@
         } else {
           $("div#div_src_cd").css("display", "none");
           $("div#div_case_input_rslt").css("display", "block");
-          cmnSyncCall("GetTestInpuByCaseNum", {
+          cmnSyncCall("GetTestInputAndExptRsltByCaseNum", {
             scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getItem", event.args.element).parentElement).value
             , case_num: $("div#data_tree_component").jqxTree("getItem", event.args.element).value
           }, callback, null);
@@ -143,7 +155,7 @@
        codeMirrorEditor = CodeMirror.fromTextArea($("#text_src_cd")[0], {
           mode: "python",
           lineNumbers: true,
-          lineWrapping: true,
+          lineWrapping: false,
           readOnly: "nocursor",
           foldGutter: {
             rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.brace, CodeMirror.fold.comment)
@@ -238,8 +250,11 @@
           for (var i = 0; i < data.length; i++) {
             $("div#data_tree_component").jqxTree("addTo", {label: data[i].case_nm, value: data[i].case_num}, $("div#data_tree_component").jqxTree("getItems")[i]);
           }
-        } else if (act == "GetTestInpuByCaseNum") {
-          
+        } else if (act == "GetTestInputAndExptRsltByCaseNum") {
+          $("div#case_input_component").jqxGrid("clear");
+          for (var i = 0; i < data.input.length; i++) {
+            $("div#case_input_component").jqxGrid("addrow", null, {seq: (i + 1), input_nm: data.input[i].input_nm, input_val: data.input[i].input_val});
+          }
         }
       }
       

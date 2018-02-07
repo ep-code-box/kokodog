@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.skd.sel.sel_scnrio_mng.service.GetTestInputAndExptRsltByCaseNumSvc;
 import com.skd.sel.sel_scnrio_mng.dao.GetTestInputByCaseNumDao;
+import com.skd.sel.sel_scnrio_mng.dao.GetExptRsltLstByCaseNumDao;
 
 /**
  * 이 클래스는 Selenium 테스트 자동화 도구 개발 프로젝트 내에서
@@ -33,6 +34,9 @@ public class GetTestInputAndExptRsltByCaseNumSvcImpl implements GetTestInputAndE
   
   @Autowired
   private GetTestInputByCaseNumDao getTestInputByCaseNumDao;
+  
+  @Autowired
+  private GetExptRsltLstByCaseNumDao getExptRsltLstByCaseNumDao;
 
   /**
    * 시나리오 번호에 해당하는 입력정보 및 기대결과 정보를 포함한다.
@@ -54,6 +58,7 @@ public class GetTestInputAndExptRsltByCaseNumSvcImpl implements GetTestInputAndE
   public Map<String, Object> getTestInputAndExptRsltByCaseNum(Map<String, Object> inputMap) throws Exception {
     Map<String, Object> outputMap = new HashMap<String, Object>();
     outputMap.put("input", getTestInputByCaseNumDao.getTestInputByCaseNum(inputMap));
+    outputMap.put("expt_rslt", getExptRsltLstByCaseNumDao.getExptRsltLstByCaseNum(inputMap));
     return outputMap;
   }
 }

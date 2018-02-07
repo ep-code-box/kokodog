@@ -61,4 +61,30 @@
     AND    NOW() BETWEEN ssti.eff_sta_dtm AND ssti.eff_end_dtm
     ORDER BY ssti.input_num
   </select>
+  <select id="getExptRsltLstByCaseNum" parameterType="HashMap" resultType="HashMap">
+    SELECT sster.test_step_num AS test_step_num
+         , sster.rslt_strd AS rslt_strd
+         , sster.judg_typ_cd AS judg_typ_cd
+         , (SELECT ccd.cd_seq_name
+            FROM   cmn_cd_spc ccs
+                 , cmn_cd_dtl ccd
+            WHERE  ccs.cd_num = 34
+            AND    NOW() BETWEEN ccs.eff_sta_dtm AND ccs.eff_end_dtm
+            AND    ccs.cd_num = ccd.cd_num
+            AND    ccd.cd_seq = sster.judg_typ_cd
+            AND    NOW() BETWEEN ccd.eff_sta_dtm AND ccd.eff_end_dtm
+           ) AS judg_typ_nm
+    FROM    skd_sel_test_expt_rslt sster
+          , skd_sel_test_scnrio ssts
+          , skd_sel_test_case sstc
+    WHERE   ssts.scnrio_num = #{scnrio_num}
+    AND     NOW() BETWEEN sster.eff_sta_dtm AND sster.eff_end_dtm
+    AND     sstc.scnrio_num = ssts.scnrio_num
+    AND     sstc.case_num = #{case_num}
+    AND     NOW() BETWEEN sstc.eff_sta_dtm AND sstc.eff_end_dtm
+    AND     sster.scnrio_num = ssts.scnrio_num
+    AND     sster.case_num = sstc.case_num
+    AND     NOW() BETWEEN sster.eff_sta_dtm AND sster.eff_end_dtm
+    ORDER BY sster.test_step_num
+  </select>
 </mapper>
