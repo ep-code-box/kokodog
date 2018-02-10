@@ -59,7 +59,7 @@ public class InsertNewScnrioSvcImpl implements InsertNewScnrioSvc {
       throw userException.userException(22, "시나리오명", (String)inputMap.get("scnrio_nm"));
     }
     methodInputMap.clear();
-/*    try {
+    try {
       sra = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
       request = sra.getRequest();
       if (request == null || request.getSession() == null || request.getSession().getAttribute("user_num") == null) {
@@ -67,14 +67,12 @@ public class InsertNewScnrioSvcImpl implements InsertNewScnrioSvc {
         methodInputMap.put("system_call_dtm", new Date());
       } else {
         methodInputMap.put("user_num", ((Integer)request.getSession().getAttribute("user_num")).intValue());
-        methodInputMap.put("system_call_dtm", new Date(((Long)request.getSession().getAttribute("system_call_dtm")).longValue()));
+        methodInputMap.put("system_call_dtm", new Date(((Long)request.getAttribute("system_call_dtm")).longValue()));
       }
     } catch (Exception e) {
-      throw e;
+      methodInputMap.put("user_num", 0);
+      methodInputMap.put("system_call_dtm", new Date());
     }
-*/
-    methodInputMap.put("user_num", inputMap.get("user_num"));
-    methodInputMap.put("system_call_dtm", inputMap.get("system_call_dtm"));
     methodInputMap.put("scnrio_nm", inputMap.get("scnrio_nm"));
     methodInputMap.put("scnrio_desc", inputMap.get("scnrio_desc"));
     insertNewScnrioDao.insertNewScnrio(methodInputMap);
