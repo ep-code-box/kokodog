@@ -78,7 +78,7 @@ public class InsertNewScnrioSvcImpl implements InsertNewScnrioSvc {
         methodInputMap.put("system_call_dtm", new Date(((Long)request.getSession().getAttribute("system_call_dtm")).longValue()));
       }
     } catch (Exception e) {
-      methodInputMap.put("user_num", 0);
+      methodInputMap.put("user_num", 10);
       methodInputMap.put("system_call_dtm", new Date());
     }
     methodInputMap.put("scnrio_nm", inputMap.get("scnrio_nm"));
