@@ -59,7 +59,7 @@ public class InsertNewScnrioSvcImpl implements InsertNewScnrioSvc {
       throw userException.userException(22, "시나리오명", (String)inputMap.get("scnrio_nm"));
     }
     methodInputMap.clear();
-    try {
+/*    try {
       sra = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
       request = sra.getRequest();
       if (request == null || request.getSession() == null || request.getSession().getAttribute("user_num") == null) {
@@ -72,6 +72,9 @@ public class InsertNewScnrioSvcImpl implements InsertNewScnrioSvc {
     } catch (Exception e) {
       throw e;
     }
+*/
+    methodInputMap.put("user_num", inputMap.get("user_num"));
+    methodInputMap.put("system_call_dtm", intpuMap.get("system_call_dtm"));
     methodInputMap.put("scnrio_nm", inputMap.get("scnrio_nm"));
     methodInputMap.put("scnrio_desc", inputMap.get("scnrio_desc"));
     insertNewScnrioDao.insertNewScnrio(methodInputMap);
