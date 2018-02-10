@@ -74,7 +74,7 @@ public class InsertNewScnrioSvcImpl implements InsertNewScnrioSvc {
     }
 */
     methodInputMap.put("user_num", inputMap.get("user_num"));
-    methodInputMap.put("system_call_dtm", intpuMap.get("system_call_dtm"));
+    methodInputMap.put("system_call_dtm", inputMap.get("system_call_dtm"));
     methodInputMap.put("scnrio_nm", inputMap.get("scnrio_nm"));
     methodInputMap.put("scnrio_desc", inputMap.get("scnrio_desc"));
     insertNewScnrioDao.insertNewScnrio(methodInputMap);
