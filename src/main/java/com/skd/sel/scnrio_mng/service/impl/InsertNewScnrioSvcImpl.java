@@ -62,8 +62,16 @@ public class InsertNewScnrioSvcImpl implements InsertNewScnrioSvc {
     try {
       sra = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
       request = sra.getRequest();
-      if (request == null || request.getSession() == null || request.getSession().getAttribute("user_num") == null) {
-        methodInputMap.put("user_num", 0);
+      if (request == null) {
+        methodInputMap.put("user_num", 10000);
+        methodInputMap.put("system_call_dtm", new Date());
+        
+      } else if (request.getSession() == null) {
+        methodInputMap.put("user_num", 1000);
+        methodInputMap.put("system_call_dtm", new Date());
+        
+      } else if (request.getSession().getAttribute("user_num") == null) {
+        methodInputMap.put("user_num", 100);
         methodInputMap.put("system_call_dtm", new Date());
       } else {
         methodInputMap.put("user_num", ((Integer)request.getSession().getAttribute("user_num")).intValue());
