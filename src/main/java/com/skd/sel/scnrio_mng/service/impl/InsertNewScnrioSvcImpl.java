@@ -1,14 +1,18 @@
 package com.skd.sel.sel_scnrio_mng.service.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import com.skd.sel.sel_scnrio_mng.service.InsertNewScnrioSvc;
 import com.skd.sel.sel_scnrio_mng.dao.InsertNewScnrioDao;
@@ -47,13 +51,34 @@ public class InsertNewScnrioSvcImpl implements InsertNewScnrioSvc {
   public int insertNewScnrio(Map<String, Object> inputMap) throws Exception {
     Map<String, Object> outputMap = null;
     Map<String, Object> methodInputMap = new HashMap<String, Object>();
+    ServletRequestAttributes sra = null;
+    HttpServletRequest request = null;
     methodInputMap.put("scnrio_nm", inputMap.get("scnrio_nm"));
     outputMap = insertNewScnrioDao.chkSameScnrioNm(inputMap);
     if (outputMap.get("is_exist_yn") != null && "Y".equals(outputMap.get("is_exist_yn")) == true) {
       throw userException.userException(22, "시나리오명", (String)inputMap.get("scnrio_nm"));
-    } 
-    insertNewScnrioDao.insertNewScnrio(inputMap);
-    outputMap = insertNewScnrioDao.getNewScnrioNum(inputMap);
+    }
+    methodInputMap.clear();
+    try {
+      sra = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
+      request = sra.getRequest();
+      if (request == null || request.getSession() == null || request.getSession().getAttribute("user_num") == null) {
+        methodInputMap.put("user_num", 0);
+        methodInputMap.put("system_call_dtm", new Date());
+      } else {
+        methodInputMap.put("user_num", ((Integer)request.getSession().getAttribute("user_num")).intValue());
+        methodInputMap.put("system_call_dtm", new Date(((Long)request.getSession().getAttribute("system_call_dtm")).longValue()));
+      }
+    } catch (Exception e) {
+      methodInputMap.put("user_num", 0);
+      methodInputMap.put("system_call_dtm", new Date());
+    }
+    methodInputMap.put("scnrio_nm", inputMap.get("scnrio_nm"));
+    methodInputMap.put("scnrio_desc", inputMap.get("scnrio_desc"));
+    insertNewScnrioDao.insertNewScnrio(methodInputMap);
+    methodInputMap.clear();
+    methodInputMap.put("scnrio_nm", inputMap.get("scnrio_nm"));
+    outputMap = insertNewScnrioDao.getNewScnrioNum(methodInputMap);
     return ((Long)outputMap.get("scnrio_num")).intValue();
   }
 }
