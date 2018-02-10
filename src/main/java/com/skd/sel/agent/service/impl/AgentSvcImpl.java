@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.cmn.cmn.service.GetServerTimeService;
 import com.skd.sel.agent.dao.AgentDao;
 import com.skd.sel.agent.service.AgentSvc;
+import com.skd.sel.module.service.MakeSrcCdWithInputParamSvc;
 
 /**
  * 이 클래스는 Selenium 테스트 자동화 도구 개발 프로젝트 내에서
@@ -41,6 +42,9 @@ public class AgentSvcImpl implements AgentSvc {
   
   @Autowired
   private AgentDao agentDao;
+  
+  @Autowired
+  private MakeSrcCdWithInputParamSvc makeSrcCdWithInputParamSvc;
   
   @Autowired
   private GetServerTimeService getServerTimeService;
@@ -78,7 +82,7 @@ public class AgentSvcImpl implements AgentSvc {
         inputMap.put("scnrio_num", outputList.get(i).get("scnrio_num"));
         inputMap.put("case_num", outputList2.get(j).get("case_num"));
         outputList3 = agentDao.getInputWithScnrioAndCase(inputMap);
-        String srcCd = makeSrcCd((String)outputMap.get("src_cd"), outputList3);
+        String srcCd = makeSrcCdWithInputParamSvc.makeSrcCd((String)outputMap.get("src_cd"), outputList3);
         Map<String, Object> returnMap2 = new HashMap<String, Object>();
         returnMap2.put("case_num", ((Long)outputList2.get(j).get("case_num")).intValue());
         returnMap2.put("src_cd", srcCd);
@@ -106,44 +110,5 @@ public class AgentSvcImpl implements AgentSvc {
    */
   public void insertTestRslt(List<Object> inputList) throws Exception {
     return;
-  }
-  
-  private String makeSrcCd(String baseSrcCd, List<Map<String, Object>> input) {
-    String madeSrcCd = new String(baseSrcCd);
-    String inputNm = null;
-    int i = 0;
-    int j = 0;
-    int k = 0;
-    for (i = 0; i < madeSrcCd.length(); i++) {
-      if (madeSrcCd.charAt(i) == '$' && (i == 0 || madeSrcCd.charAt(i - 1) != '\\')) {
-        i++;
-        if (madeSrcCd.charAt(i) == '{') {
-          for (j = i + 1; j < madeSrcCd.length(); j++) {
-            if (madeSrcCd.charAt(j) == '}') {
-              break;
-            }
-          }
-          if (j == madeSrcCd.length()) {
-            i++;
-            continue;
-          } else {
-            inputNm = madeSrcCd.substring(i + 1, j);
-            for (k = 0; k < input.size(); k++) {
-              if (inputNm.equals(input.get(k).get("input_nm")) == true) {
-                break;
-              }
-            }
-            if (k != input.size()) {
-              madeSrcCd = madeSrcCd.substring(0, i - 1) + (String)input.get(k).get("input_val") + madeSrcCd.substring(j + 1);
-              i = i + 1 + ((String)input.get(k).get("input_val")).length() - (j - i);
-            } else {
-              i++;
-              continue;
-            }
-          }
-        }
-      }
-    }
-    return madeSrcCd;
   }
 }

@@ -111,33 +111,52 @@ body {
   bottom: 5px;
 }
 
-.save_config_window {
-  height: 150px;
-  width: 500px;
-}
-
-.save_config_dbio_name_txt {
+.new_rgst_window_nm_label {
   position: absolute;
   left: 10px;
-  top: 60px;
-  right: 10px;
-  height: 30px;  
+  top: 40px;
+  height: 20px;
+  width: 90px;  
 }
 
-.save_config_dbio_ok_but {
+.new_rgst_window_nm_txt {
+  position: absolute;
+  left: 100px;
+  top: 35px;
+  height: 20px;
+  width: 400px;
+}
+
+.new_rgst_window_desc_label {
+  position: absolute;
+  left: 10px;
+  top: 68px;
+  width: 90px;
+  height: 100px;  
+}
+
+.new_rgst_window_desc_txt {
+  position: absolute;
+  left: 100px;
+  top: 65px;
+  width: 400px;
+  height: 100px;  
+}
+
+.new_rgst_window_ok_but {
   position: absolute;
   width: 50px;
-  height: 20px;
+  height: 30px;
   right: 90px;
-  bottom: 20px;  
+  bottom: 15px;
 }
 
-.save_config_dbio_cancel_but {
+.new_rgst_window_cancel_but {
   position: absolute;
   width: 50px;
-  height: 20px;
+  height: 30px;
   right: 20px;
-  bottom: 20px;  
+  bottom: 15px;
 }
 
 .div_src_cd {
@@ -177,5 +196,15 @@ body {
   right: 2px;
   bottom: 2px;
   left: 2px;
-  top: 51%;  
+  top: 51%;
+}
+
+.cell_not_edited {
+  color: black;
+  font-style: none;
+}
+
+.cell_edited {
+  color: #b90f0f !important;
+  font-style: italic;
 }

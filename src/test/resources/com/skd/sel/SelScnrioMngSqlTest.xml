@@ -9,7 +9,7 @@
     , audit_num
     , audit_dtm
     , scnrio_nm
-    , op_typ_cd
+    , op_typ_num
     , scnrio_desc
     , seq_num
     , src_cd
@@ -20,7 +20,7 @@
          , #{user_num} AS audit_num
          , NOW() AS audit_dtm
          , #{scnrio_nm} AS scnrio_nm
-         , #{op_typ_cd} AS op_typ_cd
+         , #{op_typ_num} AS op_typ_num
          , #{scnrio_desc} AS scnrio_desc
          , #{seq_num} AS seq_num
          , #{src_cd} AS src_cd
@@ -30,6 +30,16 @@
   <select id="getInsertedTempScnrioData" parameterType="HashMap" resultType="HashMap">
     SELECT MAX(ssts.scnrio_num) AS scnrio_num
     FROM   skd_sel_test_scnrio ssts
+  </select>
+  <select id="getInsertedScnrioData" parameterType="HashMap" resultType="HashMap">
+    SELECT ssts.scnrio_nm AS scnrio_nm
+         , ssts.op_typ_num AS op_typ_num
+         , ssts.scnrio_desc AS scnrio_desc
+    FROM   skd_sel_test_scnrio ssts
+    WHERE  ssts.scnrio_num = (SELECT MAX(ssts2.scnrio_num)
+                              FROM   skd_sel_test_scnrio ssts2
+                             )
+    AND    NOW() BETWEEN ssts.eff_sta_dtm AND ssts.eff_end_dtm
   </select>
   <insert id="insertTempTestCaseData" parameterType="HashMap">
     INSERT INTO skd_sel_test_case
@@ -147,4 +157,56 @@
     , #{eff_sta_dtm}
     )
   </insert>
+  <insert id="insertTempOpTyp" parameterType="HashMap">
+    INSERT INTO skd_cmn_op_typ
+    (
+      op_typ_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , op_typ_nm
+    , op_typ_desc
+    , eff_sta_dtm
+    )
+    SELECT IFNULL(MAX(scot.op_typ_num) + 1, 1) AS op_typ_num
+         , '9999-12-31 23:50:50' AS eff_end_dtm
+         , #{user_num} AS audit_num
+         , NOW() AS audit_dtm
+         , #{op_typ_nm} AS op_typ_nm
+         , #{op_typ_desc} AS op_typ_desc
+         , #{eff_sta_dtm} AS eff_sta_dtm
+    FROM   skd_cmn_op_typ scot
+  </insert>
+  <select id="getInsertedTempOpTyp" parameterType="HashMap" resultType="HashMap">
+    SELECT MAX(scot.op_typ_num) AS op_typ_num
+    FROM   skd_cmn_op_typ scot
+  </select>
+  <insert id="insertTempUserOpTyp" parameterType="HashMap">
+    INSERT INTO skd_cmn_user_op_typ
+    (
+      user_num
+    , op_typ_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , rep_yn
+    , eff_sta_dtm
+    ) VALUES (
+      #{user_num}
+    , #{op_typ_num}
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , 'Y'
+    , #{eff_sta_dtm}
+    )
+  </insert>
+  <update id="deleteTempScnrioData" parameterType="HashMap">
+    UPDATE skd_sel_test_scnrio
+    SET    eff_end_dtm = #{eff_sta_dtm} - INTERVAL 1 SECOND
+         , audit_dtm = NOW()
+         , audit_num = #{user_num}
+    WHERE  scnrio_nm = #{scnrio_nm}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
 </mapper>

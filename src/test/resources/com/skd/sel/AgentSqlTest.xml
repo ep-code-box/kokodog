@@ -9,7 +9,7 @@
     , audit_num
     , audit_dtm
     , scnrio_nm
-    , op_typ_cd
+    , op_typ_num
     , scnrio_desc
     , seq_num
     , src_cd
@@ -20,7 +20,7 @@
          , #{user_num} AS audit_num
          , NOW() AS audit_dtm
          , #{scnrio_nm} AS scnrio_nm
-         , #{op_typ_cd} AS op_typ_cd
+         , #{op_typ_num} AS op_typ_cd
          , #{scnrio_desc} AS scnrio_desc
          , #{seq_num} AS seq_num
          , #{src_cd} AS src_cd

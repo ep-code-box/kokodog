@@ -87,4 +87,56 @@
     AND     NOW() BETWEEN sster.eff_sta_dtm AND sster.eff_end_dtm
     ORDER BY sster.test_step_num
   </select>
+  <insert id="insertNewScnrio" parameterType="HashMap">
+    INSERT INTO skd_sel_test_scnrio
+    (
+      scnrio_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , scnrio_nm
+    , op_typ_num
+    , scnrio_desc
+    , seq_num
+    , src_cd
+    , eff_sta_dtm
+    )
+    SELECT IFNULL(MAX(ssts.scnrio_num + 1), 1) AS scnrio_num
+         , '9999-12-31 23:59:59' AS eff_end_dtm
+         , #{user_num} AS audit_num
+         , NOW() AS audit_dtm
+         , #{scnrio_nm} AS scnrio_nm
+         , (SELECT scot.op_typ_num
+            FROM   skd_cmn_user_op_typ scuot
+                 , skd_cmn_op_typ scot
+            WHERE  NOW() BETWEEN scot.eff_sta_dtm AND scot.eff_end_dtm
+            AND    scuot.user_num = #{user_num}
+            AND    scuot.op_typ_num = scot.op_typ_num
+            AND    NOW() BETWEEN scuot.eff_sta_dtm AND scuot.eff_end_dtm
+            AND    scuot.rep_yn = 'Y'
+           ) AS op_typ_num
+         , #{scnrio_desc} AS scnrio_desc
+         , (SELECT IFNULL(MAX(ssts2.seq_num + 1), 1) AS seq_num
+            FROM   skd_sel_test_scnrio ssts2
+           ) AS seq_num
+         , '' AS src_cd
+         , #{system_call_dtm} AS eff_sta_dtm
+    FROM   skd_sel_test_scnrio ssts
+  </insert>
+  <select id="chkSameScnrioNm" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS (SELECT *
+                             FROM   skd_sel_test_scnrio ssts
+                             WHERE  ssts.scnrio_nm = #{scnrio_nm}
+                             AND    NOW() BETWEEN ssts.eff_sta_dtm AND ssts.eff_end_dtm
+                            )
+                THEN 'Y'
+                ELSE 'N'
+           END AS is_exist_yn
+  </select>
+  <select id="getNewScnrioNum" parameterType="HashMap" resultType="HashMap">
+    SELECT MAX(ssts.scnrio_num) AS scnrio_num
+    FROM   skd_sel_test_scnrio ssts
+    WHERE  ssts.scnrio_nm = #{scnrio_nm}
+    AND    NOW() BETWEEN ssts.eff_sta_dtm AND ssts.eff_end_dtm
+  </select>
 </mapper>

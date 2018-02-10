@@ -50,7 +50,7 @@ public class AgentDaoTest {
     Calendar endDtm = GregorianCalendar.getInstance();
     testInputMap.put("user_num", 0);
     testInputMap.put("scnrio_nm", "테스트 시나리오");
-    testInputMap.put("op_typ_cd", "USC");
+    testInputMap.put("op_typ_num", 1);
     testInputMap.put("scnrio_desc", "테스트 시나리오");
     testInputMap.put("seq_num", 1);
     testInputMap.put("src_cd", "python source code example");
@@ -74,7 +74,7 @@ public class AgentDaoTest {
     Calendar endDtm = GregorianCalendar.getInstance();
     testInputMap.put("user_num", 0);
     testInputMap.put("scnrio_nm", "테스트 시나리오");
-    testInputMap.put("op_typ_cd", "USC");
+    testInputMap.put("op_typ_num", 1);
     testInputMap.put("scnrio_desc", "테스트 시나리오");
     testInputMap.put("seq_num", 1);
     testInputMap.put("src_cd", "python source code example");
@@ -106,7 +106,7 @@ public class AgentDaoTest {
     Calendar endDtm = GregorianCalendar.getInstance();
     testInputMap.put("user_num", 0);
     testInputMap.put("scnrio_nm", "테스트 시나리오");
-    testInputMap.put("op_typ_cd", "USC");
+    testInputMap.put("op_typ_num", 1);
     testInputMap.put("scnrio_desc", "테스트 시나리오");
     testInputMap.put("seq_num", 1);
     testInputMap.put("src_cd", "python source code example");
@@ -154,7 +154,7 @@ public class AgentDaoTest {
     endDtm.setTimeInMillis(endDtm.getTimeInMillis() + (10L * 60L * 1000L));
     testInputMap.put("user_num", 0);
     testInputMap.put("scnrio_nm", "테스트 시나리오");
-    testInputMap.put("op_typ_cd", "USC");
+    testInputMap.put("op_typ_num", 1);
     testInputMap.put("scnrio_desc", "테스트 시나리오");
     testInputMap.put("seq_num", 1);
     testInputMap.put("src_cd", "python source code example");
@@ -211,7 +211,7 @@ public class AgentDaoTest {
     endDtm.setTimeInMillis(endDtm.getTimeInMillis() + (10L * 60L * 1000L));
     testInputMap.put("user_num", 0);
     testInputMap.put("scnrio_nm", "테스트 시타리오");
-    testInputMap.put("op_typ_cd", "USC");
+    testInputMap.put("op_typ_num", 1);
     testInputMap.put("scnrio_desc", "테스트 시나리오");
     testInputMap.put("seq_num", 1);
     testInputMap.put("src_cd", "python source code example");
@@ -264,7 +264,7 @@ public class AgentDaoTest {
     endDtm.setTimeInMillis(endDtm.getTimeInMillis() + (10L * 60L * 1000L));
     testInputMap.put("user_num", 0);
     testInputMap.put("scnrio_nm", "테스트 시나리오");
-    testInputMap.put("op_typ_cd", "USC");
+    testInputMap.put("op_typ_num", 1);
     testInputMap.put("scnrio_desc", "테스트 시나리오");
     testInputMap.put("seq_num", 1);
     testInputMap.put("src_cd", "python source code example");

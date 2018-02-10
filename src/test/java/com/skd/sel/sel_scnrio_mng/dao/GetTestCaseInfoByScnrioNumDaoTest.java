@@ -42,7 +42,7 @@ public class GetTestCaseInfoByScnrioNumDaoTest {
     Calendar endDtm = GregorianCalendar.getInstance();
     testInputMap.put("user_num", 0);
     testInputMap.put("scnrio_nm", "테스트 시나리오");
-    testInputMap.put("op_typ_cd", "USC");
+    testInputMap.put("op_typ_num", 1);
     testInputMap.put("scnrio_desc", "테스트 시나리오");
     testInputMap.put("seq_num", 1);
     testInputMap.put("src_cd", "python source code example");

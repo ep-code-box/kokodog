@@ -15,7 +15,7 @@ import java.sql.SQLException;
  *  , audit_num INT(10) UNSIGNED NOT NULL COMMENT '권한자번호'<br/>
  *  , audit_dtm DATETIME NOT NULL COMMENT '권한일시'<br/>
  *  , scnrio_nm VARCHAR(255) NOT NULL COMMENT '시나리오명'<br/>
- *  , op_typ_cd VARCHAR(3) NOT NULL COMMENT '처리유형코드'<br/>
+ *  , op_typ_num INT(5) NOT NULL COMMENT '처리유형번호'<br/>
  *  , scnrio_desc TEXT(65535) NULL COMMENT '시나리오상세'<br/>
  *  , seq_num INT(10) UNSIGNED NOT NULL COMMENT '순차번호'<br/>
  *  , src_cd TEXT(65535) NOT NULL COMMENT '소스코드'<br/>

@@ -206,3 +206,85 @@ function cmnCallbackFunc(data, act, input_param, callbackVar) {
     callbackVar.obj.jqxDropDownList("selectIndex", callbackVar.init);    
   }
 }
+
+function cmnConfirm(callback, header, msg, callbackVar) {
+  if (typeof header == "undifined") {
+    header = "웹페이지 메시지";
+    msg = "확인?"
+  } else if (typeof msg == "undefined") {
+    msg = header;
+    header = "웹페이지 메시지";
+  }
+  var dialog = $("<div>").attr("id", "__confirm_dialog").css({width: "250px", height: "120px"});
+  $("<div>").attr("id", "__confirm_dialog_header").html(header).appendTo(dialog);
+  var body = $("<div>").css({overflow: "hidden"});
+  body.appendTo(dialog);
+  body.append($("<div>").css({position: "absolute", textAlign: "center", top: "40px", height: "35px", width: "100%"}).html(msg));
+  var okButton = $("<input>").css({position: "absolute", bottom: "15px", left: "50px", width: "70px", height: "25px"}).attr("type", "button").val("확인");
+  var cancelButton = $("<input>").css({position: "absolute", bottom: "15px", left: "130px", width: "70px", height: "25px"}).attr("type", "button").val("취소");
+  body.append(okButton);
+  body.append(cancelButton);
+  okButton.jqxButton({
+    width: "70px",
+    height: "25px"
+  });
+  cancelButton.jqxButton({
+    width: "70px",
+    height: "25px"
+  });
+  dialog.jqxWindow({
+    isModal: true,
+    resizable: false,
+    width: "250px",
+    height: "120px",
+    okButton: okButton,
+    cancelButton: cancelButton
+  });
+  dialog.jqxWindow("open");
+  dialog.on("close", function(event) {
+    if (typeof callback == "function") {
+      if (event.args.dialogResult.OK) {
+        if (typeof callbackVar != "undifined") {
+          callback(true, callbackVar);
+        } else {
+          callback(true);
+        }
+      } else {
+        if (typeof callbackVar != "undifined") {
+          callback(false, callbackVar);
+        } else {
+          callback(false);
+        }
+      }
+    }
+  });
+}
+
+function cmnAlert(header, msg) {
+  if (typeof header == "undifined") {
+    header = "웹페이지 메시지";
+    msg = "확인?"
+  } else if (typeof msg == "undefined") {
+    msg = header;
+    header = "웹페이지 메시지";
+  }
+  var dialog = $("<div>").attr("id", "__confirm_dialog").css({width: "250px", height: "120px"});
+  $("<div>").attr("id", "__confirm_dialog_header").html(header).appendTo(dialog);
+  var body = $("<div>").css({overflow: "hidden"});
+  body.appendTo(dialog);
+  body.append($("<div>").css({position: "absolute", textAlign: "center", top: "40px", height: "35px", width: "100%"}).html(msg));
+  var okButton = $("<input>").css({position: "absolute", bottom: "15px", left: "90px", width: "70px", height: "25px"}).attr("type", "button").val("확인");
+  body.append(okButton);
+  okButton.jqxButton({
+    width: "70px",
+    height: "25px"
+  });
+  dialog.jqxWindow({
+    isModal: true,
+    resizable: false,
+    width: "250px",
+    height: "120px",
+    okButton: okButton,
+  });
+  dialog.jqxWindow("open");
+}
