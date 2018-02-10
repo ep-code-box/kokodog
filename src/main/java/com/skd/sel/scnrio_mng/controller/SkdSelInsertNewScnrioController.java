@@ -57,8 +57,8 @@ public class SkdSelInsertNewScnrioController {
     validationCheck(request, response);
     Map<String, Object> inputMap = new HashMap<String, Object>();
     Map<String, Object> outputMap = new HashMap<String, Object>();
-    inputMap.put("scnrio_nm", Integer.parseInt(request.getParameter("scnrio_nm")));
-    inputMap.put("scnrio_desc", Integer.parseInt(request.getParameter("scnrio_desc")));
+    inputMap.put("scnrio_nm", request.getParameter("scnrio_nm"));
+    inputMap.put("scnrio_desc", request.getParameter("scnrio_desc"));
     outputMap.put("scnrio_num", insertNewScnrioSvc.insertNewScnrio(inputMap));
     return outputMap;
   }
