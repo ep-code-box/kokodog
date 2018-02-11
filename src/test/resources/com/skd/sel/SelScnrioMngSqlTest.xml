@@ -209,4 +209,52 @@
     WHERE  scnrio_nm = #{scnrio_nm}
     AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
   </update>
+  <select id="getInsertedCaseData" parameterType="HashMap" resultType="HashMap">
+    SELECT sstc.case_nm AS case_nm
+         , sstc.case_desc AS case_desc
+         , sstc.case_num AS case_num
+    FROM   skd_sel_test_case sstc
+    WHERE  sstc.case_num = (SELECT MAX(sstc2.case_num)
+                            FROM   skd_sel_test_case sstc2
+                            WHERE  sstc2.scnrio_num = sstc.scnrio_num
+                           )
+    AND    sstc.scnrio_num = #{scnrio_num}
+    AND    NOW() BETWEEN sstc.eff_sta_dtm AND sstc.eff_end_dtm
+  </select>
+  <insert id="insertTempCaseData" parameterType="HashMap">
+    INSERT INTO skd_sel_test_case
+    (
+      scnrio_num
+    , case_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , case_nm
+    , case_desc
+    , seq_num
+    , eff_sta_dtm
+    )
+    SELECT #{scnrio_num} AS scnrio_num
+         , IFNULL(MAX(case_num) + 1, 1) AS case_num
+         , '9999-12-31 23:59:59' AS eff_end_dtm
+         , #{user_num} AS audit_num
+         , NOW() AS audit_dtm
+         , #{case_nm} AS case_num
+         , #{case_desc} AS case_desc
+         , (SELECT IFNULL(MAX(sstc2.seq_num) + 1, 1) AS seq_num
+            FROM   skd_sel_test_case sstc2
+            WHERE  sstc2.scnrio_num = sstc.scnrio_num
+           ) AS seq_num
+         , #{eff_sta_dtm} AS eff_sta_dtm
+    FROM   skd_sel_test_case sstc
+  </insert>
+  <update id="deleteTempCaseData" parameterType="HashMap">
+    UPDATE skd_sel_test_case
+    SET    eff_end_dtm = #{eff_sta_dtm} - INTERVAL 1 SECOND
+         , audit_dtm = NOW()
+         , audit_num = #{user_num}
+    WHERE  scnrio_num = #{scnrio_num}
+    AND    case_nm = #{case_nm}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
 </mapper>

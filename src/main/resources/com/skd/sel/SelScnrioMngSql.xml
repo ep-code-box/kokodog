@@ -139,4 +139,49 @@
     WHERE  ssts.scnrio_nm = #{scnrio_nm}
     AND    NOW() BETWEEN ssts.eff_sta_dtm AND ssts.eff_end_dtm
   </select>
+  <insert id="insertNewCase" parameterType="HashMap">
+    INSERT INTO skd_sel_test_case
+    (
+      scnrio_num
+    , case_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , case_nm
+    , case_desc
+    , seq_num
+    , eff_sta_dtm
+    )
+    SELECT #{scnrio_num} AS scnrio_num
+         , IFNULL(MAX(sstc.case_num + 1), 1) AS case_num
+         , '9999-12-31 23:59:59' AS eff_end_dtm
+         , #{user_num} AS audit_num
+         , NOW() AS audit_dtm
+         , #{case_nm} AS case_nm
+         , #{case_desc} AS case_desc
+         , (SELECT IFNULL(MAX(sstc2.seq_num + 1), 1) AS seq_num
+            FROM   skd_sel_test_case sstc2
+            WHERE  sstc2.scnrio_num = sstc.scnrio_num
+           ) AS seq_num
+         , #{system_call_dtm} AS eff_sta_dtm
+    FROM   skd_sel_test_case sstc
+  </insert>
+  <select id="chkSameCaseNm" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS (SELECT *
+                             FROM   skd_sel_test_case sstc
+                             WHERE  sstc.case_nm = #{case_nm}
+                             AND    sstc.scnrio_num = #{scnrio_num}
+                             AND    NOW() BETWEEN sstc.eff_sta_dtm AND sstc.eff_end_dtm
+                            )
+                THEN 'Y'
+                ELSE 'N'
+           END AS is_exist_yn
+  </select>
+  <select id="getNewCaseNum" parameterType="HashMap" resultType="HashMap">
+    SELECT MAX(sstc.case_num) AS case_num
+    FROM   skd_sel_test_case sstc
+    WHERE  sstc.scnrio_num = #{scnrio_num}
+    AND    sstc.case_nm = #{case_nm}
+    AND    NOW() BETWEEN sstc.eff_sta_dtm AND sstc.eff_end_dtm
+  </select>
 </mapper>

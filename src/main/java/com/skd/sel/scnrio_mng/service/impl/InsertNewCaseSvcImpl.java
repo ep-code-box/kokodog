@@ -14,53 +14,51 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-import com.skd.sel.sel_scnrio_mng.service.InsertNewScnrioSvc;
 import com.skd.sel.sel_scnrio_mng.service.InsertNewCaseSvc;
-import com.skd.sel.sel_scnrio_mng.dao.InsertNewScnrioDao;
+import com.skd.sel.sel_scnrio_mng.dao.InsertNewCaseDao;
 import com.cmn.err.UserException;
 
 /**
  * 이 클래스는 Selenium 테스트 자동화 도구 개발 프로젝트 내에서
- * 시스템 관리를 위해 신규 시나리오 등록 요청 발생 시
+ * 시스템 관리를 위해 신규 케이스 등록 요청 발생 시
  * 시나리오번호를 채번하여 신규 시나리오번호를 등록해주는 역할을 한다.
- * input은 시나리오명, 시나리오설명을 받아
- * 최종 결과값으로 시나리오번호를 되돌려주는 역할을 수행한다.
+ * input은 케이스명, 케이스설명, 시나리오번호를 받아
+ * 최종 결과값으로 케이스번호를 되돌려주는 역할을 수행한다.
  *
  * @author  Minseok Lee
  * @since   2018.02.03
  * @version 1.0
  */
-@Service("insertNewScnrioSvc")
-public class InsertNewScnrioSvcImpl implements InsertNewScnrioSvc {
-  private static Logger logger = LogManager.getLogger(InsertNewScnrioSvcImpl.class);
+@Service("insertNewCaseSvc")
+public class InsertNewCaseSvcImpl implements InsertNewCaseSvc {
+  private static Logger logger = LogManager.getLogger(InsertNewCaseSvcImpl.class);
   
   @Autowired
-  private InsertNewScnrioDao insertNewScnrioDao;
+  private InsertNewCaseDao insertNewCaseDao;
   
   @Autowired
   private UserException userException;
-  
-  @Autowired
-  private InsertNewCaseSvc insertNewCaseSvc;
 
   /**
-   * 신규 시나리오명과 시나리오설명을 받아 채번된 시나리오번호를 리턴한다.
+   * 신규 케이스명과 케이스설명, 시나리오번호를 받아 채번된 케이스번호를 리턴한다.
    *
    * @param inputMap Map 형태의 아래 정보를 포함하고 있는 정보
-   *        scnrio_nm - 시나리오 명(필수)
-   *        scnior_desc - 시나리오 설명(선택)
-   * @return 시나리오 번호
+   *        scnrio_num - 시나리오번호(필수)
+   *        case_nm - 케이스 명(필수)
+   *        case_desc - 케이스 설명(선택)
+   * @return 케이스 번호
    * @exception Exception 예상하지 못한 Exception으로 정의한다.
    */
-  public int insertNewScnrio(Map<String, Object> inputMap) throws Exception {
+  public int insertNewCase(Map<String, Object> inputMap) throws Exception {
     Map<String, Object> outputMap = null;
     Map<String, Object> methodInputMap = new HashMap<String, Object>();
     ServletRequestAttributes sra = null;
     HttpServletRequest request = null;
-    methodInputMap.put("scnrio_nm", inputMap.get("scnrio_nm"));
-    outputMap = insertNewScnrioDao.chkSameScnrioNm(methodInputMap);
+    methodInputMap.put("case_nm", inputMap.get("case_nm"));
+    methodInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
+    outputMap = insertNewCaseDao.chkSameCaseNm(methodInputMap);
     if (outputMap.get("is_exist_yn") != null && "Y".equals(outputMap.get("is_exist_yn")) == true) {
-      throw userException.userException(22, "시나리오명", (String)inputMap.get("scnrio_nm"));
+      throw userException.userException(22, "케이스명", (String)inputMap.get("case_nm"));
     }
     methodInputMap.clear();
     try {
@@ -77,17 +75,14 @@ public class InsertNewScnrioSvcImpl implements InsertNewScnrioSvc {
       methodInputMap.put("user_num", 0);
       methodInputMap.put("system_call_dtm", new Date());
     }
-    methodInputMap.put("scnrio_nm", inputMap.get("scnrio_nm"));
-    methodInputMap.put("scnrio_desc", inputMap.get("scnrio_desc"));
-    insertNewScnrioDao.insertNewScnrio(methodInputMap);
+    methodInputMap.put("case_nm", inputMap.get("case_nm"));
+    methodInputMap.put("case_desc", inputMap.get("case_desc"));
+    methodInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
+    insertNewCaseDao.insertNewCase(methodInputMap);
     methodInputMap.clear();
-    methodInputMap.put("scnrio_nm", inputMap.get("scnrio_nm"));
-    outputMap = insertNewScnrioDao.getNewScnrioNum(methodInputMap);
-    methodInputMap.clear();
-    methodInputMap.put("scnrio_num", outputMap.get("scnrio_num"));
-    methodInputMap.put("case_nm", "테스트 케이스 샘플");
-    methodInputMap.put("case_desc", "테스트 케이스 샘플");
-    insertNewCaseSvc.insertNewCase(methodInputMap);
-    return ((Long)outputMap.get("scnrio_num")).intValue();
+    methodInputMap.put("case_nm", inputMap.get("case_nm"));
+    methodInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
+    outputMap = insertNewCaseDao.getNewCaseNum(methodInputMap);
+    return ((Long)outputMap.get("case_num")).intValue();
   }
 }

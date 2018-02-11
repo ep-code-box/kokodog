@@ -166,6 +166,8 @@
         $("div#test_scnrio_right_click_pop").on("itemclick", event_div_test_scnrio_right_click_pop_click);
         $("input#new_rgst_window_ok_but_component").on("click", event_input_new_rgst_window_ok_but_component_click);
         $("input#new_rgst_window_cancel_but_component").on("click", event_input_new_rgst_window_cancel_but_component_click);
+        $("a#menu_scnrio_new").click(event_a_menu_scnrio_new_click);
+        $("a#menu_import").click(event_a_menu_import_click);
       }
       
       function event_div_data_tree_component_item_click(event) {
@@ -257,6 +259,14 @@
 
       function event_expt_rslt_save_but_click(event) {
         cmnAlert("구현중");
+      }
+      
+      function event_a_menu_scnrio_new_click(event) {
+        scnrio_add_window_pop();
+      }
+      
+      function event_a_menu_import_click(event) {
+        scnrio_file_upload();
       }
 
       function setCodeMirrorEditor() {
@@ -414,6 +424,10 @@
               saveBut.click(event_expt_rslt_save_but_click);
             }
           });
+        } else if (act == "InsertNewScnrio") {
+          $("div#data_tree_component").jqxTree("addTo", {label: $("input#new_rgst_window_nm_txt_component").val(), value: data.scnrio_num});
+          $("div#data_tree_component").jqxTree("addTo", {label: "샘플 케이스", value: 1}, $("div#data_tree_component").jqxTree("getItems")[$("div#data_tree_component").jqxTree("getItems").length - 1]);
+          $("div#new_rgst_window").jqxWindow("close");
         }
       }
       
@@ -564,29 +578,32 @@
           <ul>
             <li>File
               <ul>
-                <li id="li_menu_new">
-                  <a id="menu_new">New</a>
+                <li id="li_menu_scnrio_new">
+                  <a id="menu_scnrio_new">시나리오추가</a>
                 </li>
-                <li type="separator"></li>
-                <li id="li_menu_save">
-                  <a id="menu_save">Save</a>
+                <li id="li_menu_case_new">
+                  <a id="menu_case_new">케이스추가</a>
                 </li>
-                <li id="li_menu_save_as">
-                  <a id="menu_save_as">Save As...</a>
-                </li>
-              </ul>
-            </li>
-            <li>Develop
-              <ul>
-                <li id="li_menu_deploy">
-                  <a id="menu_deploy">Deploy</a>
+                <li id="li_menu_update">
+                  <a id="menu_update">수정</a>
                 </li>
                 <li id="li_menu_delete">
-                  <a id="menu_delete">Ver. Delete</a>
+                  <a id="menu_delete">삭제</a>
                 </li>
-                <li type='separator'></li>
-                <li id="li_menu_test">
-                  <a id="menu_test">Test</a>
+                <li type="separator"></li>
+                <li id="li_menu_scnrio_test">
+                  <a id="menu_scnrio_test">시나리오테스트</a>
+                </li>
+                <li id="li_menu_case_test">
+                  <a id="menu_case_test">케이스테스트</a>
+                </li>
+                <li type="separator"></li>
+                <li id="li_menu_import">
+                  <a id="menu_import">시나리오파일 업로드</a>
+                </li>
+                <li type="separator"></li>
+                <li id="li_menu_inform">
+                  <a id="menu_inform">정보</a>
                 </li>
               </ul>
             </li>
