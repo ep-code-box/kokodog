@@ -360,13 +360,14 @@
           codeMirrorEditor.getDoc().setValue(data.src_cd);
           codeMirrorEditor.setOption("readOnly", false);
         } else if (act == "GetTestCaseInfoByScnrioNum") {
-          for (var i = 0; i < $("div#data_tree_component").jqxTree("getItems").length; i++) {
+          var i = 0;
+          for (i = 0; i < $("div#data_tree_component").jqxTree("getItems").length; i++) {
             if ($("div#data_tree_component").jqxTree("getItems")[i].parentElement == null && $("div#data_tree_component").jqxTree("getItems")[i].value == input_param.scnrio_num) {
               break;
             }
           }
-          for (var i = 0; i < data.length; i++) {
-            $("div#data_tree_component").jqxTree("addTo", {label: data[i].case_nm, value: data[i].case_num}, $("div#data_tree_component").jqxTree("getItems")[i]);
+          for (var j = 0; j < data.length; j++) {
+            $("div#data_tree_component").jqxTree("addTo", {label: data[j].case_nm, value: data[j].case_num}, $("div#data_tree_component").jqxTree("getItems")[i]);
           }
         } else if (act == "GetTestInputAndExptRsltByCaseNum") {
           $("div#case_input_component").jqxGrid("clear");
@@ -512,8 +513,7 @@
           }
         } else if (callbackVar == 2) {
           if (ret == true) {
-            cmnAlert("구현중");
-//          cmnSyncCall("GetTestList", {scnrio_num: $("div#data_tree_component").jqxTree("getSelectedItem").value}, callback, null);
+          cmnSyncCall("GetTestList", {scnrio_num: $("div#data_tree_component").jqxTree("getSelectedItem").value}, callback, null);
           } else {
             cmnAlert("테스트가 취소되었습니다.");
           }
