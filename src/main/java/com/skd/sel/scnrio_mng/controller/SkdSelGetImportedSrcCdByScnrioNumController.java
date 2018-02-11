@@ -62,7 +62,7 @@ public class SkdSelGetImportedSrcCdByScnrioNumController {
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("scnrio_num", Integer.parseInt(request.getParameter("scnrio_num")));
     if (request.getParameter("case_num") != null) {
-      inputMap.put("case_num", Integer.parseInt(request.getParameter("input_num")));
+      inputMap.put("case_num", Integer.parseInt(request.getParameter("case_num")));
     }
     return getImportedSrcCdSvc.getImportedSrcCd(inputMap);
   }
