@@ -112,12 +112,12 @@ public class GetImportedSrcCdDaoImpl implements GetImportedSrcCdDao {
    * @exception SQLException SQL 수행 시 발생할 수 있는 예외
    */
   public List<Map<String, Object>> getTestInputByCaseNum(Map<String, Object> inputMap) throws SQLException {
-    logger.debug("============   Start method of GetImportedSrcCdDaoImpl.getTestInputByScnrioNum   ============");
+    logger.debug("============   Start method of GetImportedSrcCdDaoImpl.getTestInputByCaseNum   ============");
     logger.debug("Parameter inputMap[" + inputMap.toString() + "]");
     List<Map<String, Object>> outputList = null;
-    outputList = sqlSession.selectList("com.skd.sel.sel_scnrio_mng.getTestInputByScnrioNum", inputMap);
+    outputList = sqlSession.selectList("com.skd.sel.sel_scnrio_mng.getTestInputByCaseNum", inputMap);
     logger.debug("Output List[" + outputList.toString() + "]");
-    logger.debug("============   End method of GetImportedSrcCdDaoImpl.getTestInputByScnrioNum   ============");
+    logger.debug("============   End method of GetImportedSrcCdDaoImpl.getTestInputByCaseNum   ============");
     return outputList;
   }
   /**
