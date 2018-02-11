@@ -106,15 +106,18 @@
          , #{user_num} AS audit_num
          , NOW() AS audit_dtm
          , #{scnrio_nm} AS scnrio_nm
-         , (SELECT scot.op_typ_num
-            FROM   skd_cmn_user_op_typ scuot
-                 , skd_cmn_op_typ scot
-            WHERE  NOW() BETWEEN scot.eff_sta_dtm AND scot.eff_end_dtm
-            AND    scuot.user_num = #{user_num}
-            AND    scuot.op_typ_num = scot.op_typ_num
-            AND    NOW() BETWEEN scuot.eff_sta_dtm AND scuot.eff_end_dtm
-            AND    scuot.rep_yn = 'Y'
-           ) AS op_typ_num
+         , CASE WHEN #{op_typ_num} IS NULL
+                THEN (SELECT scot.op_typ_num
+                      FROM   skd_cmn_user_op_typ scuot
+                           , skd_cmn_op_typ scot
+                      WHERE  NOW() BETWEEN scot.eff_sta_dtm AND scot.eff_end_dtm
+                      AND    scuot.user_num = #{user_num}
+                      AND    scuot.op_typ_num = scot.op_typ_num
+                      AND    NOW() BETWEEN scuot.eff_sta_dtm AND scuot.eff_end_dtm
+                      AND    scuot.rep_yn = 'Y'
+                     )
+                ELSE #{op_typ_num}
+           END AS op_typ_num
          , #{scnrio_desc} AS scnrio_desc
          , (SELECT IFNULL(MAX(ssts2.seq_num + 1), 1) AS seq_num
             FROM   skd_sel_test_scnrio ssts2
