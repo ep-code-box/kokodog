@@ -26,7 +26,7 @@ public class UpdateScnrioSrcCdDaoImpl implements UpdateScnrioSrcCdDao {
     logger.debug("Parameter inputMap[" + inputMap.toString() + "]");
     Map<String, Object> outputMap = null;
     outputMap = sqlSession.selectOne("com.skd.sel.sel_scnrio_mng.getTestInputInfoByScnrioNumAndInputNm", inputMap);
-    logger.debug("Output Map[" + outputMap.toString() + "]");
+    logger.debug("Output Map[" + outputMap + "]");
     logger.debug("============   End method of UpdateScnrioSrcCdDaoImpl.getTestInputInfoByScnrioNumAndInputNm   ============");
     return outputMap;
   }

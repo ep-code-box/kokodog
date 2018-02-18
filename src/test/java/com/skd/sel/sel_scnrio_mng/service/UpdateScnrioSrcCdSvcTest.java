@@ -166,6 +166,10 @@ public class UpdateScnrioSrcCdSvcTest {
         Assert.fail("예상치 못한 input_num 값이 들어가 있습니다.[" + ((Long)outputList.get(i).get("input_num")).intValue() + "]");
       }
     }
+    testInputMap.clear();
+    testInputMap.put("scnrio_num", 3);
+    testInputMap.put("src_cd", "test source code by python\n\n1st variable : ${svc_num}\n2nd variable : ${tmp}\n3rd variable : ${login_id}");
+    updateScnrioSrcCdSvc.updateScnrioSrcCd(testInputMap);    
   }
   
   private void insertTempScnrioData(Map<String, Object> inputMap) throws Exception {

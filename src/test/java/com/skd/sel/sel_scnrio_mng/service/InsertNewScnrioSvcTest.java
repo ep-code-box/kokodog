@@ -65,6 +65,8 @@ public class InsertNewScnrioSvcTest {
     Calendar endDtm = GregorianCalendar.getInstance();
     testInputMap.clear();
     testInputMap.put("scnrio_nm", "테스트 시나리오");
+    testInputMap.put("user_num", 0);
+    testInputMap.put("eff_sta_dtm", new Date(staDtm.getTimeInMillis()));
     deleteTempScnrioData(testInputMap);
     testInputMap.clear();
     testInputMap.put("user_num", 0);

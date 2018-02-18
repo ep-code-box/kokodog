@@ -107,7 +107,7 @@ public class UpdateScnrioSrcCdSvcImpl implements UpdateScnrioSrcCdSvc {
           daoInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
           daoInputMap.put("input_num", i + 1);
           daoInputMap.put("input_nm", inputValList.get(i).get("input_nm"));
-          daoInputMap.put("input_desc", daoOutputMap.get("input_desc"));
+          daoInputMap.put("input_desc", daoOutputMap == null ? null : daoOutputMap.get("input_desc"));
           daoInputMap.put("system_call_dtm", new Date(systemCallDtm));
           daoInputMap.put("user_num", userNum);
           updateScnrioSrcCdDao.insertNewTestInput(daoInputMap);
