@@ -307,7 +307,14 @@
       }
 
       function event_input_data_save_but_click(event) {
-        cmnAlert("구현중");
+        var inputData = new Array();
+        for (var i = 0; i < editedCaseInput.length; i++) {
+          inputData.put({input_num: editedCaseInput[i].rowindex, input_nm: $("div#case_input_component").jqxGrid("getrowdata", editedCaseInput[i].rowindex).input_nm
+                        , input_val: $("div#case_input_component").jqxGrid("getrowdata", editedCaseInput[i].rowindex).input_val});
+        }
+        cmnSyncCall("SaveCaseInput", {data: JSON.stringify({scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement).value
+                                                            , case_num: $("div#data_tree_component").jqxTree("getSelectedItem").value
+                                                            , input: JSON.stringify(inputData)})}, callback, null);
       }
       
       function event_expt_rslt_add_but_click(event) {
@@ -554,6 +561,9 @@
             $("div#data_tree_component").jqxTree("addTo", {label: $("input#new_rgst_window_nm_txt_component").val(), value: data.case_num}
                                                  , $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement));            
           }
+          $("div#new_rgst_window").jqxWindow("close");
+        } else if (act == "SaveCaseInput") {
+          editedCaseInput = new Array();
         }
       }
       
@@ -606,6 +616,8 @@
         $("input#new_rgst_window_ok_but_component").val("등록");
         $("input#new_rgst_window_nm_txt_component").jqxInput({placeHolder: "시나리오명..."});
         $("#new_rgst_window_desc_txt_component").jqxTextArea({placeHolder: "시나리오설명..."});
+        $("input#new_rgst_window_nm_txt_component").jqxInput("val", "");
+        $("#new_rgst_window_desc_txt_component").jqxTextArea("val", "");
         $("div#new_rgst_window").jqxWindow("open");
       }
       
@@ -690,6 +702,8 @@
         $("input#new_rgst_window_ok_but_component").val("등록");
         $("input#new_rgst_window_nm_txt_component").jqxInput({placeHolder: "케이스명..."});
         $("#new_rgst_window_desc_txt_component").jqxTextArea({placeHolder: "케이스설명..."});
+        $("input#new_rgst_window_nm_txt_component").jqxInput("val", "");
+        $("#new_rgst_window_desc_txt_component").jqxTextArea("val", "");
         $("div#new_rgst_window").jqxWindow("open");        
       }
       
