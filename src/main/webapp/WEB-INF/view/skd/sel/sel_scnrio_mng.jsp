@@ -278,11 +278,24 @@
       
       function event_input_new_rgst_window_ok_but_component_click() {
         if ($("div#new_rgst_window_header").html() == "시나리오 신규 등록") {
-          var validCheckMsg = event_input_new_rgst_window_ok_but_component_click_validation();
+          var validCheckMsg = event_input_new_rgst_window_ok_but_component_click_validation(0);
           if (validCheckMsg != null) {
             cmnAlert(validCheckMsg);
           } else {
             cmnSyncCall("InsertNewScnrio", {scnrio_nm: $.trim($("input#new_rgst_window_nm_txt_component").val()), scnrio_desc: $("#new_rgst_window_desc_txt_component").val()}, callback, null);
+          }
+        } else if ($("div#new_rgst_window_header").html() == "케이스 신규 등록") {
+          var validCheckMsg = event_input_new_rgst_window_ok_but_component_click_validation(1);
+          if (validCheckMsg != null) {
+            cmnAlert(validCheckMsg);
+          } else {
+            var scnrioNum = 0;
+            if ($("div#data_tree_component").jqxTree("getItem").parentElement == null) {
+              scnrioNum = $("div#data_tree_component").jqxTree("getSelectedItem").value;
+            } else {
+              scnrioNum = $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement).value;
+            }
+            cmnSyncCall("InsertNewCase", {scnrio_num: scnrioNum, case_nm: $.trim($("input#new_rgst_window_nm_txt_component").val()), case_desc: $("#new_rgst_window_desc_txt_component").val()}, callback, null);
           }
         } else {
           cmnAlert("구현중");
@@ -322,7 +335,7 @@
       }
       
       function event_scnrio_src_cd_save() {
-        cmnSyncCall("SaveSncrioSrcCd", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", target).value, src_cd: codeMirrorEditor.getDoc().getValue()}, null, null);
+        cmnSyncCall("SaveSncrioSrcCd", {scnrio_num: $("div#data_tree_component").jqxTree("getSelectedItem").value, src_cd: codeMirrorEditor.getDoc().getValue()}, null, null);
       }
 
       function setCodeMirrorEditor() {
@@ -534,6 +547,13 @@
               $("div#agent_down_pop_window").jqxWindow("open");
             }
           });
+        } else if (act == "InsertNewCase") {
+          if ($("div#data_tree_component").jqxTree("getSelectedItem").parentElement == null) {
+            $("div#data_tree_component").jqxTree("addTo", {label: $("input#new_rgst_window_nm_txt_component").val(), value: data.case_num}, $("div#data_tree_component").jqxTree("getSelectedItem"));
+          } else {
+            $("div#data_tree_component").jqxTree("addTo", {label: $("input#new_rgst_window_nm_txt_component").val(), value: data.case_num}
+                                                 , $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement));            
+          }
         }
       }
       
@@ -589,14 +609,25 @@
         $("div#new_rgst_window").jqxWindow("open");
       }
       
-      function event_input_new_rgst_window_ok_but_component_click_validation() {
-        if ($.trim($("input#new_rgst_window_nm_txt_component").val()) == "") {
-          return "시나리오 명을 넣어주세요";
-        } else {
-          var RegExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;
-          if($("input#new_rgst_window_nm_txt_component").val().match(RegExp) != null) {
-            return "정상적인 시나리오 명을 넣어주세요[특수문자 금지]";
+      function event_input_new_rgst_window_ok_but_component_click_validation(typ) {
+        if (typ == 0) {
+          if ($.trim($("input#new_rgst_window_nm_txt_component").val()) == "") {
+            return "시나리오 명을 넣어주세요";
+          } else {
+            var RegExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;
+            if($("input#new_rgst_window_nm_txt_component").val().match(RegExp) != null) {
+              return "정상적인 시나리오 명을 넣어주세요[특수문자 금지]";
+            }
           }
+        } else if (typ == 1) {
+          if ($.trim($("input#new_rgst_window_nm_txt_component").val()) == "") {
+            return "케이스 명을 넣어주세요";
+          } else {
+            var RegExp = /[\{\}\[\]\/?.,;:|\)*~`!^\+┼<>@\#$%&\'\"\\\(\=]/gi;
+            if($("input#new_rgst_window_nm_txt_component").val().match(RegExp) != null) {
+              return "정상적인 케이스 명을 넣어주세요[특수문자 금지]";
+            }
+          }          
         }
         return null;
       }
