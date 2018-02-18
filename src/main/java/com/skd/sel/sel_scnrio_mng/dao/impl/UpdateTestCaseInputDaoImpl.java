@@ -26,7 +26,7 @@ public class UpdateTestCaseInputDaoImpl implements UpdateTestCaseInputDao {
     logger.debug("Parameter inputMap[" + inputMap.toString() + "]");
     Map<String, Object> outputMap = null;
     outputMap = sqlSession.selectOne("com.skd.sel.sel_scnrio_mng.getTestCaseInputByInputNm", inputMap);
-    logger.debug("Parameter outputMap[" + outputMap.toString() + "]");
+    logger.debug("Parameter outputMap[" + outputMap + "]");
     logger.debug("============   End method of UpdateTestCaseInputDaoImpl.getTestCaseInputByInputNm   ============");
     return outputMap;
   }
