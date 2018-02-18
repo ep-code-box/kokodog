@@ -309,12 +309,12 @@
       function event_input_data_save_but_click(event) {
         var inputData = new Array();
         for (var i = 0; i < editedCaseInput.length; i++) {
-          inputData.put({input_num: editedCaseInput[i].rowindex, input_nm: $("div#case_input_component").jqxGrid("getrowdata", editedCaseInput[i].rowindex).input_nm
+          inputData.push({input_num: editedCaseInput[i].rowindex, input_nm: $("div#case_input_component").jqxGrid("getrowdata", editedCaseInput[i].rowindex).input_nm
                         , input_val: $("div#case_input_component").jqxGrid("getrowdata", editedCaseInput[i].rowindex).input_val});
         }
         cmnSyncCall("SaveCaseInput", {data: JSON.stringify({scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement).value
                                                             , case_num: $("div#data_tree_component").jqxTree("getSelectedItem").value
-                                                            , input: JSON.stringify(inputData)})}, callback, null);
+                                                            , input: inputData})}, callback, null);
       }
       
       function event_expt_rslt_add_but_click(event) {

@@ -337,4 +337,41 @@
     AND    input_num &gt;= #{input_num}
     AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
   </update>
+  <select id="getTestCaseInputByInputNm" parameterType="HashMap" resultType="HashMap">
+    SELECT ssti.input_num AS input_num
+    FROM   skd_sel_test_input ssti
+    WHERE  ssti.scnrio_num = #{scnrio_num}
+    AND    NOW() BETWEEN ssti.eff_sta_dtm AND ssti.eff_end_dtm
+  </select>
+  <update id="delTestCaseInput" parameterType="HashMap">
+    UPDATE skd_sel_test_case_input
+    SET    eff_end_dtm = #{system_call_dtm} - INTERVAL 1 SECOND
+         , audit_num = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  scnrio_num = #{scnrio_num}
+    AND    case_num = #{case_num}
+    AND    input_num = #{input_num}
+  </update>
+  <insert id="insertNewTestCaseInput" parameterType="HashMap">
+    INSERT INTO skd_sel_test_case_input
+    (
+      scnrio_num
+    , case_num
+    , input_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , input_val
+    , eff_sta_dtm
+    ) VALUES (
+      #{scnrio_num}
+    , #{case_num}
+    , #{input_num}
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , #{input_val}
+    , #{system_call_dtm}
+    )
+  </insert>
 </mapper>
