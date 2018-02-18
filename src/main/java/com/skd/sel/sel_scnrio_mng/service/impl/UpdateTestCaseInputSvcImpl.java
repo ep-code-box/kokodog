@@ -70,7 +70,10 @@ public class UpdateTestCaseInputSvcImpl implements UpdateTestCaseInputSvc {
       userNum = 0;
     }
     for (int i = 0; i < ((List<Map<String, Object>>)inputMap.get("input")).size(); i++) {
-      outputMap = updateTestCaseInputDao.getTestCaseInputByInputNm(((List<Map<String, Object>>)inputMap.get("input")).get(i));
+      daoInputMap.clear();
+      daoInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
+      daoInputMap.put("input_nm", ((List<Map<String, Object>>)inputMap.get("input")).get(i).get("input_nm"));
+      outputMap = updateTestCaseInputDao.getTestCaseInputByInputNm(daoInputMap);
       if (outputMap != null && outputMap.get("input_num") != null) {
         daoInputMap.clear();
         daoInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
