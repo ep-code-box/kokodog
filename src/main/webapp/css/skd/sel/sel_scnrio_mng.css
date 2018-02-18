@@ -208,3 +208,20 @@ body {
   color: #b90f0f !important;
   font-style: italic;
 }
+
+.agent_down_pop_window_label {
+  position: absolute;
+  right: 20px;
+  left: 20px;
+  top: 40px;
+  bottom: 70px;
+  text-align: center;
+}
+
+.agent_down_pop_window_down_but {
+  position: absolute;
+  width: 70px;
+  height: 30px;
+  left: 215px;
+  bottom: 10px;  
+}

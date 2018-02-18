@@ -26,4 +26,15 @@ public interface MakeSrcCdWithInputParamSvc {
    * @exception Exception 예상하지 못한 Exception으로 정의한다.
    */
   public String makeSrcCd(String baseSrcCd, List<Map<String, Object>> input) throws Exception;
+
+  /**
+   * 입력 파라미터 명 및 위치를 되돌려준다.
+   *
+   * @param baseSrcCd 조합되기 전 입력 파라미터를 변수로 갖고 있는 소스
+   * @return 다음 맵 정보를 갖고 있는 리스트 집합
+   *       input_nm : 입력 명
+   *       pos: 위치
+   * @exception Exception 예상하지 못한 Exception으로 정의한다.
+   */
+  public List<Map<String, Object>> getSrcCdInputNm(String baseSrcCd) throws Exception;
 }

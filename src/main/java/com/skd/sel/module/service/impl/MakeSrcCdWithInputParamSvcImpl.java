@@ -1,5 +1,7 @@
 package com.skd.sel.module.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,12 +73,58 @@ public class MakeSrcCdWithInputParamSvcImpl implements MakeSrcCdWithInputParamSv
               i = i + 1 + ((String)input.get(k).get("input_val")).length() - (j - i);
             } else {
               i++;
-              continue;
+              madeSrcCd = madeSrcCd.substring(0, i - 2) + madeSrcCd.substring(j + 1);
+              i = i + 1 - (j - i);
             }
           }
         }
       }
     }
     return madeSrcCd;
+  }
+  
+  /**
+   * 입력 파라미터 명 및 위치를 되돌려준다.
+   *
+   * @param baseSrcCd 조합되기 전 입력 파라미터를 변수로 갖고 있는 소스
+   * @return 다음 맵 정보를 갖고 있는 리스트 집합
+   *       input_nm : 입력 명
+   *       pos: 위치
+   * @exception Exception 예상하지 못한 Exception으로 정의한다.
+   */
+  public List<Map<String, Object>> getSrcCdInputNm(String baseSrcCd) throws Exception {
+    String madeSrcCd = new String(baseSrcCd);
+    String inputNm = null;
+    int i = 0;
+    int j = 0;
+    List<Map<String, Object>> outputList = new ArrayList<Map<String, Object>>();
+    for (i = 0; i < madeSrcCd.length(); i++) {
+      if (madeSrcCd.charAt(i) == '$' && (i == 0 || madeSrcCd.charAt(i - 1) != '\\')) {
+        i++;
+        if (madeSrcCd.charAt(i) == '{') {
+          for (j = i + 1; j < madeSrcCd.length(); j++) {
+            if (madeSrcCd.charAt(j) == '{' && madeSrcCd.charAt(j - 1) == '$') {
+              break;
+            }
+            if (madeSrcCd.charAt(j) == '}') {
+              break;
+            }
+          }
+          if (madeSrcCd.charAt(j) == '{' && madeSrcCd.charAt(j - 1) == '$') {
+            i = j - 2;
+            continue;
+          } else if (j == madeSrcCd.length()) {
+            i++;
+            continue;
+          } else {
+            Map<String, Object> tmpMap = new HashMap<String, Object>();
+            tmpMap.put("input_nm", madeSrcCd.substring(i + 1, j));
+            tmpMap.put("pos", i + 1);
+            outputList.add(tmpMap);
+          }
+        }
+      }
+    }
+    return outputList;
   }
 }

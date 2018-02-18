@@ -38,6 +38,14 @@
         contentEventLoad();
         setCodeMirrorEditor();
         getSncrioLst();
+        setButEnableChk();
+        $("#toolbar_scnrio_new").jqxTooltip({position: "mouse", content: "새 시나리오..."});
+        $("#toolbar_case_new").jqxTooltip({position: "mouse", content: "새 테스트케이스..."});
+        $("#toolbar_update").jqxTooltip({position: "mouse", content: "수정"});
+        $("#toolbar_del").jqxTooltip({position: "mouse", content: "삭제"});
+        $("#toolbar_scnrio_test").jqxTooltip({position: "mouse", content: "시나리오 테스트"});
+        $("#toolbar_case_test").jqxTooltip({position: "mouse", content: "케이스 테스트"});
+        $("#toolbar_upload").jqxTooltip({position: "mouse", content: "시나리오 업로드"});
       });
       
       /* jqWidget을 사용하는 각종 함수 들 첫 오픈 처리 */
@@ -47,7 +55,7 @@
           height: "100%"
         });
         $("div#top_menu_icon_component").jqxToolBar({
-          tools: "custom | custom custom | custom | custom custom | dropdownlist",
+          tools: "custom custom custom custom | custom custom | custom",
           width: "100%",
           height: "100%",
           initTools: init_top_menu_icon_component_init_tools
@@ -131,12 +139,28 @@
           height: "100%",
           width: "100%"          
         });
+        $("div#agent_down_pop_window").jqxWindow({
+          position: "center",
+          showCloseButton: true,
+          resizable: false,
+          isModal: true,
+          modalOpacity: 0.3,
+          draggable: true,
+          autoOpen: false,
+          width: "500px",
+          height: "200px"          
+        });
+        $("input#agent_down_pop_window_down_but_component").jqxButton({
+          height: "100%",
+          width: "100%"
+        });
       }
 
       /* jqWidget을 사용하는 각종 이벤트들 맵핑 처리 */
       function contentEventLoad() {
         $("div#data_tree_component").on("itemClick", event_div_data_tree_component_item_click);
         $("div#data_tree_component").on("expand", event_div_data_tree_component_expand);
+        $("div#data_tree_component").on("select", event_div_data_tree_component_select);
         $("div#case_input_component").on("cellendedit", event_div_case_input_component_cellendedit);
         $("div#rslt_expt_component").on("cellendedit", event_div_rslt_expt_component_cellendedit);
         $(document).bind("contextmenu", function (event) {
@@ -164,10 +188,12 @@
           }
         });
         $("div#test_scnrio_right_click_pop").on("itemclick", event_div_test_scnrio_right_click_pop_click);
+        $("div#test_case_right_click_pop").on("itemclick", event_div_test_case_right_click_pop_click);
         $("input#new_rgst_window_ok_but_component").on("click", event_input_new_rgst_window_ok_but_component_click);
         $("input#new_rgst_window_cancel_but_component").on("click", event_input_new_rgst_window_cancel_but_component_click);
         $("a#menu_scnrio_new").click(event_a_menu_scnrio_new_click);
         $("a#menu_import").click(event_a_menu_import_click);
+        $("input#agent_down_pop_window_down_but_component").click(event_input_agent_down_pop_window_down_but_component_click);
       }
       
       function event_div_data_tree_component_item_click(event) {
@@ -198,6 +224,10 @@
           }
           cmnASyncCall("GetTestCaseInfoByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", event.args.element).value}, callback, null);
         }
+      }
+      
+      function event_div_data_tree_component_select() {
+        setButEnableChk();        
       }
       
       function event_div_case_input_component_cellendedit(event) {
@@ -232,12 +262,30 @@
         }
       }
       
+      function event_div_test_case_right_click_pop_click(event) {
+        if ($(event.target).text() == "추가") {
+          case_add_window_pop();
+        } else if ($(event.target).text() == "삭제") {
+          case_del_window_pop();
+        } else if ($(event.target).text() == "수정") {
+          case_update_window_pop();
+        } else if ($(event.target).text() == "케이스 테스트") {
+          case_test();
+        } else if ($(event.target).text() == "케이스 정보") {
+          case_inform();
+        }        
+      }
+      
       function event_input_new_rgst_window_ok_but_component_click() {
-        var validCheckMsg = event_input_new_rgst_window_ok_but_component_click_validation();
-        if (validCheckMsg != null) {
-          cmnAlert(validCheckMsg);
+        if ($("div#new_rgst_window_header").html() == "시나리오 신규 등록") {
+          var validCheckMsg = event_input_new_rgst_window_ok_but_component_click_validation();
+          if (validCheckMsg != null) {
+            cmnAlert(validCheckMsg);
+          } else {
+            cmnSyncCall("InsertNewScnrio", {scnrio_nm: $.trim($("input#new_rgst_window_nm_txt_component").val()), scnrio_desc: $("#new_rgst_window_desc_txt_component").val()}, callback, null);
+          }
         } else {
-          cmnSyncCall("InsertNewScnrio", {scnrio_nm: $.trim($("input#new_rgst_window_nm_txt_component").val()), scnrio_desc: $("#new_rgst_window_desc_txt_component").val()}, callback, null);
+          cmnAlert("구현중");
         }
       }
       
@@ -268,6 +316,14 @@
       function event_a_menu_import_click(event) {
         scnrio_file_upload();
       }
+      
+      function event_input_agent_down_pop_window_down_but_component_click(event) {
+        cmnAlert("구현중");
+      }
+      
+      function event_scnrio_src_cd_save() {
+        cmnSyncCall("SaveSncrioSrcCd", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", target).value, src_cd: codeMirrorEditor.getDoc().getValue()}, null, null);
+      }
 
       function setCodeMirrorEditor() {
        codeMirrorEditor = CodeMirror.fromTextArea($("#text_src_cd")[0], {
@@ -278,7 +334,10 @@
           foldGutter: {
             rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.brace, CodeMirror.fold.comment)
           },
-          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+          extraKeys: {
+             "Ctrl-S": event_scnrio_src_cd_save
+          }
         });
         codeMirrorEditor.setOption("theme", gCmEditorTheme);
         codeMirrorEditor.getWrapperElement().style["font-family"] = "Oxygen Mono";
@@ -294,55 +353,88 @@
       function init_top_menu_icon_component_init_tools(type, index, tool, menuToolIninitialization) {
         switch (index) {
           case 0:
-            var newButton = $("<div>" + "<img src='/FileDown?file_key=0xAoKZ11FQB3HyZH0bIpCaaphbKcyS3uXYn0G5rn' title='New...' style='width:20px;height:20px;'/>" + "</div>");
+            var newButton = $("<input>").attr("id", "toolbar_scnrio_new");
             tool.append(newButton);
             newButton.jqxButton({
-              width: "20px",
-              height: "20px"
+              imgSrc: "/FileDown?file_key=4W3AYzuLwhTwCJfNrBJcgZQL1bmgIxhKJLruOczF",
+              imgPosition: "left",
+              width: "28px",
+              height: "28px",
+              imgHeight: "20px",
+              imgWidth: "20px"
             });
             break;
           case 1:
-            var saveButton = $("<div>" + "<img src='/FileDown?file_key=GgnS17SPV1IuXIfUZGWXfykXCbOMyeB2S2AGKtWD' title='Save...' style='width:20px;height:20px;'/>" + "</div>");
-            tool.append(saveButton);
-            saveButton.jqxButton({
-              width: "20px",
-              height: "20px"
+            var newButton = $("<input>").attr("id", "toolbar_case_new");
+            tool.append(newButton);
+            newButton.jqxButton({
+              imgSrc: "/FileDown?file_key=0xAoKZ11FQB3HyZH0bIpCaaphbKcyS3uXYn0G5rn",
+              imgPosition: "left",
+              width: "28px",
+              height: "28px",
+              imgHeight: "20px",
+              imgWidth: "20px"
             });
             break;
           case 2:
-            var saveAsButton = $("<div>" + "<img src='/FileDown?file_key=6Tyvf2KhwkyKKug6IZZmJOvzLcZT4mYWoBK3D5Ke' title='Save As...' style='width:20px;height:20px;'/>" + "</div>");
-            tool.append(saveAsButton);
-            saveAsButton.jqxButton({
-              width: "20px",
-              height: "20px"
+            var updateButton = $("<input>").attr("id", "toolbar_update");
+            tool.append(updateButton);
+            updateButton.jqxButton({
+              imgSrc: "/FileDown?file_key=6Tyvf2KhwkyKKug6IZZmJOvzLcZT4mYWoBK3D5Ke",
+              imgPosition: "left",
+              width: "28px",
+              height: "28px",
+              imgHeight: "20px",
+              imgWidth: "20px"
             });
             break;
           case 3:
-            var distrubteButton = $("<div>" + "<img src='/FileDown?file_key=zc15PA0zUXEPfRQVPYNOTbcbdUEoJScZZLO8TBYG' title='Deploy' style='width:20px;height:20px;'/>" + "</div>");
-            tool.append(distrubteButton);
-            distrubteButton.jqxButton({
-              width: "20px",
-              height: "20px"
+            var deleteButton = $("<input>").attr("id", "toolbar_del");
+            tool.append(deleteButton);
+            deleteButton.jqxButton({
+              imgSrc: "/FileDown?file_key=YwN3sUbnW2f7T2YrLy5lbLUztLD9EWDIyP3v6g4A",
+              imgPosition: "left",
+              width: "28px",
+              height: "28px",
+              imgHeight: "20px",
+              imgWidth: "20px"
             });
             break;
           case 4:
-            var deleteButton = $("<div>" + "<img src='/FileDown?file_key=YwN3sUbnW2f7T2YrLy5lbLUztLD9EWDIyP3v6g4A' title='Ver. Delete' style='width:20px;height:20px;'/>" + "</div>");
-            tool.append(deleteButton);
-            deleteButton.jqxButton({
-              width: "20px",
-              height: "20px"
+            var scnrioTestButton = $("<input>").attr("id", "toolbar_scnrio_test");
+            tool.append(scnrioTestButton);
+            scnrioTestButton.jqxButton({
+              imgSrc: "/FileDown?file_key=zc15PA0zUXEPfRQVPYNOTbcbdUEoJScZZLO8TBYG",
+              imgPosition: "left",
+              width: "28px",
+              height: "28px",
+              imgHeight: "20px",
+              imgWidth: "20px"
             });
             break;
           case 5:
-            var testButton = $("<div>" + "<img src='/FileDown?file_key=YwN3sUbnW2f7T2YrLy5lbLUztLD9EWDIyP3v6g4A' title='Test' style='width:20px;height:20px;'/>" + "</div>");
-            tool.append(testButton);
-            testButton.jqxButton({
-              width: "20px",
-              height: "20px"
+            var caseTestButton = $("<input>").attr("id", "toolbar_case_test");
+            tool.append(caseTestButton);
+            caseTestButton.jqxButton({
+              imgSrc: "/FileDown?file_key=zc15PA0zUXEPfRQVPYNOTbcbdUEoJScZZLO8TBYG",
+              imgPosition: "left",
+              width: "28px",
+              height: "28px",
+              imgHeight: "20px",
+              imgWidth: "20px"
             });
             break;
           case 6:
-            tool.jqxDropDownList({width: "150px", height: "28px", dropDownHeight: "200px"});
+            var uploadButton = $("<input>").attr("id", "toolbar_upload");
+            tool.append(uploadButton);
+            uploadButton.jqxButton({
+              imgSrc: "/FileDown?file_key=GgnS17SPV1IuXIfUZGWXfykXCbOMyeB2S2AGKtWD",
+              imgPosition: "left",
+              width: "28px",
+              height: "28px",
+              imgHeight: "20px",
+              imgWidth: "20px"
+            });
             break;
           default:
             break;
@@ -429,6 +521,19 @@
           $("div#data_tree_component").jqxTree("addTo", {label: $("input#new_rgst_window_nm_txt_component").val(), value: data.scnrio_num});
           $("div#data_tree_component").jqxTree("addTo", {label: "샘플 케이스", value: 1}, $("div#data_tree_component").jqxTree("getItems")[$("div#data_tree_component").jqxTree("getItems").length - 1]);
           $("div#new_rgst_window").jqxWindow("close");
+        } else if (act == "GetImportedSrcCdByScnrioNum") {
+          $.ajax({
+            url: "http://localhost:30710/test",
+            type: "post",
+            data: data,
+            dataType: "JSON",
+            async: true,
+            success: function(data) {
+            },
+            error: function(request, status, error) {
+              $("div#agent_down_pop_window").jqxWindow("open");
+            }
+          });
         }
       }
       
@@ -513,7 +618,13 @@
           }
         } else if (callbackVar == 2) {
           if (ret == true) {
-          cmnSyncCall("GetTestList", {scnrio_num: $("div#data_tree_component").jqxTree("getSelectedItem").value}, callback, null);
+            cmnSyncCall("GetImportedSrcCdByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getSelectedItem").value}, callback, null);
+          } else {
+            cmnAlert("테스트가 취소되었습니다.");
+          }
+        } else if (callbackVar == 3) {
+          if (ret == true) {
+            cmnSyncCall("GetImportedSrcCdByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement).value, test_num: $("div#data_tree_component").jqxTree("getSelectedItem").value}, callback, null);
           } else {
             cmnAlert("테스트가 취소되었습니다.");
           }
@@ -526,7 +637,7 @@
       
       function scnrio_file_upload() {
         var form = $("<form>");
-        form.append($("<input>").attr({type: "file", id: "scnrio_file_upload"}).css("display", "none"));
+        form.append($("<input>").attr({type: "file", id: "scnrio_file_upload", accept: ".side"}).css("display", "none"));
         $("input#scnrio_file_upload").on("change", function(event) {
           cmnAlert("구현중");
         });
@@ -549,6 +660,65 @@
         $("input#new_rgst_window_nm_txt_component").jqxInput({placeHolder: "케이스명..."});
         $("#new_rgst_window_desc_txt_component").jqxTextArea({placeHolder: "케이스설명..."});
         $("div#new_rgst_window").jqxWindow("open");        
+      }
+      
+      function case_del_window_pop() {
+        cmnAlert("구현중");
+      }
+      
+      function case_update_window_pop() {
+        cmnAlert("구현중");
+      }
+      
+      function case_test() {
+        cmnConfirm(callbackConfirm, "췝페이지 메시지", "테스트를 수행하시겠습니까?", 3);        
+      }
+      
+      function setButEnableChk() {
+        if ($("div#data_tree_component").jqxTree("getSelectedItem") == null) {
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_case_new", true);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_update", true);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_delete", true);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_scnrio_test", true);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_case_test", true);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_import", true);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_inform", true);
+          $("#toolbar_case_new").jqxButton("disabled", true);
+          $("#toolbar_update").jqxButton("disabled", true);
+          $("#toolbar_del").jqxButton("disabled", true);
+          $("#toolbar_scnrio_test").jqxButton("disabled", true);
+          $("#toolbar_case_test").jqxButton("disabled", true);
+          $("#toolbar_upload").jqxButton("disabled", true);
+        } else if ($("div#data_tree_component").jqxTree("getSelectedItem").parentElement == null) {
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_case_new", false);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_update", false);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_delete", false);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_scnrio_test", false);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_case_test", true);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_import", false);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_inform", false);
+          $("#toolbar_case_new").jqxButton("disabled", false);
+          $("#toolbar_update").jqxButton("disabled", false);
+          $("#toolbar_del").jqxButton("disabled", false);
+          $("#toolbar_scnrio_test").jqxButton("disabled", false);
+          $("#toolbar_case_test").jqxButton("disabled", true);
+          $("#toolbar_upload").jqxButton("disabled", false);
+        } else {
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_case_new", false);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_update", false);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_delete", false);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_scnrio_test", true);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_case_test", false);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_import", false);
+          $("div#top_menu_bar_component").jqxMenu("disable", "li_menu_inform", false);
+          $("#toolbar_case_new").jqxButton("disabled", false);
+          $("#toolbar_case_new").jqxButton("disabled", false);
+          $("#toolbar_update").jqxButton("disabled", false);
+          $("#toolbar_del").jqxButton("disabled", false);
+          $("#toolbar_scnrio_test").jqxButton("disabled", true);
+          $("#toolbar_case_test").jqxButton("disabled", false);
+          $("#toolbar_upload").jqxButton("disabled", false);
+        }
       }
       
       var cellInputClass = function(row, datafield, value, rowdata) {
@@ -677,16 +847,16 @@
     </div>
     <div id="test_scnrio_right_click_pop">
       <ul>
-        <li>시나리오 추가</li>
-        <li>삭제</li>
-        <li>수정</li>
+        <li id="pop_menu_new_scnrio">시나리오 추가</li>
+        <li id="pop_menu_new_delete">삭제</li>
+        <li id="pop_menu_new_update">수정</li>
         <li type="separator"></li>
-        <li>시나리오파일 업로드</li>
-        <li>시나리오 테스트</li>
+        <li id="pop_menu_scnrio_file_upload">시나리오파일 업로드</li>
+        <li id="pop_menu_scnrio_test">시나리오 테스트</li>
         <li type="separator"></li>
-        <li>시나리오 정보</li>
+        <li id="pop_menu_scnrio_inform">시나리오 정보</li>
         <li type="separator"></li>
-        <li>케이스 추가</li>
+        <li id="pop_menu_new_case">케이스 추가</li>
       </ul>
     </div>
     <div id="test_case_right_click_pop">
@@ -701,5 +871,21 @@
       </ul>
     </div>
     <input type="file" id="scnrio_file_upload" style="display:none;"/>
+    <div id="agent_down_pop_window">
+      <div class="agent_down_pop_window_header" id="agent_down_pop_window_header">
+        에이전트 설치 안내
+      </div>
+      <div style="overflow: hidden;" class="window_rgst_content">
+        <div id="agent_down_pop_window_label" class="agent_down_pop_window_label">
+          테스트를 수행하기 위해서는 에이전트 파일이 필수로 설치되어야 합니다.<br/>
+          아래 다운로드 버튼을 클릭하고 다운받은 파일을 실행하면 테스트를 위한<br/>
+          에이전트 파일이 설치됩니다.<br/>
+          설치 후에 다시 테스트를 진행하시기 바립니다.<br/>
+        </div>
+        <div class="agent_down_pop_window_down_but">
+          <input id="agent_down_pop_window_down_but_component" type="button" value="다운로드"/>
+        </div>
+      </div>      
+    </div>
   </body>
 </html>

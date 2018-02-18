@@ -257,4 +257,28 @@
     AND    case_nm = #{case_nm}
     AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
   </update>
+  <select id="getSrcCdWithSrcCd" parameterType="HashMap" resultType="HashMap">
+    SELECT ssts.src_cd AS src_cd
+    FROM   skd_sel_test_scnrio ssts
+    WHERE  ssts.scnrio_num = #{scnrio_num}
+    AND    NOW() BETWEEN ssts.eff_sta_dtm AND ssts.eff_end_dtm
+  </select>
+  <select id="getTestInputData" parameterType="HashMap" resultType="HashMap">
+    SELECT ssti.input_num AS input_num
+         , ssti.input_nm AS input_nm
+         , ssti.input_desc AS input_desc
+         , ssti.eff_sta_dtm AS eff_sta_dtm
+    FROM   skd_sel_test_input ssti
+    WHERE  ssti.scnrio_num = #{scnrio_num}
+    AND    NOW() BETWEEN ssti.eff_sta_dtm AND ssti.eff_end_dtm
+  </select>
+  <select id="getTestCaseInputData" parameterType="HashMap" resultType="HashMap">
+    SELECT sstci.input_num AS input_num
+         , sstci.input_val AS input_val
+         , sstci.eff_sta_dtm AS eff_sta_dtm
+    FROM   skd_sel_test_case_input sstci
+    WHERE  sstci.scnrio_num = #{scnrio_num}
+    AND    sstci.case_num = #{case_num}
+    AND    NOW() BETWEEN sstci.eff_sta_dtm AND sstci.eff_end_dtm
+  </select>
 </mapper>

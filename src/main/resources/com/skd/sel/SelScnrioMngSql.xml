@@ -187,4 +187,153 @@
     AND    sstc.case_nm = #{case_nm}
     AND    NOW() BETWEEN sstc.eff_sta_dtm AND sstc.eff_end_dtm
   </select>
+  <update id="delScnrio" parameterType="HashMap">
+    UPDATE skd_sel_test_scnrio
+    SET    eff_end_dtm = NOW() - INTERVAL 1 SECOND
+         , audit_num = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
+  <select id="getTestInputInfoByScnrioNumAndInputNm" parameterType="HashMap" resultType="HashMap">
+    SELECT ssti.input_num AS input_num
+         , ssti.input_desc AS input_desc
+    FROM   skd_sel_test_input ssti
+    WHERE  ssti.scnrio_num = #{scnrio_num}
+    AND    ssti.input_nm = #{input_nm}
+    AND    ssti.eff_end_dtm = (SELECT MAX(ssti2.eff_end_dtm)
+                               FROM   skd_sel_test_input ssti2
+                               WHERE  ssti2.scnrio_num = ssti.scnrio_num
+                               AND    ssti2.input_nm = ssti.input_nm
+                              )
+  </select>
+  <update id="delTestInputWithScnrioNumAndInputNm" parameterType="HashMap">
+    UPDATE skd_sel_test_input
+    SET    eff_end_dtm = #{system_call_dtm} - INTERVAL 1 SECOND
+         , audit_num = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  scnrio_num = #{scnrio_num}
+    AND    input_num = #{input_num}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
+  <insert id="insertNewTestInput" parameterType="HashMap">
+    INSERT INTO skd_sel_test_input
+    (
+      scnrio_num
+    , input_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , input_nm
+    , input_desc
+    , eff_sta_dtm
+    ) VALUES (
+      #{scnrio_num}
+    , #{input_num}
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , #{input_nm}
+    , #{input_desc}
+    , #{system_call_dtm}
+    )
+  </insert>
+  <update id="delTestCaseInputWithScnrioNumAndInputNum" parameterType="HashMap">
+    UPDATE skd_sel_test_case_input
+    SET    eff_end_dtm = #{system_call_dtm} - INTERVAL 1 SECOND
+         , audit_num = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  scnrio_num = #{scnrio_num}
+    AND    input_num = #{input_num}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
+  <insert id="insertChangedInputNumWithScnrioNumAndCaseNumAndInputNm" parameterType="HashMap">
+    INSERT INTO skd_sel_test_case_input
+    (
+      scnrio_num
+    , case_num
+    , input_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , input_val
+    , eff_sta_dtm
+    )
+    SELECT sstci1.scnrio_num AS scnrio_num
+         , sstci1.case_num AS case_num
+         , #{input_num} AS input_num
+         , '9999-12-31 23:59:59' AS eff_end_dtm
+         , #{user_num} AS audit_num
+         , NOW() AS audit_dtm
+         , sstci1.input_val AS input_val
+         , #{system_call_dtm} AS eff_sta_dtm
+    FROM   skd_sel_test_input ssti1
+         , skd_sel_test_case_input sstci1
+    WHERE  ssti1.scnrio_num = #{scnrio_num}
+    AND    ssti1.input_nm = #{input_nm}
+    AND    ssti1.eff_end_dtm = (SELECT MAX(ssti2.eff_end_dtm)
+                                FROM   skd_sel_test_input ssti2
+                                WHERE  ssti2.scnrio_num = ssti1.scnrio_num
+                                AND    ssti2.input_nm = ssti1.input_nm
+                               )
+    AND    sstci1.scnrio_num = ssti1.scnrio_num
+    AND    sstci1.input_num = ssti1.input_num
+    AND    ssti1.eff_end_dtm BETWEEN sstci1.eff_sta_dtm AND sstci1.eff_end_dtm
+  </insert>
+  <update id="delTestScnrio" parameterType="HashMap">
+    UPDATE skd_sel_test_scnrio
+    SET    eff_end_dtm = #{system_call_dtm} - INTERVAL 1 SECOND
+         , audit_num = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  scnrio_num = #{scnrio_num}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
+  <insert id="insertNewSrcCdWithScnrioNum" parameterType="HashMap">
+    INSERT INTO skd_sel_test_scnrio
+    (
+      scnrio_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , scnrio_nm
+    , op_typ_num
+    , scnrio_desc
+    , seq_num
+    , src_cd
+    , eff_sta_dtm
+    )
+    SELECT ssts.scnrio_num AS scnrio_num
+         , '9999-12-31 23:59:59' AS eff_end_dtm
+         , #{user_num} AS audit_num
+         , NOW() AS audit_dtm
+         , ssts.scnrio_nm AS scnrio_nm
+         , ssts.op_typ_num AS op_typ_num
+         , ssts.scnrio_desc AS scnrio_desc
+         , seq_num AS seq_num
+         , #{src_cd} AS src_cd
+         , #{system_call_dtm} AS eff_sta_dtm
+    FROM   skd_sel_test_scnrio ssts
+    WHERE  ssts.scnrio_num = #{scnrio_num}
+    AND    ssts.eff_end_dtm = (SELECT MAX(eff_end_dtm)
+                               FROM   skd_sel_test_scnrio ssts2
+                               WHERE  ssts2.scnrio_num = ssts.scnrio_num
+                              )
+  </insert>
+  <update id="delTestInputBiggerThanInputNum" parameterType="HashMap">
+    UPDATE skd_sel_test_input
+    SET    eff_end_dtm = #{system_call_dtm} - INTERVAL 1 SECOND
+         , audit_num = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  scnrio_num = #{scnrio_num}
+    AND    input_num &gt;= #{input_num}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
+  <update id="delTestCaseInputBiggerThanInputNum" parameterType="HashMap">
+    UPDATE skd_sel_test_case_input
+    SET    eff_end_dtm = #{system_call_dtm} - INTERVAL 1 SECOND
+         , audit_num = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  scnrio_num = #{scnrio_num}
+    AND    input_num &gt;= #{input_num}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
 </mapper>

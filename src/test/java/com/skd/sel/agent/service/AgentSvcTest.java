@@ -178,7 +178,7 @@ public class AgentSvcTest {
       Assert.fail("정상적인 데이터가 추출되지 않았습니다.");
       return;
     } else {
-      Assert.assertEquals(testReturnString, "python source code example 01026189758, ${temp_num} \\${svc_num}");      
+      Assert.assertEquals(testReturnString, "python source code example 01026189758,  \\${svc_num}");      
     }
   }
   
