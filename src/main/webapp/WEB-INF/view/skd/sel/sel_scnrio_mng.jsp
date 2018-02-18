@@ -564,6 +564,9 @@
           $("div#new_rgst_window").jqxWindow("close");
         } else if (act == "SaveCaseInput") {
           editedCaseInput = new Array();
+          for (var i = 0; i < $("div#case_input_component").jqxGrid("getrows").length; i++) {
+            $("div#case_input_component").jqxGrid("updaterow", i, $("div#case_input_component").jqxGrid("getrowdata", i));
+          }
         }
       }
       

@@ -352,6 +352,7 @@
     WHERE  scnrio_num = #{scnrio_num}
     AND    case_num = #{case_num}
     AND    input_num = #{input_num}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
   </update>
   <insert id="insertNewTestCaseInput" parameterType="HashMap">
     INSERT INTO skd_sel_test_case_input
