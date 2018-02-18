@@ -168,6 +168,7 @@
            ) AS seq_num
          , #{system_call_dtm} AS eff_sta_dtm
     FROM   skd_sel_test_case sstc
+    WHERE  sstc.scnrio_num = #{scnrio_num}
   </insert>
   <select id="chkSameCaseNm" parameterType="HashMap" resultType="HashMap">
     SELECT CASE WHEN EXISTS (SELECT *

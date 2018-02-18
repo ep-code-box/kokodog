@@ -290,7 +290,7 @@
             cmnAlert(validCheckMsg);
           } else {
             var scnrioNum = 0;
-            if ($("div#data_tree_component").jqxTree("getItem").parentElement == null) {
+            if ($("div#data_tree_component").jqxTree("getSelectedItem").parentElement == null) {
               scnrioNum = $("div#data_tree_component").jqxTree("getSelectedItem").value;
             } else {
               scnrioNum = $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement).value;
