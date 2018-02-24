@@ -47,5 +47,6 @@ public class DelTestScnrioSvcImpl implements DelTestScnrioSvc {
     inputMap.put("user_num", userNum);
     delTestScnrioDao.delTestScnrio(inputMap);
     delTestScnrioDao.delAllTestCaseWithScnrioNum(inputMap);
+    delTestScnrioDao.delAllTestInputWithScnrioNum(inputMap);
   }
 }

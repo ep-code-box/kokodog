@@ -17,4 +17,12 @@
     WHERE  scnrio_num = #{scnrio_num}
     AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
   </update>
+  <update id="delAllTestInputWithScnrioNum" parameterType="HashMap">
+    UPDATE skd_sel_test_input
+    SET    eff_end_dtm = #{system_call_dtm} - INTERVAL 1 SECOND
+         , audit_num = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  scnrio_num = #{scnrio_num}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
 </mapper>
