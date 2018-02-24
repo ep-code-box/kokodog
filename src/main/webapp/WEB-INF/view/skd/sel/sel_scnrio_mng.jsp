@@ -691,6 +691,7 @@
             cmnAlert("테스트가 취소되었습니다.");
           }
         } else if (callbackVar == 4) {
+          if (ret == true) {
             cmnSyncCall("DelTestCase", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement).value
                                       , case_num: $("div#data_tree_component").jqxTree("getSelectedItem").value}, callback, null);
           } else {
