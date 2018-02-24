@@ -567,6 +567,13 @@
           for (var i = 0; i < $("div#case_input_component").jqxGrid("getrows").length; i++) {
             $("div#case_input_component").jqxGrid("updaterow", i, $("div#case_input_component").jqxGrid("getrowdata", i));
           }
+        } else if (act == "DelTestScnrio") {
+          for (var i = 0; i < $("div#data_tree_component").jqxTree("getItems").length; i++) {
+            if ($("div#data_tree_component").jqxTree("getItems")[i].parentElement == null && $("div#data_tree_component").jqxTree("getItems")[i].val() == input_param.scnrio_num) {
+              $("div#data_tree_component").jqxTree("removeItem", $("div#data_tree_component").jqxTree("getItems")[i]);
+              break;
+            }
+          }
         }
       }
       
@@ -658,7 +665,7 @@
       function callbackConfirm(ret, callbackVar) {
         if (callbackVar == 1) {
           if (ret == true) {
-            cmnAlert("구현중");
+            cmnSyncCall("DelTestScnrio", {scnrio_num: $("div#data_tree_component").jqxTree("getSelectedItem").value}, callback, null);
           } else {
             cmnAlert("삭제가 취소되었습니다.");
           }
