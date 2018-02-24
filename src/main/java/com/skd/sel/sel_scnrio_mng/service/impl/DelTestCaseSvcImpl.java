@@ -15,15 +15,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-import com.skd.sel.sel_scnrio_mng.service.DelTestScnrioSvc;
-import com.skd.sel.sel_scnrio_mng.dao.DelTestScnrioDao;
+import com.skd.sel.sel_scnrio_mng.service.DelTestCaseSvc;
+import com.skd.sel.sel_scnrio_mng.dao.DelTestCaseDao;
+import com.cmn.err.UserException;
 
-@Service("delTestScnrioSvc")
-public class DelTestScnrioSvcImpl implements DelTestScnrioSvc {
+@Service("delTestCaseSvc")
+public class DelTestCaseSvcImpl implements DelTestCaseSvc {
   @Autowired
-  private DelTestScnrioDao delTestScnrioDao;
-  public void delTestScnrio(int scnrioNum) throws Exception {
+  private DelTestCaseDao delTestCaseDao;
+  
+  @Autowired
+  private UserException userException;
+  
+  public void delTestCase(int scnrioNum, int caseNum) throws Exception {
     Map<String, Object> inputMap = new HashMap<String, Object>();
+    Map<String, Object> outputMap = null;
     ServletRequestAttributes sra = null;
     HttpServletRequest request = null;
     long systemCallDtm = 0L;
@@ -43,11 +49,14 @@ public class DelTestScnrioSvcImpl implements DelTestScnrioSvc {
       userNum = 0;
     }
     inputMap.put("scnrio_num", scnrioNum);
+    inputMap.put("case_num", caseNum);
+    outputMap = delTestCaseDao.getCanBeDeletedCase(inputMap);
+    if (outputMap != null && outputMap.get("can_be_deleted") != null && "Y".equals(outputMap.get("can_be_deleted")) == false) {
+      throw userException.userException(23, "1", "케이스");
+    }
     inputMap.put("system_call_dtm", new Date(systemCallDtm));
     inputMap.put("user_num", userNum);
-    delTestScnrioDao.delTestScnrio(inputMap);
-    delTestScnrioDao.delAllTestCaseWithScnrioNum(inputMap);
-    delTestScnrioDao.delAllTestInputWithScnrioNum(inputMap);
-    delTestScnrioDao.delAllTestCaseInputWithScnrioNum(inputMap);
+    delTestCaseDao.delTestCaseWithScnrioNumAndCaseNum(inputMap);
+    delTestCaseDao.delAllTestCaseInputWithScnrioNumAndCaseNum(inputMap);
   }
 }

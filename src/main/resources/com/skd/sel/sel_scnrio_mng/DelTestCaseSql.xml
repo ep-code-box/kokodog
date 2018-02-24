@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skd.sel.sel_scnrio_mng.DelTestCase">
+  <select id="getCanBeDeletedCase" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS (SELECT *
+                             FROM   skd_sel_test_case sstc
+                             WHERE  sstc.scnrio_num = #{scnrio_num}
+                             AND    sstc.case_num &lt;&gt; #{case_num}
+                             AND    NOW() BETWEEN sstc.eff_sta_dtm AND sstc.eff_end_dtm
+                            )
+                THEN 'Y'
+                ELSE 'N'
+           END AS can_be_deleted
+  </select>
+  <update id="delTestCaseWithScnrioNumAndCaseNum" parameterType="HashMap">
+    UPDATE skd_sel_test_case
+    SET    eff_end_dtm = #{system_call_dtm} - INTERVAL 1 SECOND
+         , audit_num = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  scnrio_num = #{scnrio_num}
+    AND    case_num = #{case_num}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
+  <update id="delAllTestCaseInputWithScnrioNumAndCaseNum" parameterType="HashMap">
+    UPDATE skd_sel_test_case_input
+    SET    eff_end_dtm = #{system_call_dtm} - INTERVAL 1 SECOND
+         , audit_num = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  scnrio_num = #{scnrio_num}
+    AND    case_num = #{case_num}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
+</mapper>

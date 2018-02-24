@@ -39,4 +39,11 @@ public class DelTestScnrioDaoImpl implements DelTestScnrioDao {
     sqlSession.update("com.skd.sel.sel_scnrio_mng.DelTestScnrio.delAllTestInputWithScnrioNum", inputMap);
     logger.debug("============   End method of DelTestScnrioDaoImpl.delAllTestInputWithScnrioNum   ============");
   }
+  
+  public void delAllTestCaseInputWithScnrioNum(Map<String, Object> inputMap) throws SQLException {
+    logger.debug("============   Start method of DelTestScnrioDaoImpl.delAllTestCaseInputWithScnrioNum   ============");
+    logger.debug("Parameter inputMap[" + inputMap.toString() + "]");
+    sqlSession.update("com.skd.sel.sel_scnrio_mng.DelTestScnrio.delAllTestCaseInputWithScnrioNum", inputMap);
+    logger.debug("============   End method of DelTestScnrioDaoImpl.delAllTestCaseInputWithScnrioNum   ============");
+  }
 }

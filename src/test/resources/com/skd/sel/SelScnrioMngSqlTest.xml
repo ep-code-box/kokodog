@@ -291,4 +291,10 @@
     FROM   skd_sel_test_case sstc
     WHERE  sstc.scnrio_num = #{scnrio_num}
   </select>
+  <select id="getDeletedTestCaseDataWithScnrioNumAndCaseNum" parameterType="HashMap" resultType="HashMap">
+    SELECT sstc.eff_end_dtm AS eff_end_dtm
+    FROM   skd_sel_test_case sstc
+    WHERE  sstc.scnrio_num = #{scnrio_num}
+    AND    sstc.case_num = #{case_num}
+  </select>
 </mapper>
