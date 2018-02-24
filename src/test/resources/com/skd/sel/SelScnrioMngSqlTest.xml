@@ -281,4 +281,14 @@
     AND    sstci.case_num = #{case_num}
     AND    NOW() BETWEEN sstci.eff_sta_dtm AND sstci.eff_end_dtm
   </select>
+  <select id="getDeletedTestScnrioData" parameterType="HashMap" resultType="HashMap">
+    SELECT ssts.eff_end_dtm AS eff_end_dtm
+    FROM   skd_sel_test_scnrio ssts
+    WHERE  ssts.scnrio_num = #{scnrio_num}
+  </select>
+  <select id="getDeletedTestCaseData" parameterType="HashMap" resultType="HashMap">
+    SELECT sstc.eff_end_dtm AS eff_end_dtm
+    FROM   skd_sel_test_case sstc
+    WHERE  sstc.scnrio_num = #{scnrio_num}
+  </select>
 </mapper>
