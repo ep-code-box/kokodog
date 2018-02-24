@@ -569,7 +569,7 @@
           }
         } else if (act == "DelTestScnrio") {
           for (var i = 0; i < $("div#data_tree_component").jqxTree("getItems").length; i++) {
-            if ($("div#data_tree_component").jqxTree("getItems")[i].parentElement == null && $("div#data_tree_component").jqxTree("getItems")[i].val() == input_param.scnrio_num) {
+            if ($("div#data_tree_component").jqxTree("getItems")[i].parentElement == null && $("div#data_tree_component").jqxTree("getItems")[i].value == input_param.scnrio_num) {
               $("div#data_tree_component").jqxTree("removeItem", $("div#data_tree_component").jqxTree("getItems")[i]);
               break;
             }
@@ -681,6 +681,12 @@
           } else {
             cmnAlert("테스트가 취소되었습니다.");
           }
+        } else if (callbackVar == 4) {
+            cmnSyncCall("DelTestCase", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement).value
+                                      , case_num: $("div#data_tree_component").jqxTree("getSelectedItem").value}, callback, null);
+          } else {
+            cmnAlert("삭제가 취소되었습니다.");
+          }
         }
       }
       
@@ -718,7 +724,7 @@
       }
       
       function case_del_window_pop() {
-        cmnAlert("구현중");
+        cmnConfirm(callbackConfirm, "췝페이지 메시지", "테스트를 수행하시겠습니까?", 4);
       }
       
       function case_update_window_pop() {
