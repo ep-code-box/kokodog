@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.stereotype.Controller;
 
 import com.skd.sel.sel_scnrio_mng.service.GetImportedSrcCdSvc;
+import com.cmn.cmn.service.GetServerTimeService;
 import com.cmn.err.SystemException;
 /**
  *  이 클래스는 SK 주식회사 C&C DT 프로젝트 일환으로
@@ -31,6 +32,9 @@ public class SkdSelGetImportedSrcCdByScnrioNumController {
   
   @Autowired
   private SystemException systemException;
+  
+  @Autowired
+  private GetServerTimeService getServerTimeService;
   
   private static Logger logger = LogManager.getLogger(SkdSelGetImportedSrcCdByScnrioNumController.class);
   
@@ -56,7 +60,7 @@ public class SkdSelGetImportedSrcCdByScnrioNumController {
    */
   @RequestMapping(value="/skd/sel/sel_scnrio_mng/GetImportedSrcCdByScnrioNum", method=RequestMethod.POST)
   @ResponseBody
-  public List<Map<String, Object>> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public Map<String, Object> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
     logger.debug("Start method of SkdSelGetImportedSrcCdByScnrioNumController.main[/skd/sel/sel_scnrio_mng/GetImportedSrcCdByScnrioNum]");
     validationCheck(request, response);
     Map<String, Object> inputMap = new HashMap<String, Object>();
@@ -64,7 +68,11 @@ public class SkdSelGetImportedSrcCdByScnrioNumController {
     if (request.getParameter("case_num") != null) {
       inputMap.put("case_num", Integer.parseInt(request.getParameter("case_num")));
     }
-    return getImportedSrcCdSvc.getImportedSrcCd(inputMap);
+    Map<String, Object> retMap = new HashMap<String, Object>();
+    List<Map<String, Object>> outputList = getImportedSrcCdSvc.getImportedSrcCd(inputMap);
+    retMap.put("dtm", getServerTimeService.getServerTime());
+    retMap.put("test_data", outputList);
+    return retMap;
   }
 
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {

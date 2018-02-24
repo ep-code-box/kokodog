@@ -545,7 +545,7 @@
           $.ajax({
             url: "http://localhost:30710/test",
             type: "post",
-            data: data,
+            data: JSON.stringify({scnrio_num: input_param.scnrio_num, dtm: data.dtm, test_data: data.test_data}),
             dataType: "JSON",
             async: true,
             success: function(data) {
