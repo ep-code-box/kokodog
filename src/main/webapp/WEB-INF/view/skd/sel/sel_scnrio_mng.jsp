@@ -574,6 +574,15 @@
               break;
             }
           }
+        } else if (act == "DelTestCase") {
+          for (var i = 0; i < $("div#data_tree_component").jqxTree("getItems").length; i++) {
+            if ($("div#data_tree_component").jqxTree("getItems")[i].parentElement != null
+                && $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getItems")[i].parentElement).value == input_param.scnrio_num
+                && $("div#data_tree_component").jqxTree("getItems")[i].value == input_param.case_num) {
+              $("div#data_tree_component").jqxTree("removeItem", $("div#data_tree_component").jqxTree("getItems")[i]);
+              break;
+            }
+          }          
         }
       }
       
