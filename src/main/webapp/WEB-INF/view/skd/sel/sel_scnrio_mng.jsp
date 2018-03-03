@@ -443,7 +443,7 @@
             }
           }
           cmnSyncCall("SaveTestExptRslt", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement).value
-                                           , case_num: $("div#data_tree_component").jqxTree("getItem", target).value, data: JSON.stringify(dataList)})
+                                           , case_num: $("div#data_tree_component").jqxTree("getSelectedItem").value, data: JSON.stringify(dataList)}, callback, null);
         }
       }
       
@@ -716,6 +716,19 @@
               break;
             }
           }          
+        } else if (act == "SaveTestExptRslt") {
+          for (var i = 0; i < editedExptRslt.length; i++) {
+            if (editedExptRslt[i].rowtype == "delete") {
+              $("div#rslt_expt_component").jqxGrid("deleterow", $("div#rslt_expt_component").jqxGrid("getrowid", i));
+              for (var j = 0; j < editedExptRslt.length; j++)  {
+                if (editedExptRslt[i].rowindex < editedExptRslt[j].rowindex) {
+                  editedExptRslt[j].rowindex = editedExptRslt[j].rowindex - 1;
+                }
+              }
+            }
+          }
+          editedExptRslt = [];
+          $("div#rslt_expt_component").jqxGrid("render");
         }
       }
       

@@ -11,12 +11,14 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import com.skd.sel.sel_scnrio_mng.service.UpdateTestExptRsltSvc;
 import com.skd.sel.sel_scnrio_mng.dao.UpdateTestExptRsltDao;
+import com.cmn.err.UserException;
 /**
  * 이 클래스는 Selenium 테스트 자동화 도구 개발 프로젝트 내에서
  * 테스트 케이스 내 테스트가 정상적으로 수행되었는지 기준정보를 판단하기 위한
@@ -29,6 +31,8 @@ import com.skd.sel.sel_scnrio_mng.dao.UpdateTestExptRsltDao;
  */
 @Service("updateTestExptRsltSvc")
 public class UpdateTestExptRsltSvcImpl implements UpdateTestExptRsltSvc {
+  @Autowired
+  private UserException userException;
   
   @Autowired
   private UpdateTestExptRsltDao updateTestExptRsltDao;
@@ -92,7 +96,13 @@ public class UpdateTestExptRsltSvcImpl implements UpdateTestExptRsltSvc {
         daoInputMap.put("test_step_num", inputList.get(i).get("test_step_num"));
         daoInputMap.put("rslt_strd", inputList.get(i).get("rslt_strd"));
         daoInputMap.put("judg_typ_cd", inputList.get(i).get("judg_typ_cd"));
-        updateTestExptRsltDao.insertTestExptRslt(daoInputMap);
+        try {
+          updateTestExptRsltDao.insertTestExptRslt(daoInputMap);
+        } catch (Exception e) {
+          if (e instanceof DuplicateKeyException == true) {
+            throw userException.userException(24, "테스트스텝번호", "테스트스텝번호 : " + inputList.get(i).get("test_step_num"));
+          }
+        }
       }
     }
   }

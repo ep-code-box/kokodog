@@ -21,6 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.skd.sel.sel_scnrio_mng.service.UpdateTestExptRsltSvc;
+import com.cmn.err.UserException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/conf/root-context.xml", "classpath:/conf/kokodog-servlet.xml"})
@@ -35,6 +36,11 @@ public class UpdateTestExptRsltSvcTest {
   @Transactional
   @Rollback(true)
   public void testUpdateTestExptRslt() throws Exception {
+    testUpdateTestExptRsltSucc();
+    testUpdateTestExptRsltFail();
+  }
+  
+  private void testUpdateTestExptRsltSucc() throws Exception {
     int scnrioNum = 0;
     Map<String, Object> testInputMap = new HashMap<String, Object>();
     Map<String, Object> outputMap = null;
@@ -133,6 +139,57 @@ public class UpdateTestExptRsltSvcTest {
         Assert.assertEquals(6, allInsertedTestExptRslt.get(i).get("judg_typ_cd"));
       } else {
         Assert.fail("정상적인 데이터가 검출되지 않았습니다. [" + allInsertedTestExptRslt.get(i) + "]");
+      }
+    }
+  }
+  
+  public void testUpdateTestExptRsltFail() throws Exception {
+    int scnrioNum = 0;
+    Map<String, Object> testInputMap = new HashMap<String, Object>();
+    Map<String, Object> outputMap = null;
+    Calendar staDtm = GregorianCalendar.getInstance();
+    Calendar endDtm = GregorianCalendar.getInstance();
+    testInputMap.clear();
+    testInputMap.put("user_num", 0);
+    testInputMap.put("scnrio_nm", "테스트 시나리오");
+    testInputMap.put("op_typ_num", 1);
+    testInputMap.put("scnrio_desc", "테스트 시나리오");
+    testInputMap.put("seq_num", 1);
+    testInputMap.put("src_cd", "Temp python source code");
+    testInputMap.put("eff_sta_dtm", new Date(staDtm.getTimeInMillis()));
+    insertTempScnrioData(testInputMap);
+    scnrioNum = ((Long)getInsertedTempScnrioData().get("scnrio_num")).intValue();
+    testInputMap.clear();
+    testInputMap.put("user_num", 0);
+    testInputMap.put("scnrio_num", scnrioNum);
+    testInputMap.put("case_nm", "테스트 케이스");
+    testInputMap.put("case_desc", "테스트 케이스");
+    testInputMap.put("eff_sta_dtm", new Date(staDtm.getTimeInMillis()));
+    insertTempCaseData(testInputMap);
+    testInputMap.clear();
+    testInputMap.put("user_num", 0);
+    testInputMap.put("scnrio_num", scnrioNum);
+    testInputMap.put("case_num", 1);
+    testInputMap.put("test_step_num", 1);
+    testInputMap.put("rslt_strd", "테스트1");
+    testInputMap.put("judg_typ_cd", 1);
+    testInputMap.put("eff_sta_dtm", new Date(staDtm.getTimeInMillis()));
+    insertTempTestExptRslt(testInputMap);
+    List<Map<String, Object>> inputList = new ArrayList<Map<String, Object>>();
+    Map<String, Object> tempInputMap = null;
+    tempInputMap = new HashMap<String, Object>();
+    tempInputMap.put("test_step_num", 1);
+    tempInputMap.put("rslt_strd", "테스트 오류 1");
+    tempInputMap.put("judg_typ_cd", 2);
+    tempInputMap.put("modify_typ", 1);
+    inputList.add(tempInputMap);
+    try {
+      updateTestExptRsltSvc.updateTestExptRslt(scnrioNum, 1, inputList);
+    } catch (Exception e) {
+      if (e instanceof UserException == true) {
+        Assert.assertEquals(((UserException)e).getMessageNum(), 24);
+      } else {
+        Assert.fail("정상적으로 종료하지 않았습니다.");        
       }
     }
   }
