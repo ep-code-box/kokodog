@@ -209,6 +209,16 @@ body {
   font-style: italic;
 }
 
+.cell_added {
+  color: #0f0fb9 !important;
+  font-style: italic;
+}
+
+.cell_deleted {
+  color: #b9b9b9 !important;
+  font-style: italic;
+}
+
 .agent_down_pop_window_label {
   position: absolute;
   right: 20px;

@@ -153,7 +153,6 @@
         });
       }
 
-      /* jqWidget을 사용하는 각종 이벤트들 맵핑 처리 */
       function contentEventLoad() {
         $("a#menu_new").click(event_a_menu_new_click);
         $("a#menu_save").click(event_a_menu_save_click);
@@ -171,7 +170,6 @@
         $("input#test_cancel_but_component").on("click", event_test_cancel_but_component_click);
       }
       
-      /* jsource_data_tab_component(메뉴 상단 아이콘 버튼) 신규 맵핑 처리 */
       function init_top_menu_icon_component_init_tools(type, index, tool, menuToolIninitialization) {
         switch (index) {
           case 0:
@@ -237,12 +235,10 @@
         }
       }
 
-      /* New Icon을 클릭하거나 혹은 File - New 클릭 시 새 창 오픈해주는 함수 */
       function event_a_menu_new_click(e) {
         addNewQueryTab(0, "", "", 0, "", 0, "Y", "N");
       }
 
-      /* Save Icon을 클릭하거나 혹은 File - Save 클릭 시 새 창 오픈해주는 함수 */
       function event_a_menu_save_click(e) {
         if (getTabContent().find("input.is_changed").val() == "false" && 
            getTabContent().find("input.query_num").val() != "0") {

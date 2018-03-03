@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skd.sel.sel_scnrio_mng.UpdateTestExptRslt">
+  <update id="delTestExptRsltByStepNum" parameterType="HashMap">
+    UPDATE skd_sel_test_expt_rslt
+    SET    eff_end_dtm = #{system_call_dtm} - INTERVAL 1 SECOND
+         , audit_num = #{user_num}
+         , audit_dtm = NOW()
+    WHERE  scnrio_num = #{scnrio_num}
+    AND    case_num = #{case_num}
+    AND    test_step_num = #{test_step_num}
+    AND    NOW() BETWEEN eff_sta_dtm AND eff_end_dtm
+  </update>
+  <insert id="insertTestExptRslt" parameterType="HashMap">
+    INSERT INTO skd_sel_test_expt_rslt
+    (
+      scnrio_num
+    , case_num
+    , test_step_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , rslt_strd
+    , judg_typ_cd
+    , eff_sta_dtm
+    ) VALUES (
+      #{scnrio_num}
+    , #{case_num}
+    , #{test_step_num}
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , #{rslt_strd}
+    , #{judg_typ_cd}
+    , #{system_call_dtm}
+    )
+  </insert>
+</mapper>

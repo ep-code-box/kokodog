@@ -31,8 +31,8 @@
       var codeMirrorEditor;
       var editedCaseInput = new Array();
       var editedExptRslt = new Array();
+      var judgTypNm = [];
 
-      /* Document 로드 시에 발생하는 시작 함수 */
       $(document).ready(function() {
         contentInitLoad();
         contentEventLoad();
@@ -48,7 +48,6 @@
         $("#toolbar_upload").jqxTooltip({position: "mouse", content: "시나리오 업로드"});
       });
       
-      /* jqWidget을 사용하는 각종 함수 들 첫 오픈 처리 */
       function contentInitLoad() {
         $("div#top_menu_bar_component").jqxMenu({
           width: "100%",
@@ -94,10 +93,10 @@
           showtoolbar: true,
           rendertoolbar: function (statusbar) {
             var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
-            var saveButton = $("<div style='float: left; margin-left: 5px;'>Save</div>");
+            var saveButton = $("<div style='float: left; margin-left: 5px;'>Save</div>").attr("id", "case_input_component_save_button");
             container.append(saveButton);
             statusbar.append(container);
-            saveButton.jqxButton({width: 60, height: 20});
+            saveButton.jqxButton({width: 60, height: 20, disabled: true});
             saveButton.click(event_input_data_save_but_click);
           }
         });
@@ -108,6 +107,11 @@
         });
         $("div#test_case_right_click_pop").jqxMenu({
           width: "120px",
+          autoOpenPopup: false,
+          mode: "popup"
+        });
+        $("div#test_blank_right_click_pop").jqxMenu({
+          width: "150px",
           autoOpenPopup: false,
           mode: "popup"
         });
@@ -156,13 +160,13 @@
         });
       }
 
-      /* jqWidget을 사용하는 각종 이벤트들 맵핑 처리 */
       function contentEventLoad() {
         $("div#data_tree_component").on("itemClick", event_div_data_tree_component_item_click);
         $("div#data_tree_component").on("expand", event_div_data_tree_component_expand);
         $("div#data_tree_component").on("select", event_div_data_tree_component_select);
         $("div#case_input_component").on("cellendedit", event_div_case_input_component_cellendedit);
         $("div#rslt_expt_component").on("cellendedit", event_div_rslt_expt_component_cellendedit);
+        $("div#rslt_expt_component").on("rowselect", event_div_rslt_expt_component_rowselect);
         $(document).bind("contextmenu", function (event) {
           if ($(event.target).parents(".jqx-tree").length > 0 || $(event.target).attr("id") == "_cmn_loaderModal") {
             return false;
@@ -175,6 +179,7 @@
           if (rightClick && target != null) {
             $("div#test_scnrio_right_click_pop").jqxMenu("close");
             $("div#test_case_right_click_pop").jqxMenu("close");
+            $("div#test_blank_right_click_pop").jqxMenu("close");            
             $("div#data_tree_component").jqxTree("selectItem", target);
             var scrollTop = $(window).scrollTop();
             var scrollLeft = $(window).scrollLeft();
@@ -185,10 +190,16 @@
             }
             loadTestScnrioCaseInfo(target);
             return false;
+          } else if (rightClick && target == null) {
+            $("div#test_scnrio_right_click_pop").jqxMenu("close");
+            $("div#test_case_right_click_pop").jqxMenu("close");
+            $("div#test_blank_right_click_pop").jqxMenu("close");            
+            $("div#test_blank_right_click_pop").jqxMenu("open", parseInt(event.clientX) + 5 + scrollLeft, parseInt(event.clientY) + 5 + scrollTop);
           }
         });
         $("div#test_scnrio_right_click_pop").on("itemclick", event_div_test_scnrio_right_click_pop_click);
         $("div#test_case_right_click_pop").on("itemclick", event_div_test_case_right_click_pop_click);
+        $("div#test_blank_right_click_pop").on("itemclick", event_div_test_blank_right_click_pop_click);
         $("input#new_rgst_window_ok_but_component").on("click", event_input_new_rgst_window_ok_but_component_click);
         $("input#new_rgst_window_cancel_but_component").on("click", event_input_new_rgst_window_cancel_but_component_click);
         $("a#menu_scnrio_new").click(event_a_menu_scnrio_new_click);
@@ -200,26 +211,12 @@
         loadTestScnrioCaseInfo(event.args.element);
       }
       
-      function loadTestScnrioCaseInfo(target) {
-        if ($("div#data_tree_component").jqxTree("getItem", target).parentElement == null) {
-          $("div#div_case_input_rslt").css("display", "none");
-          $("div#div_src_cd").css("display", "block");
-          cmnSyncCall("GetSrcCdByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", target).value}, callback, null);
-        } else {
-          $("div#div_src_cd").css("display", "none");
-          $("div#div_case_input_rslt").css("display", "block");
-          cmnSyncCall("GetTestInputAndExptRsltByCaseNum", {
-            scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getItem", target).parentElement).value
-            , case_num: $("div#data_tree_component").jqxTree("getItem", target).value
-          }, callback, null);
-        }
-      }
-      
       function event_div_data_tree_component_expand(event) {
         if ($("div#data_tree_component").jqxTree("getItem", event.args.element).parentElement == null) {
           for (var i = 0; i < $("div#data_tree_component").jqxTree("getItems").length; i++) {
             if ($("div#data_tree_component").jqxTree("getItems")[i].parentElement == event.args.element) {
               $("div#data_tree_component").jqxTree("removeItem", $("div#data_tree_component").jqxTree("getItems")[i]);
+              i--;
             }
           }
           cmnASyncCall("GetTestCaseInfoByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", event.args.element).value}, callback, null);
@@ -234,14 +231,39 @@
         if (event.args.oldvalue != event.args.value) {
           editedCaseInput.push({rowindex: event.args.rowindex});
           $("div#case_input_component").jqxGrid("updaterow", event.args.rowindex);
+          $("#case_input_component_save_button").jqxButton("disabled", false);
         }
       }
       
       function event_div_rslt_expt_component_cellendedit(event) {
         if (event.args.oldvalue != event.args.value) {
-          editedExptRslt.push({rowindex: event.args.rowindex});
+          var i = 0;
+          for (i = 0; i < editedExptRslt.length; i++) {
+            if (editedExptRslt[i].rowindex == event.args.rowindex) {
+              if (event.args.datafield == "test_step_num" && typeof editedExptRslt[i].beforeRowNum == "undefined") {
+                editedExptRslt[i].beforeRowNum = event.args.oldvalue;
+              } else if (event.args.datafield == "test_step_num" && editedExptRslt[i].beforeRowNum == event.args.value) {
+                delete editedExptRslt[i].beforeRowNum;
+              }
+              break;
+            }
+          }
+          if (i == editedExptRslt.length) {
+            var pushVal;
+            if (event.args.datafield == "test_step_num") {
+              pushVal = {rowindex: event.args.rowindex, rowtype: "edited", beforeRowNum: event.args.oldvalue};
+            } else {
+              pushVal = {rowindex: event.args.rowindex, rowtype: "edited"};
+            }
+            editedExptRslt.push(pushVal);
+          }
           $("div#rslt_expt_component").jqxGrid("updaterow", event.args.rowindex);
-        }        
+          $("#rslt_expt_component_save_button").jqxButton("disabled", false);
+        }
+      }
+      
+      function event_div_rslt_expt_component_rowselect(event) {
+        $("#rslt_expt_component_del_button").jqxButton("disabled", false);        
       }
       
       function event_div_test_scnrio_right_click_pop_click(event) {
@@ -276,6 +298,12 @@
         }        
       }
       
+      function event_div_test_blank_right_click_pop_click(event) {
+        if ($(event.target).text() == "시나리오 추가") {
+          scnrio_add_window_pop();
+        }        
+      }
+      
       function event_input_new_rgst_window_ok_but_component_click() {
         if ($("div#new_rgst_window_header").html() == "시나리오 신규 등록") {
           var validCheckMsg = event_input_new_rgst_window_ok_but_component_click_validation(0);
@@ -307,26 +335,116 @@
       }
 
       function event_input_data_save_but_click(event) {
-        var inputData = new Array();
-        for (var i = 0; i < editedCaseInput.length; i++) {
-          inputData.push({input_num: editedCaseInput[i].rowindex, input_nm: $("div#case_input_component").jqxGrid("getrowdata", editedCaseInput[i].rowindex).input_nm
-                        , input_val: $("div#case_input_component").jqxGrid("getrowdata", editedCaseInput[i].rowindex).input_val});
+        if ($("#case_input_component_save_button").jqxButton("disabled") == false) {
+          var inputData = new Array();
+          for (var i = 0; i < editedCaseInput.length; i++) {
+            inputData.push({input_num: editedCaseInput[i].rowindex, input_nm: $("div#case_input_component").jqxGrid("getrowdata", editedCaseInput[i].rowindex).input_nm
+                          , input_val: $("div#case_input_component").jqxGrid("getrowdata", editedCaseInput[i].rowindex).input_val});
+          }
+          cmnSyncCall("SaveCaseInput", {data: JSON.stringify({scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement).value
+                                                              , case_num: $("div#data_tree_component").jqxTree("getSelectedItem").value
+                                                              , input: inputData})}, callback, null);
         }
-        cmnSyncCall("SaveCaseInput", {data: JSON.stringify({scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement).value
-                                                            , case_num: $("div#data_tree_component").jqxTree("getSelectedItem").value
-                                                            , input: inputData})}, callback, null);
       }
       
       function event_expt_rslt_add_but_click(event) {
-        cmnAlert("구현중");
+        var maxTestStepNum = 0;
+        for (var i = 0; i < $("div#rslt_expt_component").jqxGrid("getrows").length; i++) {
+          if (maxTestStepNum < $("div#rslt_expt_component").jqxGrid("getrowdata", i).test_step_num) {
+            maxTestStepNum = $("div#rslt_expt_component").jqxGrid("getrowdata", i).test_step_num;
+          }
+        }
+        var label = "";
+        if (judgTypNm != null && judgTypNm.length > 0) {
+          label = judgTypNm[0].label;
+        }
+        $("div#rslt_expt_component").jqxGrid("addrow", null, {test_step_num: maxTestStepNum + 1, judg_typ_nm: label, rslt_strd: ""});
+        editedExptRslt.push({rowindex: $("div#rslt_expt_component").jqxGrid("getrows").length - 1, rowtype: "add"});
+        $("#rslt_expt_component_save_button").jqxButton("disabled", false);
       }
       
       function event_expt_rslt_del_but_click(event) {
-        cmnAlert("구현중");
+        if ($("#rslt_expt_component_del_button").jqxButton("disabled") == false) {
+          for (var i = 0; i < editedExptRslt.length; i++) {
+            if (editedExptRslt[i].rowindex == $("div#rslt_expt_component").jqxGrid("getselectedrowindex")) {
+              if (editedExptRslt[i].rowtype == "add") {
+                $("div#rslt_expt_component").jqxGrid("deleterow", $("div#rslt_expt_component").jqxGrid("getrowid", editedExptRslt[i].rowindex));
+                $("#rslt_expt_component_del_button").jqxButton("disabled", true);
+                var delRowIndex = editedExptRslt[i].rowindex;
+                editedExptRslt.splice(i, 1);
+                for (var j = 0; j < editedExptRslt.length; j++) {
+                  if (editedExptRslt[j].rowindex > delRowIndex) {
+                    editedExptRslt[j].rowindex = editedExptRslt[j].rowindex - 1;
+                  }
+                }
+                if (editedExptRslt.length == 0) {
+                  $("#rslt_expt_component_save_button").jqxButton("disabled", true);
+                }
+                return;
+              } else if (editedExptRslt[i].rowtype == "delete") {
+                if (typeof editedExptRslt[i].beforerowtype != "undefined" && editedExptRslt[i].beforerowtype == "edited") {
+                  editedExptRslt[i].rowtype = "edited";
+                  delete editedExptRslt[i].beforerowtype;
+                } else {
+                  editedExptRslt.splice(i, 1);
+                }
+                $("div#rslt_expt_component").jqxGrid("render");
+                if (editedExptRslt.length == 0) {
+                  $("#rslt_expt_component_save_button").jqxButton("disabled", true);
+                }
+                return;
+              } else if (editedExptRslt[i].rowtype == "edited") {
+                editedExptRslt[i].beforerowtype = "edited";
+                editedExptRslt[i].rowtype = "delete";
+                $("div#rslt_expt_component").jqxGrid("render");
+                $("#rslt_expt_component_save_button").jqxButton("disabled", false);
+                return;
+              }
+            }
+          }
+          editedExptRslt.push({rowindex: $("div#rslt_expt_component").jqxGrid("getselectedrowindex"), rowtype: "delete"});
+          $("#rslt_expt_component_save_button").jqxButton("disabled", false);
+          $("div#rslt_expt_component").jqxGrid("render");
+        }
       }
 
       function event_expt_rslt_save_but_click(event) {
-        cmnAlert("구현중");
+        if ($("#rslt_expt_component_save_button").jqxButton("disabled") == false) {
+          var i = 0;
+          var j = 0;
+          var dataList = new Array();
+          for (i = 0; i < editedExptRslt.length; i++) {
+            if (editedExptRslt[i].rowtype == "add") {
+              for (j = 0; j < judgTypNm.length; j++) {
+                if (judgTypNm[j].label == $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).judg_typ_nm) {
+                  break;
+                }
+              }
+              dataList.push({modify_typ: 1, test_step_num: $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).test_step_num
+                             , rslt_strd: $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).rslt_strd
+                             , judg_typ_cd: judgTypNm[j].value});
+            } else if (editedExptRslt[i].rowtype == "edited") {
+              for (j = 0; j < judgTypNm.length; j++) {
+                if (judgTypNm[j].label == $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).judg_typ_nm) {
+                  break;
+                }
+              }
+              var old_test_step_num;
+              if (typeof $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).beforeRowNum == "undefined") {
+                old_test_step_num = $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).test_step_num;
+              } else {
+                old_test_step_num = $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).beforeRowNum;
+              }
+              dataList.push({modify_typ: 2, test_step_num: $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).test_step_num
+                             , rslt_strd: $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).rslt_strd
+                             , judg_typ_cd: judgTypNm[j].value, old_test_step_num: old_test_step_num});
+            } else if (editedExptRslt[i].rowtype == "delete") {
+              dataList.push({modify_typ: 3, test_step_num: $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).test_step_num});
+            }
+          }
+          cmnSyncCall("SaveTestExptRslt", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement).value
+                                           , case_num: $("div#data_tree_component").jqxTree("getItem", target).value, data: JSON.stringify(dataList)})
+        }
       }
       
       function event_a_menu_scnrio_new_click(event) {
@@ -346,7 +464,7 @@
       }
 
       function setCodeMirrorEditor() {
-       codeMirrorEditor = CodeMirror.fromTextArea($("#text_src_cd")[0], {
+        codeMirrorEditor = CodeMirror.fromTextArea($("#text_src_cd")[0], {
           mode: "python",
           lineNumbers: true,
           lineWrapping: false,
@@ -373,87 +491,98 @@
       function init_top_menu_icon_component_init_tools(type, index, tool, menuToolIninitialization) {
         switch (index) {
           case 0:
-            var newButton = $("<input>").attr("id", "toolbar_scnrio_new");
+            var newButton = $("<div><img src='/FileDown?file_key=4W3AYzuLwhTwCJfNrBJcgZQL1bmgIxhKJLruOczF' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_scnrio_new");
             tool.append(newButton);
             newButton.jqxButton({
-              imgSrc: "/FileDown?file_key=4W3AYzuLwhTwCJfNrBJcgZQL1bmgIxhKJLruOczF",
-              imgPosition: "left",
               width: "28px",
               height: "28px",
-              imgHeight: "20px",
-              imgWidth: "20px"
+            });
+            newButton.on("click", function(event) {
+              if ($("#toolbar_scnrio_new").jqxButton("disabled") != true) {
+                scnrio_add_window_pop();
+              }
             });
             break;
           case 1:
-            var newButton = $("<input>").attr("id", "toolbar_case_new");
+            var newButton = $("<div><img src='/FileDown?file_key=0xAoKZ11FQB3HyZH0bIpCaaphbKcyS3uXYn0G5rn' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_case_new");
             tool.append(newButton);
             newButton.jqxButton({
-              imgSrc: "/FileDown?file_key=0xAoKZ11FQB3HyZH0bIpCaaphbKcyS3uXYn0G5rn",
-              imgPosition: "left",
               width: "28px",
               height: "28px",
-              imgHeight: "20px",
-              imgWidth: "20px"
+            });
+            newButton.on("click", function(event) {
+              if ($("#toolbar_case_new").jqxButton("disabled") != true) {
+                case_add_window_pop();
+              }
             });
             break;
           case 2:
-            var updateButton = $("<input>").attr("id", "toolbar_update");
+            var updateButton = $("<div><img src='/FileDown?file_key=6Tyvf2KhwkyKKug6IZZmJOvzLcZT4mYWoBK3D5Ke' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_update");
             tool.append(updateButton);
             updateButton.jqxButton({
-              imgSrc: "/FileDown?file_key=6Tyvf2KhwkyKKug6IZZmJOvzLcZT4mYWoBK3D5Ke",
-              imgPosition: "left",
               width: "28px",
               height: "28px",
-              imgHeight: "20px",
-              imgWidth: "20px"
             });
-            break;
+            break;cmnAlert
+            updateButton.on("click", function(event) {
+              if ($("#toolbar_case_new").jqxButton("disabled") != true) {
+                cmnAlert("구현중");
+              }
+            });
           case 3:
-            var deleteButton = $("<input>").attr("id", "toolbar_del");
+            var deleteButton = $("<div><img src='/FileDown?file_key=YwN3sUbnW2f7T2YrLy5lbLUztLD9EWDIyP3v6g4A' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_del");
             tool.append(deleteButton);
             deleteButton.jqxButton({
-              imgSrc: "/FileDown?file_key=YwN3sUbnW2f7T2YrLy5lbLUztLD9EWDIyP3v6g4A",
-              imgPosition: "left",
               width: "28px",
               height: "28px",
-              imgHeight: "20px",
-              imgWidth: "20px"
+            });
+            deleteButton.on("click", function(event) {
+              if ($("#toolbar_del").jqxButton("disabled") != true) {
+                if ($("div#data_tree_component").jqxTree("getSelectedItem").parentElement == null) {
+                  scnrio_del_window_pop();
+                } else {
+                  case_del_window_pop();
+                }
+              }
             });
             break;
           case 4:
-            var scnrioTestButton = $("<input>").attr("id", "toolbar_scnrio_test");
+            var scnrioTestButton = $("<div><img src='/FileDown?file_key=zc15PA0zUXEPfRQVPYNOTbcbdUEoJScZZLO8TBYG' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_scnrio_test");
             tool.append(scnrioTestButton);
             scnrioTestButton.jqxButton({
-              imgSrc: "/FileDown?file_key=zc15PA0zUXEPfRQVPYNOTbcbdUEoJScZZLO8TBYG",
-              imgPosition: "left",
               width: "28px",
               height: "28px",
-              imgHeight: "20px",
-              imgWidth: "20px"
+            });
+            scnrioTestButton.on("click", function(event) {
+              if ($("#toolbar_scnrio_test").jqxButton("disabled") != true) {
+                scnrio_test();
+              }
             });
             break;
           case 5:
-            var caseTestButton = $("<input>").attr("id", "toolbar_case_test");
+            var caseTestButton = $("<div><img src='/FileDown?file_key=zc15PA0zUXEPfRQVPYNOTbcbdUEoJScZZLO8TBYG' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_case_test");
             tool.append(caseTestButton);
             caseTestButton.jqxButton({
-              imgSrc: "/FileDown?file_key=zc15PA0zUXEPfRQVPYNOTbcbdUEoJScZZLO8TBYG",
-              imgPosition: "left",
               width: "28px",
               height: "28px",
-              imgHeight: "20px",
-              imgWidth: "20px"
+            });
+            caseTestButton.on("click", function(event) {
+              if ($("#toolbar_case_test").jqxButton("disabled") != true) {
+                case_test();
+              }
             });
             break;
           case 6:
-            var uploadButton = $("<input>").attr("id", "toolbar_upload");
+            var uploadButton = $("<div><img src='/FileDown?file_key=GgnS17SPV1IuXIfUZGWXfykXCbOMyeB2S2AGKtWD' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_upload");
             tool.append(uploadButton);
             uploadButton.jqxButton({
-              imgSrc: "/FileDown?file_key=GgnS17SPV1IuXIfUZGWXfykXCbOMyeB2S2AGKtWD",
-              imgPosition: "left",
               width: "28px",
               height: "28px",
-              imgHeight: "20px",
-              imgWidth: "20px"
+            });
+            uploadButton.on("click", function(event) {
+              if ($("#toolbar_upload").jqxButton("disabled") != true) {
+                scnrio_file_upload();
+              }
             });
             break;
           default:
@@ -493,45 +622,48 @@
                                                                    , rslt_strd: data.expt_rslt[i].rslt_strd
                                                                   });
           }
+          $("#case_input_component_save_button").jqxButton("disabled", true);
+          $("#rslt_expt_component_save_button").jqxButton("disabled", true);
+          $("#rslt_expt_component_del_button").jqxButton("disabled", true);
         } else if (act == "/cmn/cmn/main/GetCommonCode") {
-          var judgTypNms = [];
+          judgTypNm = [];
           for (var property in data) {
-            judgTypNms.push({value: property, label: data[property]});
+            judgTypNm.push({value: property, label: data[property]});
           }
-          var judgTypNmsSource = {
+          var judgTypNmSource = {
             datatype: "array",
             datafields: [
               {name: "label", type: "string"},
               {name: "value", type: "int"}
             ],
-            localdata: judgTypNms
+            localdata: judgTypNm
           };
-          var judgTypNmsAdapter = new $.jqx.dataAdapter(judgTypNmsSource, {autoBind: true});
+          var judgTypNmAdapter = new $.jqx.dataAdapter(judgTypNmSource, {autoBind: true});
           $("div#rslt_expt_component").jqxGrid({
             editable: true,
             enabletooltips: true,
-            columns: [{text: "테스트스텝번호", datafield: "test_step_num", width: 100, editable: true, columntype: "textbox", cellsalign: "right", cellclassname: cellExptRsltClass},
+            columns: [{text: "테스트스텝번호", datafield: "test_step_num", width: 100, editable: true, columntype: "textbox", cellsalign: "right", cellclassname: cellExptRsltClass, cellbeginedit: cellbeginedit},
                       {text: "판정여부구분", datafield: "judg_typ_nm", width: "30%", editable: true, columntype: "dropdownlist"
                       , createeditor: function (row, value, editor) {
-                        editor.jqxDropDownList({ source: judgTypNmsAdapter, displayMember: "label", valueMember: "value"});
-                      }, cellclassname: cellExptRsltClass},
-                      {text: "기준문구", datafield: "rslt_strd", editable: true, columntype: "textbox", cellclassname: cellExptRsltClass}
+                        editor.jqxDropDownList({source: judgTypNmAdapter, displayMember: "label", valueMember: "value"});
+                      }, cellclassname: cellExptRsltClass, cellbeginedit: cellbeginedit},
+                      {text: "기준문구", datafield: "rslt_strd", editable: true, columntype: "textbox", cellclassname: cellExptRsltClass, cellbeginedit: cellbeginedit}
                      ],
             width: "100%",
             height: "100%",
             showtoolbar: true,
             rendertoolbar: function (statusbar) {
               var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
-              var addBut = $("<div style='float: left; margin-left: 5px;'>Add</div>");
-              var delBut = $("<div style='float: left; margin-left: 5px;'>Delete</div>");
-              var saveBut = $("<div style='float: left; margin-left: 5px;'>Save</div>");
+              var addBut = $("<div style='float: left; margin-left: 5px;'>Add</div>").attr("id", "rslt_expt_component_add_button");
+              var delBut = $("<div style='float: left; margin-left: 5px;'>Delete</div>").attr("id", "rslt_expt_component_del_button");
+              var saveBut = $("<div style='float: left; margin-left: 5px;'>Save</div>").attr("id", "rslt_expt_component_save_button");
               container.append(addBut);
               container.append(delBut);
               container.append(saveBut);
               statusbar.append(container);
               addBut.jqxButton({width: 60, height: 20});
-              delBut.jqxButton({width: 65, height: 20});
-              saveBut.jqxButton({width: 65, height: 20});
+              delBut.jqxButton({width: 65, height: 20, disabled: true});
+              saveBut.jqxButton({width: 65, height: 20, disabled: true});
               addBut.click(event_expt_rslt_add_but_click);
               delBut.click(event_expt_rslt_del_but_click);
               saveBut.click(event_expt_rslt_save_but_click);
@@ -564,6 +696,7 @@
           $("div#new_rgst_window").jqxWindow("close");
         } else if (act == "SaveCaseInput") {
           editedCaseInput = new Array();
+          $("#case_input_component_save_button").jqxButton("disabled", true);
           for (var i = 0; i < $("div#case_input_component").jqxGrid("getrows").length; i++) {
             $("div#case_input_component").jqxGrid("updaterow", i, $("div#case_input_component").jqxGrid("getrowdata", i));
           }
@@ -621,6 +754,8 @@
         } else {
           $("div#div_src_cd").css("display", "none");
           $("div#div_case_input_rslt").css("display", "block");
+          $("div#case_input_component").jqxGrid("unselectrow", $("div#case_input_component").jqxGrid("getselectedrowindex"));
+          $("div#rslt_expt_component").jqxGrid("unselectrow", $("div#rslt_expt_component").jqxGrid("getselectedrowindex"));
           cmnSyncCall("GetTestInputAndExptRsltByCaseNum", {
             scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getItem", target).parentElement).value
             , case_num: $("div#data_tree_component").jqxTree("getItem", target).value
@@ -734,7 +869,7 @@
       }
       
       function case_del_window_pop() {
-        cmnConfirm(callbackConfirm, "췝페이지 메시지", "테스트를 수행하시겠습니까?", 4);
+        cmnConfirm(callbackConfirm, "췝페이지 메시지", "삭제하시겠습니까?", 4);
       }
       
       function case_update_window_pop() {
@@ -804,10 +939,29 @@
       var cellExptRsltClass = function(row, datafield, value, rowdata) {
         for (var i = 0; i < editedExptRslt.length; i++) {
           if (editedExptRslt[i].rowindex == row) {
-            return "cell_edited";
+            if (editedExptRslt[i].rowtype == "add") {
+              return "cell_added";
+            } else if (editedExptRslt[i].rowtype == "delete") {
+              return "cell_deleted";
+            } else {
+              return "cell_edited";
+            }
           }
         }
         return "cell_not_edited";
+      }
+
+      var cellbeginedit = function (row, datafield, columntype, value) {
+        for (var i = 0; i < editedExptRslt.length; i++) {
+          if (editedExptRslt[i].rowindex == row) {
+            if (editedExptRslt[i].rowtype == "delete") {
+              return false;
+            } else {
+              return true;
+            }
+          }
+        }
+        return true;
       }
     </script>
   </head>
@@ -932,13 +1086,18 @@
     </div>
     <div id="test_case_right_click_pop">
       <ul>
-        <li>추가</li>
-        <li>삭제</li>
+        <li id="pop_menu_case_new_case">추가</li>
+        <li id="pop_menu_case_delete">삭제</li>
         <li>수정</li>
         <li type="separator"></li>
         <li>케이스 테스트</li>
         <li type="separator"></li>
         <li>케이스 정보</li>
+      </ul>
+    </div>
+    <div id="test_blank_right_click_pop">
+      <ul>
+        <li id="pop_menu_blank_new_scnrio">시나리오 추가</li>
       </ul>
     </div>
     <input type="file" id="scnrio_file_upload" style="display:none;"/>

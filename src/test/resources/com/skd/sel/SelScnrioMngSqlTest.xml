@@ -297,4 +297,53 @@
     WHERE  sstc.scnrio_num = #{scnrio_num}
     AND    sstc.case_num = #{case_num}
   </select>
+  <insert id="insertTempTestExptRslt" parameterType="HashMap">
+    INSERT INTO skd_sel_test_expt_rslt
+    (
+      scnrio_num
+    , case_num
+    , test_step_num
+    , eff_end_dtm
+    , audit_num
+    , audit_dtm
+    , rslt_strd
+    , judg_typ_cd
+    , eff_sta_dtm
+    ) VALUES (
+      #{scnrio_num}
+    , #{case_num}
+    , #{test_step_num}
+    , '9999-12-31 23:59:59'
+    , #{user_num}
+    , NOW()
+    , #{rslt_strd}
+    , #{judg_typ_cd}
+    , #{eff_sta_dtm}
+    )
+  </insert>
+  <select id="getInsertedTempTestExptRslt" parameterType="HashMap" resultType="HashMap">
+    SELECT sster.eff_end_dtm AS eff_end_dtm
+    FROM   skd_sel_test_expt_rslt sster
+    WHERE  sster.scnrio_num = #{scnrio_num}
+    AND    sster.case_num = #{case_num}
+    AND    sster.test_step_num = #{test_step_num}
+  </select>
+  <select id="getInsertedTestExptRslt" parameterType="HashMap" resultType="HashMap">
+    SELECT sster.rslt_strd AS rslt_strd
+         , sster.judg_typ_cd AS judg_typ_cd
+    FROM   skd_sel_test_expt_rslt sster
+    WHERE  sster.scnrio_num = #{scnrio_num}
+    AND    sster.case_num = #{case_num}
+    AND    sster.test_step_num = #{test_step_num}
+    AND    NOW() BETWEEN sster.eff_sta_dtm AND sster.eff_end_dtm
+  </select>
+  <select id="getAllInsertedTestExptRslt" parameterType="HashMap" resultType="HashMap">
+    SELECT sster.test_step_num AS test_step_num
+         , sster.rslt_strd AS rslt_strd
+         , sster.judg_typ_cd AS judg_typ_cd
+    FROM   skd_sel_test_expt_rslt sster
+    WHERE  sster.scnrio_num = #{scnrio_num}
+    AND    sster.case_num = #{case_num}
+    AND    NOW() BETWEEN sster.eff_sta_dtm AND sster.eff_end_dtm
+  </select>
 </mapper>
