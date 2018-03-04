@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skd.sel.sel_scnrio_mng.GetTestStepInfo">
+  <select id="getTestStepInfo" parameterType="HashMap" resultType="HashMap">
+    SELECT ssts.scnrio_num AS scnrio_num
+         , ssts.scnrio_nm AS scnrio_nm
+         , sstc.case_num AS case_num
+         , sstc.case_nm AS case_nm
+         , sster.test_step_num AS test_step_num
+         , sster.rslt_strd AS rslt_strd
+         , sster.judg_typ_cd AS judg_typ_cd
+    FROM   skd_sel_test_scnrio ssts
+         , skd_sel_test_case sstc
+         , skd_sel_test_expt_rslt sster
+    WHERE  ssts.scnrio_num = #{scnrio_num}
+    AND    NOW() BETWEEN ssts.eff_sta_dtm AND ssts.eff_end_dtm
+    AND    sstc.scnrio_num = ssts.scnrio_num
+    AND    (#{case_num} IS NULL
+            OR #{case_num} = ''
+            OR sstc.case_num = #{case_num}
+           )
+    AND    NOW() BETWEEN sstc.eff_sta_dtm AND sstc.eff_end_dtm
+    AND    sster.scnrio_num = ssts.scnrio_num
+    AND    sster.case_num = sstc.case_num
+    AND    NOW() BETWEEN sster.eff_sta_dtm AND sster.eff_end_dtm
+    ORDER BY ssts.scnrio_num, sstc.case_num, sster.test_step_num
+  </select>
+</mapper>

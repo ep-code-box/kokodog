@@ -158,10 +158,32 @@
           height: "100%",
           width: "100%"
         });
+        $("div#test_step_pop_window").jqxWindow({
+          position: "center",
+          showCloseButton: true,
+          resizable: false,
+          isModal: true,
+          modalOpacity: 0.3,
+          draggable: true,
+          autoOpen: false,
+          width: "1200px",
+          height: "800px"
+        });
+        $("div#test_step_pop_window_grid_component").jqxGrid({
+          width: "100%",
+          height: "100%",
+          editable: false,
+          columns: [{text: "시나리오명", datafield: "scnrio_nm", width: 160, editable: false, columntype: "textbox", cellsalign: "center"},
+                    {text: "케이스명", datafield: "case_nm", width: 160, editable: false, columntype: "textbox", cellsalign: "center"},
+                    {text: "로그", datafield: "log", editable: false, columntype: "textbox", cellsalign: "center"},
+                    {text: "진행상태", datafield: "state_nm", width: 80, editable: false, columntype: "textbox", cellsalign: "center"}
+                   ],
+          width: "100%",
+          height: "100%"
+        });
       }
 
       function contentEventLoad() {
-        $("div#data_tree_component").on("itemClick", event_div_data_tree_component_item_click);
         $("div#data_tree_component").on("expand", event_div_data_tree_component_expand);
         $("div#data_tree_component").on("select", event_div_data_tree_component_select);
         $("div#case_input_component").on("cellendedit", event_div_case_input_component_cellendedit);
@@ -188,7 +210,6 @@
             } else {
               $("div#test_case_right_click_pop").jqxMenu("open", parseInt(event.clientX) + 5 + scrollLeft, parseInt(event.clientY) + 5 + scrollTop);              
             }
-            loadTestScnrioCaseInfo(target);
             return false;
           } else if (rightClick && target == null) {
             $("div#test_scnrio_right_click_pop").jqxMenu("close");
@@ -207,10 +228,6 @@
         $("input#agent_down_pop_window_down_but_component").click(event_input_agent_down_pop_window_down_but_component_click);
       }
       
-      function event_div_data_tree_component_item_click(event) {
-        loadTestScnrioCaseInfo(event.args.element);
-      }
-      
       function event_div_data_tree_component_expand(event) {
         if ($("div#data_tree_component").jqxTree("getItem", event.args.element).parentElement == null) {
           for (var i = 0; i < $("div#data_tree_component").jqxTree("getItems").length; i++) {
@@ -223,8 +240,9 @@
         }
       }
       
-      function event_div_data_tree_component_select() {
-        setButEnableChk();        
+      function event_div_data_tree_component_select(event) {
+        loadTestScnrioCaseInfo(event.args.element);
+        setButEnableChk();
       }
       
       function event_div_case_input_component_cellendedit(event) {
@@ -430,10 +448,10 @@
                 }
               }
               var old_test_step_num;
-              if (typeof $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).beforeRowNum == "undefined") {
+              if (typeof editedExptRslt[i].beforeRowNum == "undefined") {
                 old_test_step_num = $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).test_step_num;
               } else {
-                old_test_step_num = $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).beforeRowNum;
+                old_test_step_num = editedExptRslt[i].beforeRowNum;
               }
               dataList.push({modify_typ: 2, test_step_num: $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).test_step_num
                              , rslt_strd: $("div#rslt_expt_component").jqxGrid("getrowdata", editedExptRslt[i].rowindex).rslt_strd
@@ -683,7 +701,15 @@
             success: function(data) {
             },
             error: function(request, status, error) {
-              $("div#agent_down_pop_window").jqxWindow("open");
+//              $("div#agent_down_pop_window").jqxWindow("open");
+              if (typeof input_param.case_num == "undefined") {
+                cmnSyncCall("GetScnrioAndCaseAndTestStepInfo", {scnrio_num: input_param.scnrio_num});
+              } else {
+                cmnSyncCall("GetScnrioAndCaseAndTestStepInfo", {scnrio_num: input_param.scnrio_num, case_num: input_param.case_num});                
+              }
+              
+              $("div#test_step_pop_window").jqxWindow("open");
+              
             }
           });
         } else if (act == "InsertNewCase") {
@@ -719,7 +745,7 @@
         } else if (act == "SaveTestExptRslt") {
           for (var i = 0; i < editedExptRslt.length; i++) {
             if (editedExptRslt[i].rowtype == "delete") {
-              $("div#rslt_expt_component").jqxGrid("deleterow", $("div#rslt_expt_component").jqxGrid("getrowid", i));
+              $("div#rslt_expt_component").jqxGrid("deleterow", $("div#rslt_expt_component").jqxGrid("getrowid", editedExptRslt[i].rowindex));
               for (var j = 0; j < editedExptRslt.length; j++)  {
                 if (editedExptRslt[i].rowindex < editedExptRslt[j].rowindex) {
                   editedExptRslt[j].rowindex = editedExptRslt[j].rowindex - 1;
@@ -728,6 +754,15 @@
             }
           }
           editedExptRslt = [];
+          var tmpList = new Array();
+          for (var i = 0; i < $("div#rslt_expt_component").jqxGrid("getrows").length; i++) {
+            tmpList.push($("div#rslt_expt_component").jqxGrid("getrows")[i]);
+          }
+          var retList = sort(tmpList, "test_step_num");
+          $("div#rslt_expt_component").jqxGrid("clear")
+          for (var i = 0; i < retList.length; i++) {
+            $("div#rslt_expt_component").jqxGrid("addrow", null, retList[i]);
+          }
           $("div#rslt_expt_component").jqxGrid("render");
         }
       }
@@ -761,10 +796,13 @@
           target = $("div#data_tree_component").jqxTree("getSelectedItem").element;
         }
         if ($("div#data_tree_component").jqxTree("getItem", target).parentElement == null) {
+          codeMirrorEditor.getDoc().setValue("");
           $("div#div_case_input_rslt").css("display", "none");
           $("div#div_src_cd").css("display", "block");
           cmnSyncCall("GetSrcCdByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", target).value}, callback, null);
         } else {
+          $("div#case_input_component").jqxGrid("clear");
+          $("div#rslt_expt_component").jqxGrid("clear");
           $("div#div_src_cd").css("display", "none");
           $("div#div_case_input_rslt").css("display", "block");
           $("div#case_input_component").jqxGrid("unselectrow", $("div#case_input_component").jqxGrid("getselectedrowindex"));
@@ -793,7 +831,7 @@
           if ($.trim($("input#new_rgst_window_nm_txt_component").val()) == "") {
             return "시나리오 명을 넣어주세요";
           } else {
-            var RegExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;
+            var RegExp = /[\{\}\[\]\/?.,;:|\)*~`!^+┼<>@\#$%&\'\"\\\(\=]/gi;
             if($("input#new_rgst_window_nm_txt_component").val().match(RegExp) != null) {
               return "정상적인 시나리오 명을 넣어주세요[특수문자 금지]";
             }
@@ -802,7 +840,7 @@
           if ($.trim($("input#new_rgst_window_nm_txt_component").val()) == "") {
             return "케이스 명을 넣어주세요";
           } else {
-            var RegExp = /[\{\}\[\]\/?.,;:|\)*~`!^\+┼<>@\#$%&\'\"\\\(\=]/gi;
+            var RegExp = /[\{\}\[\]\/?.,;:|\)*~`!^+┼<>@\#$%&\'\"\\\(\=]/gi;
             if($("input#new_rgst_window_nm_txt_component").val().match(RegExp) != null) {
               return "정상적인 케이스 명을 넣어주세요[특수문자 금지]";
             }
@@ -976,6 +1014,20 @@
         }
         return true;
       }
+      
+      function sort(list, dict) {
+        var retList = list.slice();
+        for (var i = 0; i < retList.length; i++) {
+          for (var j = i + 1; j < retList.length; j++) {
+            if (eval("retList[" + i + "]." + dict) > eval("retList[" + j + "]." + dict)) {
+              var tmpList = retList[i];
+              retList[i] = retList[j];
+              retList[j] = tmpList;
+            }
+          }
+        }
+        return retList;
+      }
     </script>
   </head>
   <body>
@@ -1127,6 +1179,17 @@
         </div>
         <div class="agent_down_pop_window_down_but">
           <input id="agent_down_pop_window_down_but_component" type="button" value="다운로드"/>
+        </div>
+      </div>      
+    </div>
+    <div id="test_step_pop_window">
+      <div class="test_step_pop_window_header" id="test_step_pop_window_header">
+        테스트 진행 경과 상태
+      </div>
+      <div style="overflow: hidden;" class="window_rgst_content">
+        <div id="test_step_pop_window_grid" class="test_step_pop_window_grid">
+          <div id="test_step_pop_window_grid_component" class="test_step_pop_window_grid_component">
+          </div>
         </div>
       </div>      
     </div>

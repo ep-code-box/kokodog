@@ -235,3 +235,11 @@ body {
   left: 215px;
   bottom: 10px;  
 }
+
+.test_step_pop_window_grid {
+  position: absolute;
+  left: 10px;
+  top: 30px;
+  right: 10px;
+  bottom: 10px;
+}

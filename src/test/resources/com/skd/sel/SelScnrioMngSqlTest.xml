@@ -247,6 +247,7 @@
            ) AS seq_num
          , #{eff_sta_dtm} AS eff_sta_dtm
     FROM   skd_sel_test_case sstc
+    WHERE  sstc.scnrio_num = #{scnrio_num}
   </insert>
   <update id="deleteTempCaseData" parameterType="HashMap">
     UPDATE skd_sel_test_case
