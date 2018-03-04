@@ -711,9 +711,9 @@
             error: function(request, status, error) {
 //              $("div#agent_down_pop_window").jqxWindow("open");
               if (typeof input_param.case_num == "undefined") {
-                cmnSyncCall("SkdSelGetTestStepInfo", {scnrio_num: input_param.scnrio_num}, callback, null);
+                cmnSyncCall("GetTestStepInfo", {scnrio_num: input_param.scnrio_num}, callback, null);
               } else {
-                cmnSyncCall("SkdSelGetTestStepInfo", {scnrio_num: input_param.scnrio_num, case_num: input_param.case_num}, callback, null);                
+                cmnSyncCall("GetTestStepInfo", {scnrio_num: input_param.scnrio_num, case_num: input_param.case_num}, callback, null);                
               }
             }
           });

@@ -28,10 +28,10 @@ public class SkdSelGetTestStepInfoController {
   
   private static Logger logger = LogManager.getLogger(SkdSelGetTestCaseInfoByScnrioNumController.class);
   
-  @RequestMapping(value="/skd/sel/sel_scnrio_mng/SkdSelGetTestStepInfo", method=RequestMethod.POST)
+  @RequestMapping(value="/skd/sel/sel_scnrio_mng/GetTestStepInfo", method=RequestMethod.POST)
   @ResponseBody
   public List<Map<String, Object>> main(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    logger.debug("Start method of SkdSelGetTestCaseInfoByScnrioNumController.main[/skd/sel/sel_scnrio_mng/SkdSelGetTestStepInfo]");
+    logger.debug("Start method of SkdSelGetTestCaseInfoByScnrioNumController.main[/skd/sel/sel_scnrio_mng/GetTestStepInfo]");
     validationCheck(request, response);
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("scnrio_num", Integer.parseInt(request.getParameter("scnrio_num")));
