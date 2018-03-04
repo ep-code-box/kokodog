@@ -167,7 +167,9 @@
           draggable: true,
           autoOpen: false,
           width: "1200px",
-          height: "800px"
+          height: "800px",
+          maxWidth: "1200px",
+          maxHeight: "800px"
         });
         $("div#test_step_pop_window_grid_component").jqxGrid({
           width: "100%",
@@ -175,11 +177,17 @@
           editable: false,
           columns: [{text: "시나리오명", datafield: "scnrio_nm", width: 160, editable: false, columntype: "textbox", cellsalign: "center"},
                     {text: "케이스명", datafield: "case_nm", width: 160, editable: false, columntype: "textbox", cellsalign: "center"},
+                    {text: "테스트<br/>번호", datafield: "test_step_num", width: 60, editable: false, columntype: "textbox", cellsalign: "right", align: "center"},
                     {text: "로그", datafield: "log", editable: false, columntype: "textbox", cellsalign: "center"},
-                    {text: "진행상태", datafield: "state_nm", width: 80, editable: false, columntype: "textbox", cellsalign: "center"}
+                    {text: "진행상태", datafield: "state_nm", width: 80, editable: false, columntype: "textbox", cellsalign: "center"},
+                    {text: "시나리오번호", datafield: "scnrio_num", hidden: true},
+                    {text: "케이스번호", datafield: "case_num", hidden: true}
                    ],
           width: "100%",
-          height: "100%"
+          height: "100%",
+          autoheight: true,
+          autorowheight: true,
+          columnsheight: 60
         });
       }
 
@@ -703,13 +711,10 @@
             error: function(request, status, error) {
 //              $("div#agent_down_pop_window").jqxWindow("open");
               if (typeof input_param.case_num == "undefined") {
-                cmnSyncCall("GetScnrioAndCaseAndTestStepInfo", {scnrio_num: input_param.scnrio_num});
+                cmnSyncCall("SkdSelGetTestStepInfo", {scnrio_num: input_param.scnrio_num}, callback, null);
               } else {
-                cmnSyncCall("GetScnrioAndCaseAndTestStepInfo", {scnrio_num: input_param.scnrio_num, case_num: input_param.case_num});                
+                cmnSyncCall("SkdSelGetTestStepInfo", {scnrio_num: input_param.scnrio_num, case_num: input_param.case_num}, callback, null);                
               }
-              
-              $("div#test_step_pop_window").jqxWindow("open");
-              
             }
           });
         } else if (act == "InsertNewCase") {
@@ -764,6 +769,19 @@
             $("div#rslt_expt_component").jqxGrid("addrow", null, retList[i]);
           }
           $("div#rslt_expt_component").jqxGrid("render");
+        } else if (act == "GetTestStepInfo") {
+          $("div#test_step_pop_window").jqxWindow("open");
+          $("div#test_step_pop_window_grid_component").jqxGrid("clear");
+          for (var i = 0; i < data.length; i++) {
+            $("div#test_step_pop_window_grid_component").jqxGrid("addrow", null, {test_step_num: data[i].test_step_num
+                                                                                 , scnrio_nm: data[i].scnrio_nm
+                                                                                 , case_nm: data[i].case_nm
+                                                                                 , scnrio_num: data[i].scnrio_num
+                                                                                 , case_num: data[i].case_num
+                                                                                 , log: ""
+                                                                                 , state_nm: "대기중"
+                                                                                 });
+          }
         }
       }
       
