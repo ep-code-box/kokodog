@@ -32,7 +32,7 @@ public class GetTestStepInfoDaoTest {
 
   @Test(timeout=1000)
   @Transactional
-  @Rollback(false)
+  @Rollback(true)
   public void testDelTestExptRsltByStepNum() throws Exception {
     testDelTestExptRsltByStepNumWithCaseNum();
     testDelTestExptRsltByStepNumWithoutCaseNum();
