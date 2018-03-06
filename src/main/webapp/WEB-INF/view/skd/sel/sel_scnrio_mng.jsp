@@ -32,6 +32,8 @@
       var editedCaseInput = new Array();
       var editedExptRslt = new Array();
       var judgTypNm = [];
+      var inetrvalFunc;
+      var maxTestResultRow = 0;
 
       $(document).ready(function() {
         contentInitLoad();
@@ -176,18 +178,19 @@
           height: "100%",
           editable: false,
           columns: [{text: "시나리오명", datafield: "scnrio_nm", width: 160, editable: false, columntype: "textbox", cellsalign: "center"},
-                    {text: "케이스명", datafield: "case_nm", width: 160, editable: false, columntype: "textbox", cellsalign: "center"},
-                    {text: "테스트<br/>번호", datafield: "test_step_num", width: 60, editable: false, columntype: "textbox", cellsalign: "right", align: "center"},
+                    {text: "케이스명", datafield: "case_nm", width: 200, editable: false, columntype: "textbox", cellsalign: "center"},
+                    {text: "테스트<br/>번호", datafield: "test_step_num", width: 80, editable: false, columntype: "textbox", cellsalign: "right", align: "center"},
                     {text: "로그", datafield: "log", editable: false, columntype: "textbox", cellsalign: "center"},
                     {text: "진행상태", datafield: "state_nm", width: 80, editable: false, columntype: "textbox", cellsalign: "center"},
                     {text: "시나리오번호", datafield: "scnrio_num", hidden: true},
-                    {text: "케이스번호", datafield: "case_num", hidden: true}
+                    {text: "케이스번호", datafield: "case_num", hidden: true},
+                    {text: "시각", datafield: "dtm", hidden: true}
                    ],
           width: "100%",
           height: "100%",
           autoheight: true,
           autorowheight: true,
-          columnsheight: 60
+          columnsheight: 20
         });
       }
 
@@ -234,6 +237,7 @@
         $("a#menu_scnrio_new").click(event_a_menu_scnrio_new_click);
         $("a#menu_import").click(event_a_menu_import_click);
         $("input#agent_down_pop_window_down_but_component").click(event_input_agent_down_pop_window_down_but_component_click);
+        $("div#test_step_pop_window").on("close", event_div_test_step_pop_window_close);
       }
       
       function event_div_data_tree_component_expand(event) {
@@ -488,6 +492,10 @@
       function event_scnrio_src_cd_save() {
         cmnSyncCall("SaveSncrioSrcCd", {scnrio_num: $("div#data_tree_component").jqxTree("getSelectedItem").value, src_cd: codeMirrorEditor.getDoc().getValue()}, null, null);
       }
+      
+      function event_div_test_step_pop_window_close() {
+        clearInterval(inetrvalFunc);        
+      }
 
       function setCodeMirrorEditor() {
         codeMirrorEditor = CodeMirror.fromTextArea($("#text_src_cd")[0], {
@@ -703,17 +711,21 @@
           $.ajax({
             url: "http://localhost:30710/test",
             type: "post",
-            data: JSON.stringify({scnrio_num: input_param.scnrio_num, dtm: data.dtm, test_data: data.test_data}),
-            dataType: "JSON",
+            data: {scnrio_num: input_param.scnrio_num, dtm: data.dtm, test_data: JSON.stringify(data.test_data)},
             async: true,
             success: function(data) {
+              if (typeof input_param.case_num == "undefined") {
+                cmnSyncCall("GetTestStepInfo", {scnrio_num: input_param.scnrio_num}, callback, data.dtm);
+              } else {
+                cmnSyncCall("GetTestStepInfo", {scnrio_num: input_param.scnrio_num, case_num: input_param.case_num}, callback, data.dtm);                
+              }
             },
             error: function(request, status, error) {
 //              $("div#agent_down_pop_window").jqxWindow("open");
               if (typeof input_param.case_num == "undefined") {
-                cmnSyncCall("GetTestStepInfo", {scnrio_num: input_param.scnrio_num}, callback, null);
+                cmnSyncCall("GetTestStepInfo", {scnrio_num: input_param.scnrio_num}, callback, data.dtm);
               } else {
-                cmnSyncCall("GetTestStepInfo", {scnrio_num: input_param.scnrio_num, case_num: input_param.case_num}, callback, null);                
+                cmnSyncCall("GetTestStepInfo", {scnrio_num: input_param.scnrio_num, case_num: input_param.case_num}, callback, data.dtm);                
               }
             }
           });
@@ -772,7 +784,17 @@
         } else if (act == "GetTestStepInfo") {
           $("div#test_step_pop_window").jqxWindow("open");
           $("div#test_step_pop_window_grid_component").jqxGrid("clear");
-          for (var i = 0; i < data.length; i++) {
+          maxTestResultRow = 0;
+          $("div#test_step_pop_window_grid_component").jqxGrid("addrow", null, {test_step_num: data[0].test_step_num
+                                                                               , scnrio_nm: data[0].scnrio_nm
+                                                                               , case_nm: data[0].case_nm
+                                                                               , scnrio_num: data[0].scnrio_num
+                                                                               , case_num: data[0].case_num
+                                                                               , log: ""
+                                                                               , state_nm: "진행중"
+                                                                               , dtm: callbackVar
+                                                                               });
+          for (var i = 1; i < data.length; i++) {
             $("div#test_step_pop_window_grid_component").jqxGrid("addrow", null, {test_step_num: data[i].test_step_num
                                                                                  , scnrio_nm: data[i].scnrio_nm
                                                                                  , case_nm: data[i].case_nm
@@ -780,9 +802,50 @@
                                                                                  , case_num: data[i].case_num
                                                                                  , log: ""
                                                                                  , state_nm: "대기중"
+                                                                                 , dtm: callbackVar
                                                                                  });
           }
+          inetrvalFunc = setInterval(periodicTestResultCall, 1000);
         }
+      }
+      
+      function periodicTestResultCall() {
+        for (var i = 0; i < $("div#test_step_pop_window_grid_component").jqxGrid("getrows").length; i++) {
+          if ($("div#test_step_pop_window_grid_component").jqxGrid("getrows")[i].state_nm == "진행중") {
+            nextTestResultCall(i);
+          }
+        }
+      }
+      
+      function nextTestResultCall(row) {
+        $.ajax({
+          url: "http://localhost:30710/getTestResult",
+          type: "post",
+          data: {scnrio_num: $("div#test_step_pop_window_grid_component").jqxGrid("getrows")[row].scrnio_num
+                 , dtm: $("div#test_step_pop_window_grid_component").jqxGrid("getrows")[row].dtm
+                 , case_num: $("div#test_step_pop_window_grid_component").jqxGrid("getrows")[row].case_num
+                 , test_step_num: $("div#test_step_pop_window_grid_component").jqxGrid("getrows")[row].test_step_num
+                },
+          async: true,
+          dataType: "json",
+          success: function(data) {
+            if (data.state_nm == 2) {
+              $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "state_nm", "완료");
+              $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "log", data.log);
+              if ($("div#test_step_pop_window_grid_component").jqxGrid("getrows").length > row + 1) {
+                nextTestResultCall(row + 1);
+              } else {
+                clearInterval(inetrvalFunc);                
+              }
+            } else if (data.state_nm == 1) {
+              $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "state_nm", "진행중");
+            }
+          },
+          error: function(request, status, error) {
+            clearInterval(inetrvalFunc);
+            cmnAlert("테스트 결과 조회 중 접속 오류가 발생했습니다.");
+          }
+        });
       }
       
       function getSncrioLst() {
