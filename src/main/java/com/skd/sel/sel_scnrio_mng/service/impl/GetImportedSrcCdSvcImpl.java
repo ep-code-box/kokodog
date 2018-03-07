@@ -69,6 +69,7 @@ public class GetImportedSrcCdSvcImpl implements GetImportedSrcCdSvc {
     srcCd = (String)getImportedSrcCdDao.getSrcCdByScnrioNum(methodInputMap).get("src_cd");
     for (int i = 0; i < caseNumList.length; i++) {
       methodInputMap.clear();
+      methodInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
       methodInputMap.put("case_num", caseNumList[i]);
       outputList = getImportedSrcCdDao.getTestInputByCaseNum(methodInputMap);
       retMap = new HashMap<String, Object>();
