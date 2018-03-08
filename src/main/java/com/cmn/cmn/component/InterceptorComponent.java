@@ -190,10 +190,6 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
         }
       }
     }
-    response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-    response.setHeader("Access-Control-Max-Age", "3600");
-    response.setHeader("Access-Control-Allow-Headers", "Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-ControlRequest-Headers,Authorization");
-    response.addHeader("Access-Control-Allow-Origin", "*");
     addoptInfoComponent.endConnUpdate(request, response, getServerTimeService.getServerTime(), responseNum, errMsg, ((Long)request.getAttribute("_REQUEST_CONN_SEQ")).longValue()
                                       , ((Long)request.getAttribute("system_call_dtm")).longValue());
   }

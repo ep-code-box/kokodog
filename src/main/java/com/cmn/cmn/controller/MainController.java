@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.stereotype.Controller;
 
@@ -28,6 +29,7 @@ import com.cmn.cmn.service.FileControlService;
  *  view에 jsp 페이지를 설정하여 jsp 페이지를 response로 되돌려주는 역할을 수행하는
  *  controller class이다.
  */
+@CrossOrigin(origins="*")
 @Controller
 public class MainController {
   private static Logger logger = LogManager.getLogger(MainController.class);
