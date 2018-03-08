@@ -95,10 +95,6 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
     logger.debug("============   Start method of InterceptorComponent.preHandle   ============");
-    response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-    response.setHeader("Access-Control-Max-Age", "3600");
-    response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
-    response.addHeader("Access-Control-Allow-Origin", "*");
     request.setAttribute("system_call_dtm", getServerTimeService.getServerTime());
     String ip = null;
     Calendar calendar = new GregorianCalendar(TimeZone.getDefault());
@@ -194,6 +190,10 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
         }
       }
     }
+    response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+    response.setHeader("Access-Control-Max-Age", "3600");
+    response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+    response.addHeader("Access-Control-Allow-Origin", "*");
     addoptInfoComponent.endConnUpdate(request, response, getServerTimeService.getServerTime(), responseNum, errMsg, ((Long)request.getAttribute("_REQUEST_CONN_SEQ")).longValue()
                                       , ((Long)request.getAttribute("system_call_dtm")).longValue());
   }
