@@ -33,7 +33,6 @@
       var editedExptRslt = new Array();
       var judgTypNm = [];
       var inetrvalFunc;
-      var maxTestResultRow = 0;
 
       $(document).ready(function() {
         contentInitLoad();
@@ -41,13 +40,6 @@
         setCodeMirrorEditor();
         getSncrioLst();
         setButEnableChk();
-        $("#toolbar_scnrio_new").jqxTooltip({position: "mouse", content: "새 시나리오..."});
-        $("#toolbar_case_new").jqxTooltip({position: "mouse", content: "새 테스트케이스..."});
-        $("#toolbar_update").jqxTooltip({position: "mouse", content: "수정"});
-        $("#toolbar_del").jqxTooltip({position: "mouse", content: "삭제"});
-        $("#toolbar_scnrio_test").jqxTooltip({position: "mouse", content: "시나리오 테스트"});
-        $("#toolbar_case_test").jqxTooltip({position: "mouse", content: "케이스 테스트"});
-        $("#toolbar_upload").jqxTooltip({position: "mouse", content: "시나리오 업로드"});
       });
       
       function contentInitLoad() {
@@ -95,11 +87,12 @@
           showtoolbar: true,
           rendertoolbar: function (statusbar) {
             var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
-            var saveButton = $("<div style='float: left; margin-left: 5px;'>Save</div>").attr("id", "case_input_component_save_button");
+            var saveButton = $("<div style='float: left; margin-left: 5px;'><img src='/FileDown?file_key=GgnS17SPV1IuXIfUZGWXfykXCbOMyeB2S2AGKtWD' style='width:18px;height:18px;'/></div>").attr("id", "case_input_component_save_button");
             container.append(saveButton);
             statusbar.append(container);
-            saveButton.jqxButton({width: 60, height: 20, disabled: true});
+            saveButton.jqxButton({width: 18, height: 18, disabled: true});
             saveButton.click(event_input_data_save_but_click);
+            saveButton.jqxTooltip({position: "mouse", content: "저장"});
           }
         });
         $("div#test_scnrio_right_click_pop").jqxMenu({
@@ -179,19 +172,28 @@
           editable: false,
           columns: [{text: "시나리오명", datafield: "scnrio_nm", width: 160, editable: false, columntype: "textbox", cellsalign: "center"},
                     {text: "케이스명", datafield: "case_nm", width: 200, editable: false, columntype: "textbox", cellsalign: "center"},
-                    {text: "테스트<br/>번호", datafield: "test_step_num", width: 80, editable: false, columntype: "textbox", cellsalign: "right", align: "center"},
+                    {text: "테스트번호", datafield: "test_step_num", width: 80, editable: false, columntype: "textbox", cellsalign: "right", align: "center"},
                     {text: "로그", datafield: "log", editable: false, columntype: "textbox", cellsalign: "center"},
-                    {text: "진행상태", datafield: "state_nm", width: 80, editable: false, columntype: "textbox", cellsalign: "center"},
+                    {text: "진행상태", datafield: "test_st_nm", width: 80, editable: false, columntype: "textbox", cellsalign: "center"},
                     {text: "시나리오번호", datafield: "scnrio_num", hidden: true},
                     {text: "케이스번호", datafield: "case_num", hidden: true},
-                    {text: "시각", datafield: "dtm", hidden: true}
+                    {text: "시각", datafield: "dtm", hidden: true},
+                    {text: "테스트상태코드", datafield: "test_st_cd", hidden: true},
                    ],
           width: "100%",
           height: "100%",
           autoheight: true,
           autorowheight: true,
-          columnsheight: 20
+          columnsheight: 20,
+          selectionmode: "none"
         });
+        $("#toolbar_scnrio_new").jqxTooltip({position: "mouse", content: "새 시나리오..."});
+        $("#toolbar_case_new").jqxTooltip({position: "mouse", content: "새 테스트케이스..."});
+        $("#toolbar_update").jqxTooltip({position: "mouse", content: "수정"});
+        $("#toolbar_del").jqxTooltip({position: "mouse", content: "삭제"});
+        $("#toolbar_scnrio_test").jqxTooltip({position: "mouse", content: "시나리오 테스트"});
+        $("#toolbar_case_test").jqxTooltip({position: "mouse", content: "케이스 테스트"});
+        $("#toolbar_upload").jqxTooltip({position: "mouse", content: "시나리오 업로드"});
       }
 
       function contentEventLoad() {
@@ -494,7 +496,6 @@
       }
       
       function event_div_test_step_pop_window_close() {
-        clearInterval(inetrvalFunc);        
       }
 
       function setCodeMirrorEditor() {
@@ -512,6 +513,7 @@
           }
         });
         codeMirrorEditor.setOption("theme", gCmEditorTheme);
+        codeMirrorEditor.setOption("lineSeparator", "\n");
         codeMirrorEditor.getWrapperElement().style["font-family"] = "Oxygen Mono";
         codeMirrorEditor.refresh();
         codeMirrorEditor.setSize("100%", "100%");
@@ -528,8 +530,8 @@
             var newButton = $("<div><img src='/FileDown?file_key=4W3AYzuLwhTwCJfNrBJcgZQL1bmgIxhKJLruOczF' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_scnrio_new");
             tool.append(newButton);
             newButton.jqxButton({
-              width: "28px",
-              height: "28px",
+              width: "24px",
+              height: "24px",
             });
             newButton.on("click", function(event) {
               if ($("#toolbar_scnrio_new").jqxButton("disabled") != true) {
@@ -541,8 +543,8 @@
             var newButton = $("<div><img src='/FileDown?file_key=0xAoKZ11FQB3HyZH0bIpCaaphbKcyS3uXYn0G5rn' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_case_new");
             tool.append(newButton);
             newButton.jqxButton({
-              width: "28px",
-              height: "28px",
+              width: "24px",
+              height: "24px",
             });
             newButton.on("click", function(event) {
               if ($("#toolbar_case_new").jqxButton("disabled") != true) {
@@ -551,11 +553,11 @@
             });
             break;
           case 2:
-            var updateButton = $("<div><img src='/FileDown?file_key=6Tyvf2KhwkyKKug6IZZmJOvzLcZT4mYWoBK3D5Ke' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_update");
+            var updateButton = $("<div><img src='/FileDown?file_key=y673Rwz0Ldj3Zu3zNCL5gpALrn1pogTcxpt36gQ2' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_update");
             tool.append(updateButton);
             updateButton.jqxButton({
-              width: "28px",
-              height: "28px",
+              width: "24px",
+              height: "24px",
             });
             break;cmnAlert
             updateButton.on("click", function(event) {
@@ -567,8 +569,8 @@
             var deleteButton = $("<div><img src='/FileDown?file_key=YwN3sUbnW2f7T2YrLy5lbLUztLD9EWDIyP3v6g4A' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_del");
             tool.append(deleteButton);
             deleteButton.jqxButton({
-              width: "28px",
-              height: "28px",
+              width: "24px",
+              height: "24px",
             });
             deleteButton.on("click", function(event) {
               if ($("#toolbar_del").jqxButton("disabled") != true) {
@@ -581,11 +583,11 @@
             });
             break;
           case 4:
-            var scnrioTestButton = $("<div><img src='/FileDown?file_key=zc15PA0zUXEPfRQVPYNOTbcbdUEoJScZZLO8TBYG' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_scnrio_test");
+            var scnrioTestButton = $("<div><img src='/FileDown?file_key=nTIw04flYSlW9VDRAkHtx8wRnPfNG85hIuHUVZg1' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_scnrio_test");
             tool.append(scnrioTestButton);
             scnrioTestButton.jqxButton({
-              width: "28px",
-              height: "28px",
+              width: "24px",
+              height: "24px",
             });
             scnrioTestButton.on("click", function(event) {
               if ($("#toolbar_scnrio_test").jqxButton("disabled") != true) {
@@ -594,11 +596,11 @@
             });
             break;
           case 5:
-            var caseTestButton = $("<div><img src='/FileDown?file_key=zc15PA0zUXEPfRQVPYNOTbcbdUEoJScZZLO8TBYG' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_case_test");
+            var caseTestButton = $("<div><img src='/FileDown?file_key=J0Rr7aMrbGXl0Op8r8Rs01KOBJDJNG5AC3UBBWga' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_case_test");
             tool.append(caseTestButton);
             caseTestButton.jqxButton({
-              width: "28px",
-              height: "28px",
+              width: "24px",
+              height: "24px",
             });
             caseTestButton.on("click", function(event) {
               if ($("#toolbar_case_test").jqxButton("disabled") != true) {
@@ -607,11 +609,11 @@
             });
             break;
           case 6:
-            var uploadButton = $("<div><img src='/FileDown?file_key=GgnS17SPV1IuXIfUZGWXfykXCbOMyeB2S2AGKtWD' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_upload");
+            var uploadButton = $("<div><img src='/FileDown?file_key=9co4OmyQyfCvWpYQbxb8GLA0PAwLssHxYu5c26Zf' style='width:20px;height:20px;'/></div>").attr("id", "toolbar_upload");
             tool.append(uploadButton);
             uploadButton.jqxButton({
-              width: "28px",
-              height: "28px",
+              width: "24px",
+              height: "24px",
             });
             uploadButton.on("click", function(event) {
               if ($("#toolbar_upload").jqxButton("disabled") != true) {
@@ -688,19 +690,22 @@
             showtoolbar: true,
             rendertoolbar: function (statusbar) {
               var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
-              var addBut = $("<div style='float: left; margin-left: 5px;'>Add</div>").attr("id", "rslt_expt_component_add_button");
-              var delBut = $("<div style='float: left; margin-left: 5px;'>Delete</div>").attr("id", "rslt_expt_component_del_button");
-              var saveBut = $("<div style='float: left; margin-left: 5px;'>Save</div>").attr("id", "rslt_expt_component_save_button");
+              var addBut = $("<div style='float: left; margin-left: 5px;'><img src='/FileDown?file_key=UtZ5mzcUPNjnNWjCwMG7xe6ecvrg3oxoCobS1rVD' style='width:18px;height:18px;'/></div>").attr("id", "rslt_expt_component_add_button");
+              var delBut = $("<div style='float: left; margin-left: 5px;'><img src='/FileDown?file_key=1YctFgMgRu9r1XkxJXeo2ZJrowJ4LXBCuParLx4L' style='width:18px;height:18px;'/></div>").attr("id", "rslt_expt_component_del_button");
+              var saveBut = $("<div style='float: left; margin-left: 5px;'><img src='/FileDown?file_key=GgnS17SPV1IuXIfUZGWXfykXCbOMyeB2S2AGKtWD' style='width:18px;height:18px;'/></div>").attr("id", "rslt_expt_component_save_button");
               container.append(addBut);
               container.append(delBut);
               container.append(saveBut);
               statusbar.append(container);
-              addBut.jqxButton({width: 60, height: 20});
-              delBut.jqxButton({width: 65, height: 20, disabled: true});
-              saveBut.jqxButton({width: 65, height: 20, disabled: true});
+              addBut.jqxButton({width: 18, height: 18});
+              delBut.jqxButton({width: 18, height: 18, disabled: true});
+              saveBut.jqxButton({width: 18, height: 18, disabled: true});
               addBut.click(event_expt_rslt_add_but_click);
               delBut.click(event_expt_rslt_del_but_click);
               saveBut.click(event_expt_rslt_save_but_click);
+              addBut.jqxTooltip({position: "mouse", content: "추가"});
+              delBut.jqxTooltip({position: "mouse", content: "삭제"});
+              saveBut.jqxTooltip({position: "mouse", content: "저장"});
             }
           });
         } else if (act == "InsertNewScnrio") {
@@ -782,17 +787,18 @@
           }
           $("div#rslt_expt_component").jqxGrid("render");
         } else if (act == "GetTestStepInfo") {
-          $("div#test_step_pop_window").jqxWindow("open");
+          openTestRsltWindow();
           $("div#test_step_pop_window_grid_component").jqxGrid("clear");
-          maxTestResultRow = 0;
           $("div#test_step_pop_window_grid_component").jqxGrid("addrow", null, {test_step_num: data[0].test_step_num
                                                                                , scnrio_nm: data[0].scnrio_nm
                                                                                , case_nm: data[0].case_nm
                                                                                , scnrio_num: data[0].scnrio_num
                                                                                , case_num: data[0].case_num
                                                                                , log: ""
-                                                                               , state_nm: "진행중"
+                                                                               , test_st_nm: "<div style=\"color:#0f0fb9\">정상</div>"
+//                                                                               , test_st_nm: "<img width=\"24px\" height:\"24px\" src=\"http://kokodogdev.fun25.co.kr/FileDown?file_key=CG5jTwaR34Dv4CpuPhiBQtquRpRHAastPcxrvMgs\"/>"
                                                                                , dtm: callbackVar
+                                                                               , test_st_cd : 1
                                                                                });
           for (var i = 1; i < data.length; i++) {
             $("div#test_step_pop_window_grid_component").jqxGrid("addrow", null, {test_step_num: data[i].test_step_num
@@ -801,17 +807,18 @@
                                                                                  , scnrio_num: data[i].scnrio_num
                                                                                  , case_num: data[i].case_num
                                                                                  , log: ""
-                                                                                 , state_nm: "대기중"
+                                                                                 , test_st_nm: "대기중"
                                                                                  , dtm: callbackVar
+                                                                                 , test_st_cd : 3
                                                                                  });
           }
-          inetrvalFunc = setInterval(periodicTestResultCall, 1000);
+          setTimeout(periodicTestResultCall, 1000);
         }
       }
       
       function periodicTestResultCall() {
         for (var i = 0; i < $("div#test_step_pop_window_grid_component").jqxGrid("getrows").length; i++) {
-          if ($("div#test_step_pop_window_grid_component").jqxGrid("getrows")[i].state_nm == "진행중") {
+          if ($("div#test_step_pop_window_grid_component").jqxGrid("getrows")[i].test_st_cd == 1) {
             nextTestResultCall(i);
           }
         }
@@ -819,31 +826,38 @@
       
       function nextTestResultCall(row) {
         $.ajax({
-          url: "http://localhost:30710/getTestResult",
-          type: "post",
+          url: "http://localhost:30710/getTestResult/test.js",
+          type: "get",
+          dataType : "jsonp",
           data: {scnrio_num: $("div#test_step_pop_window_grid_component").jqxGrid("getrows")[row].scrnio_num
                  , dtm: $("div#test_step_pop_window_grid_component").jqxGrid("getrows")[row].dtm
                  , case_num: $("div#test_step_pop_window_grid_component").jqxGrid("getrows")[row].case_num
                  , test_step_num: $("div#test_step_pop_window_grid_component").jqxGrid("getrows")[row].test_step_num
                 },
           async: true,
-          dataType: "json",
+          headers: {Accept: "text/css;charset=utf-8", "Content-Type": "text/js;charset=utf-8"},
           success: function(data) {
-            if (data.state_nm == 2) {
-              $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "state_nm", "완료");
+            data = JSON.parse(data);
+            if (data.test_st_cd == 2) {
+              $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "test_st_cd", 2);
+              if (data.test_rslt_cd == 1) {
+                $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "test_st_nm", "<div style=\"color:#0f0fb9\">정상</div>");
+              } else {
+                $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "test_st_nm", "<div style=\"color:#b90f0f\">비정상</div>");                
+              }
               $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "log", data.log);
               if ($("div#test_step_pop_window_grid_component").jqxGrid("getrows").length > row + 1) {
                 nextTestResultCall(row + 1);
               } else {
-                clearInterval(inetrvalFunc);                
+                setTimeout(periodicTestResultCall, 1000);               
               }
-            } else if (data.state_nm == 1) {
-              $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "state_nm", "진행중");
+            } else {
+              $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "test_st_cd", 1);
+              $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "test_st_nm", "<img width=\"24px\" height:\"24px\" src=\"http://kokodogdev.fun25.co.kr/FileDown?file_key=CG5jTwaR34Dv4CpuPhiBQtquRpRHAastPcxrvMgs\"/>");
             }
           },
           error: function(request, status, error) {
-            clearInterval(inetrvalFunc);
-            cmnAlert("테스트 결과 조회 중 접속 오류가 발생했습니다.");
+            alert("request : " + JSON.stringify(request) + ", status : " + JSON.stringify(status) + ", error : " + JSON.stringify(error));
           }
         });
       }
@@ -953,7 +967,7 @@
           }
         } else if (callbackVar == 3) {
           if (ret == true) {
-            cmnSyncCall("GetImportedSrcCdByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement).value, test_num: $("div#data_tree_component").jqxTree("getSelectedItem").value}, callback, null);
+            cmnSyncCall("GetImportedSrcCdByScnrioNum", {scnrio_num: $("div#data_tree_component").jqxTree("getItem", $("div#data_tree_component").jqxTree("getSelectedItem").parentElement).value, case_num: $("div#data_tree_component").jqxTree("getSelectedItem").value}, callback, null);
           } else {
             cmnAlert("테스트가 취소되었습니다.");
           }
@@ -1108,6 +1122,20 @@
           }
         }
         return retList;
+      }
+      
+      function openTestRsltWindow() {
+        if ($(window).width() >= 1300) {
+          $("div#test_step_pop_window").jqxWindow("width", "1200px");
+        } else {
+          $("div#test_step_pop_window").jqxWindow("width", "" + ($(window).width() -150) + "px");
+        }
+        if ($(window).height() >= 860) {
+          $("div#test_step_pop_window").jqxWindow("height", "800px");
+        } else {
+          $("div#test_step_pop_window").jqxWindow("height", "" + ($(window).height() -120) + "px");
+        }
+        $("div#test_step_pop_window").jqxWindow("open");
       }
     </script>
   </head>
