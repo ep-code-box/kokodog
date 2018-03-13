@@ -62,9 +62,9 @@ public class MakeSrcCdWithInputParamSvcImpl implements MakeSrcCdWithInputParamSv
             i++;
             continue;
           } else {
-            inputNm = madeSrcCd.substring(i + 1, j);
+            inputNm = madeSrcCd.substring(i + 1, j).trim();
             for (k = 0; k < input.size(); k++) {
-              if (inputNm.equals(input.get(k).get("input_nm")) == true) {
+              if (inputNm.equals(((String)input.get(k).get("input_nm")).trim()) == true) {
                 break;
               }
             }
@@ -117,18 +117,10 @@ public class MakeSrcCdWithInputParamSvcImpl implements MakeSrcCdWithInputParamSv
             i++;
             continue;
           } else {
-            String inputVal = madeSrcCd.substring(i + 1, j).trim();
-            for (j = 0; j < outputList.size(); j++) {
-              if (((String)outputList.get(j).get("input_nm")).equals(inputVal) == true) {
-                break;
-              }
-            }
-            if (j == outputList.size()) {
-              Map<String, Object> tmpMap = new HashMap<String, Object>();
-              tmpMap.put("input_nm", inputVal);
-              tmpMap.put("pos", i + 1);
-              outputList.add(tmpMap);
-            }
+            Map<String, Object> tmpMap = new HashMap<String, Object>();
+            tmpMap.put("input_nm", madeSrcCd.substring(i + 1, j).trim());
+            tmpMap.put("pos", i + 1);
+            outputList.add(tmpMap);
           }
         }
       }
