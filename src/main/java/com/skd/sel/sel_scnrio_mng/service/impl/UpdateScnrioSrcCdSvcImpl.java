@@ -55,6 +55,7 @@ public class UpdateScnrioSrcCdSvcImpl implements UpdateScnrioSrcCdSvc {
     int userNum = 0;
     int i = 0;
     int j = 0;
+    int seq = 0;
     try {
       sra = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
       request = sra.getRequest();
@@ -75,7 +76,9 @@ public class UpdateScnrioSrcCdSvcImpl implements UpdateScnrioSrcCdSvc {
       daoInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
       daoInputMap.put("input_nm", inputValList.get(i).get("input_nm"));
       daoOutputMap = updateScnrioSrcCdDao.getTestInputInfoByScnrioNumAndInputNm(daoInputMap);
-      if (daoOutputMap == null || daoOutputMap.get("input_num") == null || ((Long)daoOutputMap.get("input_num")).intValue() != i + 1) {
+      if (daoOutputMap != null && daoOutputMap.get("input_num") != null && ((Long)daoOutputMap.get("input_num")).intValue() == seq + 1) {
+        seq++;
+      } else {
         for (j = 0; j < i; j++) {
           if (inputValList.get(i).get("input_nm").equals(inputValList.get(j).get("input_nm")) == true) {
             break;
@@ -84,13 +87,13 @@ public class UpdateScnrioSrcCdSvcImpl implements UpdateScnrioSrcCdSvc {
         if (j == i) {
           daoInputMap.clear();
           daoInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
-          daoInputMap.put("input_num",  i + 1);
+          daoInputMap.put("input_num",  seq + 1);
           daoInputMap.put("system_call_dtm", new Date(systemCallDtm));
           daoInputMap.put("user_num", userNum);
           updateScnrioSrcCdDao.delTestCaseInputWithScnrioNumAndInputNum(daoInputMap);
           daoInputMap.clear();
           daoInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
-          daoInputMap.put("input_num", i + 1);
+          daoInputMap.put("input_num", seq + 1);
           daoInputMap.put("input_nm", inputValList.get(i).get("input_nm"));
           daoInputMap.put("system_call_dtm", new Date(systemCallDtm));
           daoInputMap.put("user_num", userNum);
@@ -98,19 +101,20 @@ public class UpdateScnrioSrcCdSvcImpl implements UpdateScnrioSrcCdSvc {
           daoInputMap.put("input_nm", inputValList.get(i).get("input_nm"));
           daoInputMap.clear();
           daoInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
-          daoInputMap.put("input_num", i + 1);
+          daoInputMap.put("input_num", seq + 1);
           daoInputMap.put("system_call_dtm", new Date(systemCallDtm));
           daoInputMap.put("user_num", userNum);
           updateScnrioSrcCdDao.delTestInputWithScnrioNumAndInputNm(daoInputMap);
           daoInputMap.put("input_nm", inputValList.get(i).get("input_nm"));
           daoInputMap.clear();
           daoInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
-          daoInputMap.put("input_num", i + 1);
+          daoInputMap.put("input_num", seq + 1);
           daoInputMap.put("input_nm", inputValList.get(i).get("input_nm"));
           daoInputMap.put("input_desc", daoOutputMap == null ? null : daoOutputMap.get("input_desc"));
           daoInputMap.put("system_call_dtm", new Date(systemCallDtm));
           daoInputMap.put("user_num", userNum);
           updateScnrioSrcCdDao.insertNewTestInput(daoInputMap);
+          seq++;
         }
       }
     }
@@ -129,13 +133,13 @@ public class UpdateScnrioSrcCdSvcImpl implements UpdateScnrioSrcCdSvc {
     daoInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
     daoInputMap.put("system_call_dtm", new Date(systemCallDtm));
     daoInputMap.put("user_num", userNum);
-    daoInputMap.put("input_num", i + 1);
+    daoInputMap.put("input_num", seq + 1);
     updateScnrioSrcCdDao.delTestInputBiggerThanInputNum(daoInputMap);
     daoInputMap.clear();
     daoInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
     daoInputMap.put("system_call_dtm", new Date(systemCallDtm));
     daoInputMap.put("user_num", userNum);
-    daoInputMap.put("input_num", i + 1);
+    daoInputMap.put("input_num", seq + 1);
     updateScnrioSrcCdDao.delTestCaseInputBiggerThanInputNum(daoInputMap);
   }
 }

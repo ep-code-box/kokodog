@@ -715,10 +715,10 @@
         } else if (act == "GetImportedSrcCdByScnrioNum") {
           $.ajax({
             url: "http://localhost:30710/test",
-            type: "post",
+            type: "POST",
             data: {scnrio_num: input_param.scnrio_num, dtm: data.dtm, test_data: JSON.stringify(data.test_data)},
             async: true,
-            success: function(data) {
+            success: function(subData) {
               if (typeof input_param.case_num == "undefined") {
                 cmnSyncCall("GetTestStepInfo", {scnrio_num: input_param.scnrio_num}, callback, data.dtm);
               } else {
@@ -726,12 +726,7 @@
               }
             },
             error: function(request, status, error) {
-//              $("div#agent_down_pop_window").jqxWindow("open");
-              if (typeof input_param.case_num == "undefined") {
-                cmnSyncCall("GetTestStepInfo", {scnrio_num: input_param.scnrio_num}, callback, data.dtm);
-              } else {
-                cmnSyncCall("GetTestStepInfo", {scnrio_num: input_param.scnrio_num, case_num: input_param.case_num}, callback, data.dtm);                
-              }
+              $("div#agent_down_pop_window").jqxWindow("open");
             }
           });
         } else if (act == "InsertNewCase") {
@@ -795,8 +790,7 @@
                                                                                , scnrio_num: data[0].scnrio_num
                                                                                , case_num: data[0].case_num
                                                                                , log: ""
-                                                                               , test_st_nm: "<div style=\"color:#0f0fb9\">정상</div>"
-//                                                                               , test_st_nm: "<img width=\"24px\" height:\"24px\" src=\"http://kokodogdev.fun25.co.kr/FileDown?file_key=CG5jTwaR34Dv4CpuPhiBQtquRpRHAastPcxrvMgs\"/>"
+                                                                               , test_st_nm: "<img width=\"24px\" height:\"24px\" src=\"http://kokodogdev.fun25.co.kr/FileDown?file_key=CG5jTwaR34Dv4CpuPhiBQtquRpRHAastPcxrvMgs\"/>"
                                                                                , dtm: callbackVar
                                                                                , test_st_cd : 1
                                                                                });
@@ -807,7 +801,7 @@
                                                                                  , scnrio_num: data[i].scnrio_num
                                                                                  , case_num: data[i].case_num
                                                                                  , log: ""
-                                                                                 , test_st_nm: "대기중"
+                                                                                 , test_st_nm: "<div style=\"color:#ffffff\">진행중</div>"
                                                                                  , dtm: callbackVar
                                                                                  , test_st_cd : 3
                                                                                  });
@@ -820,30 +814,34 @@
         for (var i = 0; i < $("div#test_step_pop_window_grid_component").jqxGrid("getrows").length; i++) {
           if ($("div#test_step_pop_window_grid_component").jqxGrid("getrows")[i].test_st_cd == 1) {
             nextTestResultCall(i);
+            if ($("div#test_step_pop_window").jqxWindow("isOpen") == true) {
+              setTimeout(periodicTestResultCall, 1000);
+            }
+            return;
           }
         }
       }
       
       function nextTestResultCall(row) {
         $.ajax({
-          url: "http://localhost:30710/getTestResult/test.js",
-          type: "get",
-          dataType : "jsonp",
-          data: {scnrio_num: $("div#test_step_pop_window_grid_component").jqxGrid("getrows")[row].scrnio_num
+          url: "http://localhost:30710/getTestResult",
+          type: "POST",
+          dataType : "json",
+          data: {scnrio_num: $("div#test_step_pop_window_grid_component").jqxGrid("getrows")[row].scnrio_num
                  , dtm: $("div#test_step_pop_window_grid_component").jqxGrid("getrows")[row].dtm
                  , case_num: $("div#test_step_pop_window_grid_component").jqxGrid("getrows")[row].case_num
                  , test_step_num: $("div#test_step_pop_window_grid_component").jqxGrid("getrows")[row].test_step_num
                 },
           async: true,
-          headers: {Accept: "text/css;charset=utf-8", "Content-Type": "text/js;charset=utf-8"},
           success: function(data) {
-            data = JSON.parse(data);
             if (data.test_st_cd == 2) {
               $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "test_st_cd", 2);
               if (data.test_rslt_cd == 1) {
                 $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "test_st_nm", "<div style=\"color:#0f0fb9\">정상</div>");
+              } else if (data.test_rslt_cd == 3) {
+                $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "test_st_nm", "<div style=\"color:#b90f0f\">오류</div>");                
               } else {
-                $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "test_st_nm", "<div style=\"color:#b90f0f\">비정상</div>");                
+                $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "test_st_nm", "<div style=\"color:#b90f0f\">비정상</div>");
               }
               $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "log", data.log);
               if ($("div#test_step_pop_window_grid_component").jqxGrid("getrows").length > row + 1) {
@@ -857,7 +855,7 @@
             }
           },
           error: function(request, status, error) {
-            alert("request : " + JSON.stringify(request) + ", status : " + JSON.stringify(status) + ", error : " + JSON.stringify(error));
+            cmnAlert("테스트 가져오기 오류가 발생했습니다.");
           }
         });
       }
