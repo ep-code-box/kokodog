@@ -12,6 +12,7 @@
                                WHERE  ssti2.scnrio_num = ssti.scnrio_num
                                AND    ssti2.input_nm = ssti.input_nm
                               )
+    AND    #{system_call_dtm} - INTERVAL 1 SECOND BETWEEN ssti.eff_sta_dtm AND ssti.eff_end_dtm
   </select>
   <update id="delTestInputWithScnrioNumAndInputNm" parameterType="HashMap">
     UPDATE skd_sel_test_input

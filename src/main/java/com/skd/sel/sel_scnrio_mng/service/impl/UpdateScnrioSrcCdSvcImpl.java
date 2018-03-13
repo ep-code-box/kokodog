@@ -75,6 +75,7 @@ public class UpdateScnrioSrcCdSvcImpl implements UpdateScnrioSrcCdSvc {
       daoInputMap.clear();
       daoInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
       daoInputMap.put("input_nm", inputValList.get(i).get("input_nm"));
+      daoInputMap.put("system_call_dtm", new Date(systemCallDtm));
       daoOutputMap = updateScnrioSrcCdDao.getTestInputInfoByScnrioNumAndInputNm(daoInputMap);
       if (daoOutputMap != null && daoOutputMap.get("input_num") != null && ((Long)daoOutputMap.get("input_num")).intValue() == seq + 1) {
         seq++;
@@ -98,7 +99,6 @@ public class UpdateScnrioSrcCdSvcImpl implements UpdateScnrioSrcCdSvc {
           daoInputMap.put("system_call_dtm", new Date(systemCallDtm));
           daoInputMap.put("user_num", userNum);
           updateScnrioSrcCdDao.insertChangedInputNumWithScnrioNumAndCaseNumAndInputNm(daoInputMap);
-          daoInputMap.put("input_nm", inputValList.get(i).get("input_nm"));
           daoInputMap.clear();
           daoInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
           daoInputMap.put("input_num", seq + 1);
