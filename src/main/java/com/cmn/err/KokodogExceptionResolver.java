@@ -156,6 +156,10 @@ public class KokodogExceptionResolver {
     Enumeration<String> param = null;
     String queryParam = "";
     String ip = null;
+    request.setAttribute("sytem_call_end_dtm", getServerTimeService.getServerTime());
+    request.setAttribute("_REQUEST_RESPONSE_STATUS", ((KokodogException)ex).getErrTyp());
+    request.setAttribute("_REQUEST_ERR_MESSGE", ((KokodogException)ex).getMessage());
+    request.setAttribute("_REQUEST_FINISH", "Y");
     param = request.getParameterNames();
     while (param.hasMoreElements() == true){
       String key = param.nextElement() + "";
