@@ -38,12 +38,6 @@ public class Distribute {
   private SqlSession sqlSession;
   
   @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-  
-  @Autowired
   private DevSerModule devSerModule;
 
   private static Logger logger = LogManager.getLogger(Distribute.class);
@@ -75,25 +69,25 @@ public class Distribute {
   private void validation(HttpServletRequest request, HttpServletResponse response) throws Exception {
     int tempQueryNum = 0;
     if (request.getParameter("service_num") == null) {
-      throw systemException.systemException(3, "service_num");
+      throw new SystemException(3, "service_num");
     }
     try {
       tempQueryNum = Integer.parseInt(request.getParameter("service_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "service_num", request.getParameter("service_num"));
+      throw new SystemException(9, "service_num", request.getParameter("service_num"));
     }
     if (tempQueryNum <= 0) {
-      throw systemException.systemException(9, "service_num", request.getParameter("service_num"));
+      throw new SystemException(9, "service_num", request.getParameter("service_num"));
     }
     if (request.getParameter("rep_ver") != null) {
       int tempRepVerNum = 0;
       try {
         tempRepVerNum = Integer.parseInt(request.getParameter("rep_ver"));
       } catch (NumberFormatException e) {
-        throw systemException.systemException(9, "rep_ver", request.getParameter("rep_ver"));
+        throw new SystemException(9, "rep_ver", request.getParameter("rep_ver"));
       }
       if (tempRepVerNum <= 0) {
-        throw systemException.systemException(9, "rep_ver", request.getParameter("rep_ver"));        
+        throw new SystemException(9, "rep_ver", request.getParameter("rep_ver"));        
       }
     }
   }

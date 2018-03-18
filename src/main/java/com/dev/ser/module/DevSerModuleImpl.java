@@ -29,9 +29,6 @@ public class DevSerModuleImpl implements DevSerModule {
   private SqlSession sqlSession;
   
   @Autowired
-  private UserException userException;
-  
-  @Autowired
   private DevCmnModule devCmnModule;
   
   private static Logger logger = LogManager.getLogger(DevSerModuleImpl.class);
@@ -103,7 +100,7 @@ public class DevSerModuleImpl implements DevSerModule {
         errStr = errStr + tempStr + "\n";
       }
       if (errStr.equals("") == false) {
-        throw userException.userException(12, errStr);
+        throw new UserException(12, errStr);
       }
       File file = new File(url + "/" + pastServiceFile + ".bak");
       if (file.exists() == true) {

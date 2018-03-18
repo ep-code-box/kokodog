@@ -29,7 +29,6 @@ import com.skd.ppa.main.service.GetConvHtmlService;
 import com.skd.ppa.module.service.DocConvWithAibrilService;
 import com.skd.ppa.module.service.NlpByKonlpyService;
 import com.cmn.err.UserException;
-import com.cmn.err.SystemException;
 
 /**
  *  이 객체는 Python 내 Konlpy를 사용하여 각종
@@ -53,14 +52,8 @@ public class DocNlpServiceImpl implements DocNlpService {
   private NlpByKonlpyService nlpByKonlpyService;
   
   @Autowired
-  private SystemException systemException;
-  
-  @Autowired
   private GetProdChkListDao getProdChkListDao;
   
-  @Autowired
-  private UserException userException;
-
   /**
    *  이 메서드는 Konlpy 내 사전에 등록된 명사 리스트를 JSON으로 리턴해주는 역할을 수행한다.
    *  @param fis : 문서의 Input Stream
@@ -152,7 +145,7 @@ public class DocNlpServiceImpl implements DocNlpService {
           try {
             Integer.parseInt(splitType[j]);
           } catch (NumberFormatException e) {
-            throw userException.userException(3, splitType[i]);
+            throw new UserException(3, splitType[i]);
           }
           for (k = 0; k < outputList.size(); k++) {
             if (((Integer)outputList.get(k).get("lst_num")).intValue() == Integer.parseInt(splitType[j])) {

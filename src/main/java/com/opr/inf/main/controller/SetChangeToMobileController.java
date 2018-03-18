@@ -15,17 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import com.cmn.err.SystemException;
-import com.cmn.err.UserException;
-
 @Controller
 public class SetChangeToMobileController {
-  @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-  
   private static Logger logger = LogManager.getLogger(SetChangeToMobileController.class);
   
   @RequestMapping(value="/opr/inf/main/SetChangeToMobile", method=RequestMethod.POST)

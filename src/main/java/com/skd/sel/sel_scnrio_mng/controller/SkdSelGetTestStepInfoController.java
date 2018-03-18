@@ -23,9 +23,6 @@ public class SkdSelGetTestStepInfoController {
   @Autowired
   private GetTestStepInfoSvc getTestStepInfoSvc;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(SkdSelGetTestCaseInfoByScnrioNumController.class);
   
   @RequestMapping(value="/skd/sel/sel_scnrio_mng/GetTestStepInfo", method=RequestMethod.POST)
@@ -44,12 +41,12 @@ public class SkdSelGetTestStepInfoController {
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {
     int tempNum = 0;
     if (request.getParameter("scnrio_num") == null) {
-      throw systemException.systemException(3, "scnrio_num");
+      throw new SystemException(3, "scnrio_num");
     }
     try {
       tempNum = Integer.parseInt(request.getParameter("scnrio_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "scnrio_num", request.getParameter("scnrio_num"));
+      throw new SystemException(9, "scnrio_num", request.getParameter("scnrio_num"));
     }
   }
 }

@@ -29,9 +29,6 @@ public class GeocodeByText {
   private SqlSession sqlSession;
   
   @Autowired
-  private SystemException systemException;
-  
-  @Autowired
   private GetDataFromURLService getDataFromURLService;
   
   private static Logger logger = LogManager.getLogger(GeocodeByText.class);
@@ -62,10 +59,10 @@ public class GeocodeByText {
       inputList.add(tempMaps);
     	outputJSONObject = (JSONObject)getDataFromURLService.getDataFromURL(strUrl, inputList, "GET", "UTF-8", GetDataFromURLService.TYPE_JSON);
       if (outputJSONObject == null) {
-        throw systemException.systemException(16, "결과 Null pointer exception");
+        throw new SystemException(16, "결과 Null pointer exception");
       }
       if (outputJSONObject.containsKey("error_message") == true && outputJSONObject.getString("error_message") != null) {
-        throw systemException.systemException(16, outputJSONObject.getString("error_message"));
+        throw new SystemException(16, outputJSONObject.getString("error_message"));
       }
       if (outputJSONObject.getJSONArray("results").size() != 1) {
         returnMaps.put("obj_search_result", false);

@@ -35,9 +35,6 @@ public class GetTaskList {
   @Autowired
   private SqlSession sqlSession;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(GetTaskList.class);
 
   /**
@@ -67,16 +64,16 @@ public class GetTaskList {
     */
   private void validation(HttpServletRequest request, HttpServletResponse response) throws Exception {
     if (request.getParameter("pgm_num") == null) {
-      throw systemException.systemException(3, "pgm_num");
+      throw new SystemException(3, "pgm_num");
     }
     int tmpPgmNum = 0;
     try {
       tmpPgmNum = Integer.parseInt(request.getParameter("pgm_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "pgm_num", request.getParameter("pgm_num"));
+      throw new SystemException(9, "pgm_num", request.getParameter("pgm_num"));
     }
     if (tmpPgmNum <= 0) {
-      throw systemException.systemException(9, "pgm_num", request.getParameter("pgm_num"));      
+      throw new SystemException(9, "pgm_num", request.getParameter("pgm_num"));      
     }
   }
 }

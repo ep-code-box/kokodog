@@ -38,9 +38,6 @@ public class GetGoogleLoginLinkURLController {
   @Autowired
   private GetGoogleLoginLinkURLService getGoogleLoginLinkURLService;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(GetGoogleLoginLinkURLController.class);
 
   /**
@@ -68,7 +65,7 @@ public class GetGoogleLoginLinkURLController {
     */
   private void validation(HttpServletRequest request, HttpServletResponse response) throws Exception {
     if (request.getParameter("redirect_url") == null) {
-      throw systemException.systemException(3, "redirect_url");
+      throw new SystemException(3, "redirect_url");
     }
   }
 }

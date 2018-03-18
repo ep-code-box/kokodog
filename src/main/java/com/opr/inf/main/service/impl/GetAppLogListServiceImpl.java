@@ -13,20 +13,12 @@ import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cmn.err.SystemException;
-import com.cmn.err.UserException;
 import com.opr.inf.main.service.GetAppLogListService;
 import com.opr.inf.main.dao.GetAppLogListDao;
 import com.cmn.cmn.service.GetServerTimeService;
 
 @Service("getAppLogListService")
 public class GetAppLogListServiceImpl implements GetAppLogListService {
-  @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-  
   @Autowired
   private GetAppLogListDao getAppLogListDao;
   

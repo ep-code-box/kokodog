@@ -32,9 +32,6 @@ import com.cmn.err.UserException;
 @Service("updateTestExptRsltSvc")
 public class UpdateTestExptRsltSvcImpl implements UpdateTestExptRsltSvc {
   @Autowired
-  private UserException userException;
-  
-  @Autowired
   private UpdateTestExptRsltDao updateTestExptRsltDao;
   /**
    * 해당 시나리오 번호, 케이스번호 및 테스트스텝번호에 따른 값을 추가/삭제/수정한다.
@@ -100,7 +97,7 @@ public class UpdateTestExptRsltSvcImpl implements UpdateTestExptRsltSvc {
           updateTestExptRsltDao.insertTestExptRslt(daoInputMap);
         } catch (Exception e) {
           if (e instanceof DuplicateKeyException == true) {
-            throw userException.userException(24, "테스트스텝번호", "테스트스텝번호 : " + inputList.get(i).get("test_step_num"));
+            throw new UserException(24, "테스트스텝번호", "테스트스텝번호 : " + inputList.get(i).get("test_step_num"));
           }
         }
       }

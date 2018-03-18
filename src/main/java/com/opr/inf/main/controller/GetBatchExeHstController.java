@@ -21,12 +21,6 @@ import com.opr.inf.main.service.GetBatchExeHstService;
 @Controller
 public class GetBatchExeHstController {
   @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-  
-  @Autowired
   private GetBatchExeHstService getBatchExeHstService;
   
   private static Logger logger = LogManager.getLogger(GetBatchExeHstController.class);
@@ -45,29 +39,29 @@ public class GetBatchExeHstController {
     long fromDatetime = 0L;
     long toDatetime = 0L;
     if (request.getParameter("from_datetime") == null) {
-      throw systemException.systemException(3, "from_datetime");
+      throw new SystemException(3, "from_datetime");
     }
     try {
       fromDatetime = Long.parseLong(request.getParameter("from_datetime"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "from_datetime", request.getParameter("from_datetime"));
+      throw new SystemException(9, "from_datetime", request.getParameter("from_datetime"));
     }
     if (fromDatetime > ((Long)request.getAttribute("system_call_dtm")).longValue()) {
-      throw systemException.systemException(9, "from_datetime", request.getParameter("from_datetime"));
+      throw new SystemException(9, "from_datetime", request.getParameter("from_datetime"));
     }
     if (request.getParameter("to_datetime") == null) {
-      throw systemException.systemException(3, "to_datetime");
+      throw new SystemException(3, "to_datetime");
     }
     try {
       toDatetime = Long.parseLong(request.getParameter("to_datetime"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "to_datetime", request.getParameter("to_datetime"));
+      throw new SystemException(9, "to_datetime", request.getParameter("to_datetime"));
     }
     if (toDatetime > ((Long)request.getAttribute("system_call_dtm")).longValue()) {
-      throw systemException.systemException(9, "to_datetime", request.getParameter("to_datetime"));
+      throw new SystemException(9, "to_datetime", request.getParameter("to_datetime"));
     }
     if (toDatetime < fromDatetime) {
-      throw systemException.systemException(14, "종료시각이 시작시각보다 작습니다.");
+      throw new SystemException(14, "종료시각이 시작시각보다 작습니다.");
     }
   }
 }

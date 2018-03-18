@@ -26,9 +26,6 @@ public class SkdSelSaveScnrioSrcCdController {
   @Autowired
   private UpdateScnrioSrcCdSvc updateScnrioSrcCdSvc;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(SkdSelSaveScnrioSrcCdController.class);
   
   /**
@@ -65,7 +62,7 @@ public class SkdSelSaveScnrioSrcCdController {
 
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {
     if (request.getParameter("scnrio_num") == null) {
-      throw systemException.systemException(3, "scnrio_num");
+      throw new SystemException(3, "scnrio_num");
     }
     return;
   }

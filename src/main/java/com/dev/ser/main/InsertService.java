@@ -36,9 +36,6 @@ public class InsertService {
   @Autowired
   private SqlSession sqlSession;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(InsertService.class);
 
   /**
@@ -93,52 +90,52 @@ public class InsertService {
     */
   private void validation(HttpServletRequest request, HttpServletResponse response) throws Exception {
     if (request.getParameter("pgm_num") == null) {
-      throw systemException.systemException(3, "pgm_num");
+      throw new SystemException(3, "pgm_num");
     }
     int tmpPgmNum = 0;
     try {
       tmpPgmNum = Integer.parseInt(request.getParameter("pgm_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "pgm_num", request.getParameter("pgm_num"));
+      throw new SystemException(9, "pgm_num", request.getParameter("pgm_num"));
     }
     if (tmpPgmNum <= 0) {
-      throw systemException.systemException(9, "pgm_num", request.getParameter("pgm_num"));      
+      throw new SystemException(9, "pgm_num", request.getParameter("pgm_num"));      
     }
     if (request.getParameter("task_num") == null) {
-      throw systemException.systemException(3, "task_num");
+      throw new SystemException(3, "task_num");
     }
     int tmpTaskNum = 0;
     try {
       tmpTaskNum = Integer.parseInt(request.getParameter("task_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "task_num", request.getParameter("task_num"));
+      throw new SystemException(9, "task_num", request.getParameter("task_num"));
     }
     if (tmpTaskNum <= 0) {
-      throw systemException.systemException(9, "task_num", request.getParameter("task_num"));      
+      throw new SystemException(9, "task_num", request.getParameter("task_num"));      
     }
     if (request.getParameter("page_num") == null) {
-      throw systemException.systemException(3, "page_num");
+      throw new SystemException(3, "page_num");
     }
     int tmpPageNum = 0;
     try {
       tmpPageNum = Integer.parseInt(request.getParameter("page_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "page_num", request.getParameter("page_num"));
+      throw new SystemException(9, "page_num", request.getParameter("page_num"));
     }
     if (tmpPageNum <= 0) {
-      throw systemException.systemException(9, "page_num", request.getParameter("page_num"));      
+      throw new SystemException(9, "page_num", request.getParameter("page_num"));      
     }
     if (request.getParameter("service_name") == null) {
-      throw systemException.systemException(3, "service_name");
+      throw new SystemException(3, "service_name");
     }
     if (checkServiceName(request.getParameter("service_name")) == false) {
-      throw systemException.systemException(13, "서비스명", request.getParameter("service_name"));      
+      throw new SystemException(13, "서비스명", request.getParameter("service_name"));      
     }
     if (isExistPastServiceName(Integer.parseInt(request.getParameter("pgm_num")),
                                Integer.parseInt(request.getParameter("task_num")),
                                Integer.parseInt(request.getParameter("page_num")),
                                request.getParameter("service_name")) == true) {
-      throw systemException.systemException(10, "서비스명");            
+      throw new SystemException(10, "서비스명");            
     }
   }
   
@@ -153,7 +150,7 @@ public class InsertService {
       } else {
         int nextSharp = retSource.indexOf("#", pos + 1);
         if (nextSharp < 0) {
-          throw systemException.systemException(5);
+          throw new SystemException(5);
         }
         String tempStr = retSource.substring(pos + 1, nextSharp);
         logger.debug("tempStr - " + tempStr);
@@ -173,7 +170,7 @@ public class InsertService {
           retSource = retSource.substring(0, pos) + today + retSource.substring(nextSharp + 1);
           index = pos + today.length() + 1;
         } else {
-          throw systemException.systemException(5);
+          throw new SystemException(5);
         }
       }
     }

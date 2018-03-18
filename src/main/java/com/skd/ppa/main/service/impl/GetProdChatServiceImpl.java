@@ -53,8 +53,6 @@ public class GetProdChatServiceImpl implements GetProdChatService {
   @Autowired
   private GetProdChatDao getProdChatDao;
   
-  @Autowired
-  private SystemException systemException;
   /**
    *  이 메서드는 대화의 output을 리턴으로 받아주는 역할을 수행한다.
    *  @param text - 전달하고자 하는 메시지
@@ -99,7 +97,7 @@ public class GetProdChatServiceImpl implements GetProdChatService {
       urlParam.put("input", urlParamSubInput);
       urlParam.put("context", urlParamSubContext);
     } else if (outputMap != null && outputMap.get("conv_num") != null && outputMap.get("conv_id") == null) {
-      throw systemException.systemException(21);
+      throw new SystemException(21);
     } else {
       inputMap.clear();
       inputMap.put("user_num", userNum);

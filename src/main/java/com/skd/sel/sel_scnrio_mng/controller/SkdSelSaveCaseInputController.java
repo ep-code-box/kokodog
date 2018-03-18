@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.stereotype.Controller;
 
 import com.skd.sel.sel_scnrio_mng.service.UpdateTestCaseInputSvc;
-import com.cmn.err.SystemException;
 /**
  *  이 클래스는 SK 주식회사 C&C DT 프로젝트 일환으로
  *  진행하고 있는 셀레니움을 통한 테스트 자동화를 목적으로 수행한다.<br/>
@@ -31,9 +30,6 @@ import com.cmn.err.SystemException;
 public class SkdSelSaveCaseInputController {
   @Autowired
   private UpdateTestCaseInputSvc updateTestCaseInputSvc;
-  
-  @Autowired
-  private SystemException systemException;
   
   private static Logger logger = LogManager.getLogger(SkdSelSaveCaseInputController.class);
   

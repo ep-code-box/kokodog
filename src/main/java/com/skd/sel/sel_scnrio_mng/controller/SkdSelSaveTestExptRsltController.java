@@ -32,9 +32,6 @@ public class SkdSelSaveTestExptRsltController {
   @Autowired
   private UpdateTestExptRsltSvc updateTestExptRsltSvc;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(SkdSelSaveTestExptRsltController.class);
   
   /**
@@ -70,10 +67,10 @@ public class SkdSelSaveTestExptRsltController {
 
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {
     if (request.getParameter("scnrio_num") == null) {
-      throw systemException.systemException(3, "scnrio_num");
+      throw new SystemException(3, "scnrio_num");
     }
     if (request.getParameter("case_num") == null) {
-      throw systemException.systemException(3, "case_num");
+      throw new SystemException(3, "case_num");
     }
     return;
   }

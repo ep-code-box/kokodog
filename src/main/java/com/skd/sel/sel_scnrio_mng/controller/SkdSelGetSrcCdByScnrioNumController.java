@@ -26,9 +26,6 @@ public class SkdSelGetSrcCdByScnrioNumController {
   @Autowired
   private GetSrcCdByScnrioNumSvc getSrcCdByScnrioNumSvc;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(SkdSelGetSrcCdByScnrioNumController.class);
   
   /**
@@ -63,12 +60,12 @@ public class SkdSelGetSrcCdByScnrioNumController {
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {
     int tempNum = 0;
     if (request.getParameter("scnrio_num") == null) {
-      throw systemException.systemException(3, "scnrio_num");
+      throw new SystemException(3, "scnrio_num");
     }
     try {
       tempNum = Integer.parseInt(request.getParameter("scnrio_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "scnrio_num", request.getParameter("scnrio_num"));
+      throw new SystemException(9, "scnrio_num", request.getParameter("scnrio_num"));
     }
     return;
   }

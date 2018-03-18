@@ -36,12 +36,6 @@ public class GetImgInfo {
   @Autowired
   private SqlSession sqlSession;
   
-  @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-  
   private static Logger logger = LogManager.getLogger(GetImgInfo.class);
   
   /**
@@ -71,15 +65,15 @@ public class GetImgInfo {
   private void validation(HttpServletRequest request, HttpServletResponse response) throws Exception {
     int tempImgNum;
     if (request.getParameter("img_num") == null) {
-      throw systemException.systemException(3, "img_num", "img_num");
+      throw new SystemException(3, "img_num", "img_num");
     }
     try {
       tempImgNum = Integer.parseInt(request.getParameter("img_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "img_num", request.getParameter("img_num"));
+      throw new SystemException(9, "img_num", request.getParameter("img_num"));
     }
     if (tempImgNum <= 0) {
-      throw systemException.systemException(9, "img_num", request.getParameter("img_num"));
+      throw new SystemException(9, "img_num", request.getParameter("img_num"));
     }
   }
 }

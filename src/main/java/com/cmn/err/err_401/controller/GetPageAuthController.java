@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.stereotype.Controller;
 
 import com.cmn.err.err_401.service.GetPageAuthService;
-import com.cmn.err.SystemException;
 
 /**
  *  이 클래스는 권한을 요청할 수 있는 Request 를 호출하는 Controller이다.
@@ -34,9 +33,6 @@ public class GetPageAuthController {
   @Autowired
   private GetPageAuthService getPageAuthService;
   
-  @Autowired
-  private SystemException systemException;
-
   private static Logger logger = LogManager.getLogger(GetPageAuthController.class);
   
   /**

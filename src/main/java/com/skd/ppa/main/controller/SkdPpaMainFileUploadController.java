@@ -25,7 +25,6 @@ import org.springframework.stereotype.Controller;
 
 import com.cmn.cmn.service.FileControlService;
 import com.skd.ppa.main.service.DocNlpService;
-import com.cmn.err.SystemException;
 
 /**
  *  이 클래스는 SK 주식회사 C&C DT 프로젝트 일환으로
@@ -41,9 +40,6 @@ public class SkdPpaMainFileUploadController {
   @Autowired
   private FileControlService fileControlService;
   
-  @Autowired
-  private SystemException systemException;
-
   private static Logger logger = LogManager.getLogger(SkdPpaMainFileUploadController.class);
   
   /**

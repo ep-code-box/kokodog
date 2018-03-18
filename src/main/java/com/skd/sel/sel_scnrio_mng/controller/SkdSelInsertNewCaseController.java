@@ -27,9 +27,6 @@ public class SkdSelInsertNewCaseController {
   @Autowired
   private InsertNewCaseSvc insertNewCaseSvc;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(SkdSelInsertNewCaseController.class);
   
   /**
@@ -69,10 +66,10 @@ public class SkdSelInsertNewCaseController {
 
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {
     if (request.getParameter("scnrio_num") == null) {
-      throw systemException.systemException(3, "scnrio_num");
+      throw new SystemException(3, "scnrio_num");
     }
     if (request.getParameter("case_nm") == null) {
-      throw systemException.systemException(3, "case_nm");
+      throw new SystemException(3, "case_nm");
     }
     return;
   }

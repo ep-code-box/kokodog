@@ -43,9 +43,6 @@ public class NlpByKonlpyServiceImpl implements NlpByKonlpyService {
   private static final String KONLPY_MORPHEME_EXE = "morpheme_analysis.py";
   private static final String KONLPY_DETAIL_EXE = "keyword_for_proposal_by_raw.py";
   
-  @Autowired
-  private SystemException systemException;
-
   /**
    *  이 메서드는 Konlpy 내 사전에 등록된 명사 리스트를 JSON으로 리턴해주는 역할을 수행한다.
    *  @param str : 명사 리스트를 추출하기 위한 기본 텍스트
@@ -123,7 +120,7 @@ public class NlpByKonlpyServiceImpl implements NlpByKonlpyService {
       errorStr = errorStr + tmpStr;
     }
     if ("".equals(errorStr) == false) {
-      throw systemException.systemException(19, errorStr);
+      throw new SystemException(19, errorStr);
     }
     return (JSONArray)JSONSerializer.toJSON(stdOutStr);
   }

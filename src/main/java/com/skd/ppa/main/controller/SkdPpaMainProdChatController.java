@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.stereotype.Controller;
 
 import com.skd.ppa.main.service.GetProdChatService;
-import com.cmn.err.SystemException;
 
 /**
  *  이 클래스는 SK 주식회사 C&C DT 프로젝트 일환으로
@@ -36,9 +35,6 @@ import com.cmn.err.SystemException;
 public class SkdPpaMainProdChatController {
   @Autowired
   private GetProdChatService getProdChatService;
-  
-  @Autowired
-  private SystemException systemException;
   
   private static Logger logger = LogManager.getLogger(SkdPpaMainProdChatController.class);
   

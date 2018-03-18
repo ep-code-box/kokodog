@@ -15,17 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import com.cmn.err.SystemException;
-import com.cmn.err.UserException;
-
 @Controller
 public class SetChangeToPCController {
-  @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-  
   private static Logger logger = LogManager.getLogger(SetChangeToPCController.class);
   
   @RequestMapping(value="/opr/inf/main/SetChangeToPC", method=RequestMethod.POST)

@@ -48,12 +48,6 @@ public class TestQuery {
   private SqlSession sqlSession;
   
   @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-  
-  @Autowired
   private DevDbdModule devDbdModule;
 
   private static Logger logger = LogManager.getLogger(TestQuery.class);
@@ -82,7 +76,7 @@ public class TestQuery {
       try {
         outputTempList = sqlSession.selectList("getDevDbdSelectTest", inputMap);
       } catch (BadSqlGrammarException e) {
-        throw userException.userException(13, "쿼리", e.getMessage());
+        throw new UserException(13, "쿼리", e.getMessage());
       }
       logger.debug("Output List of SQL getDevDbdSelectTest - " + outputTempList);
       List<String> columnList = new ArrayList<String>();
@@ -129,7 +123,7 @@ public class TestQuery {
       try {
         cnt = sqlSession.insert("insertDevDbdInsertTest", inputMap);
       } catch (BadSqlGrammarException e) {
-        throw userException.userException(13, "쿼리", e.getMessage());
+        throw new UserException(13, "쿼리", e.getMessage());
       }
       logger.debug("Insert count of SQL insertDevDbdInsertTest - " + cnt);
       returnMap.put("cnt", cnt);
@@ -139,7 +133,7 @@ public class TestQuery {
       try {
         cnt = sqlSession.update("updateDevDbdUpdateTest", inputMap);
       } catch (BadSqlGrammarException e) {
-        throw userException.userException(13, "쿼리", e.getMessage());
+        throw new UserException(13, "쿼리", e.getMessage());
       }
       logger.debug("Update count of SQL updateDevDbdUpdateTest - " + cnt);
       returnMap.put("cnt", cnt);
@@ -149,7 +143,7 @@ public class TestQuery {
       try {
         cnt = sqlSession.delete("deleteDevDbdDeleteTest", inputMap);
       } catch (BadSqlGrammarException e) {
-        throw userException.userException(13, "쿼리", e.getMessage());
+        throw new UserException(13, "쿼리", e.getMessage());
       }
       logger.debug("Delete count of SQL deleteDevDbdDeleteTest - " + cnt);
       returnMap.put("cnt", cnt);
@@ -165,15 +159,15 @@ public class TestQuery {
     */
   private void validation(HttpServletRequest request, HttpServletResponse response) throws Exception {
     if (request.getParameter("query") == null) {
-      throw systemException.systemException(3, "query");
+      throw new SystemException(3, "query");
     }
     if (request.getParameter("query_param") == null) {
-      throw systemException.systemException(3, "query_param");
+      throw new SystemException(3, "query_param");
     }
     try {
       JSONArray.fromObject(request.getParameter("query_param"));
     } catch (JSONException e) {
-      throw systemException.systemException(9, "query_param", request.getParameter("query_param"));
+      throw new SystemException(9, "query_param", request.getParameter("query_param"));
     }
   }
 }

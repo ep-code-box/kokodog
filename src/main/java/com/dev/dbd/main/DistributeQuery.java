@@ -39,12 +39,6 @@ public class DistributeQuery {
   private SqlSession sqlSession;
   
   @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-  
-  @Autowired
   private DevDbdModule devDbdModule;
 
   private static Logger logger = LogManager.getLogger(DistributeQuery.class);
@@ -76,38 +70,38 @@ public class DistributeQuery {
   private void validation(HttpServletRequest request, HttpServletResponse response) throws Exception {
     int tempQueryNum = 0;
     if (request.getParameter("query_num") == null) {
-      throw systemException.systemException(3, "query_num");
+      throw new SystemException(3, "query_num");
     }
     try {
       tempQueryNum = Integer.parseInt(request.getParameter("query_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "query_num", request.getParameter("query_num"));
+      throw new SystemException(9, "query_num", request.getParameter("query_num"));
     }
     if (tempQueryNum <= 0) {
-      throw systemException.systemException(9, "query_num", request.getParameter("query_num"));
+      throw new SystemException(9, "query_num", request.getParameter("query_num"));
     }
     if (request.getParameter("rep_ver") != null) {
       int tempRepVerNum = 0;
       try {
         tempRepVerNum = Integer.parseInt(request.getParameter("rep_ver"));
       } catch (NumberFormatException e) {
-        throw systemException.systemException(9, "rep_ver", request.getParameter("rep_ver"));
+        throw new SystemException(9, "rep_ver", request.getParameter("rep_ver"));
       }
       if (tempRepVerNum <= 0) {
-        throw systemException.systemException(9, "rep_ver", request.getParameter("rep_ver"));        
+        throw new SystemException(9, "rep_ver", request.getParameter("rep_ver"));        
       }
     }
     int tempDistInstanceNum = 0;
     if (request.getParameter("dist_instance") == null) {
-      throw systemException.systemException(3, "dist_instance");
+      throw new SystemException(3, "dist_instance");
     }
     try {
       tempDistInstanceNum = Integer.parseInt(request.getParameter("dist_instance"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "dist_instance", request.getParameter("dist_instance"));
+      throw new SystemException(9, "dist_instance", request.getParameter("dist_instance"));
     }
     if (tempDistInstanceNum <= 0) {
-      throw systemException.systemException(9, "dist_instance", request.getParameter("dist_instance"));
+      throw new SystemException(9, "dist_instance", request.getParameter("dist_instance"));
     }
   }
 }

@@ -12,20 +12,12 @@ import org.springframework.stereotype.Repository;
 
 import org.apache.ibatis.session.SqlSession;
 
-import com.cmn.err.SystemException;
-import com.cmn.err.UserException;
 import com.opr.inf.main.dao.GetBatchExeHstDao;
 
 @Repository("getBatchExeHstDao")
 public class GetBatchExeHstDaoImpl implements GetBatchExeHstDao {
   @Autowired
   private SqlSession sqlSession;
-  
-  @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
   
   private static Logger logger = LogManager.getLogger(GetBatchExeHstDaoImpl.class);
   

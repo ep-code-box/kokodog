@@ -37,9 +37,6 @@ public class SkdOcrMainGetOcrController {
   @Autowired
   private GetImgOcrInfoByFileKeyService getImgOcrInfoByFileKeyService;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(SkdOcrMainGetOcrController.class);
   
   /**
@@ -62,7 +59,7 @@ public class SkdOcrMainGetOcrController {
 
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {
     if (request.getParameter("file_key") == null || request.getParameter("file_key").length() == 0) {
-      throw systemException.systemException(3);
+      throw new SystemException(3);
     }
     return;
   }

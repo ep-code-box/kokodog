@@ -13,19 +13,11 @@ import org.apache.logging.log4j.LogManager;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cmn.err.SystemException;
-import com.cmn.err.UserException;
 import com.opr.inf.main.service.GetBatchExeHstService;
 import com.opr.inf.main.dao.GetBatchExeHstDao;
 
 @Service("getBatchExeHstService")
 public class GetBatchExeHstServiceImpl implements GetBatchExeHstService {
-  @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-  
   @Autowired
   private GetBatchExeHstDao getBatchExeHstDao;
   

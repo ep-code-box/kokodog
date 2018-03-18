@@ -34,9 +34,7 @@ public class GetCommonCodeController {
   
   @Autowired
   private GetCodeValService getCodeValService;
-  
-  @Autowired
-  private SystemException systemException;
+
   /**
     *  공통코드 리스트를 리턴해주는 Controller이다.
     *  /cmn/cmn/GetCommonCode URL을 통해 호출 가능하다.
@@ -62,15 +60,15 @@ public class GetCommonCodeController {
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {
     int codeNum = 0;
     if (request.getParameter("code") == null) {
-      throw systemException.systemException(3, "code");
+      throw new SystemException(3, "code");
     }
     try {
       codeNum = Integer.parseInt(request.getParameter("code"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "code", request.getParameter("code"));
+      throw new SystemException(9, "code", request.getParameter("code"));
     }
     if (codeNum <= 0) {
-      throw systemException.systemException(9, "code", request.getParameter("code"));
+      throw new SystemException(9, "code", request.getParameter("code"));
     }
   }
 }

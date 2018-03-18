@@ -27,9 +27,6 @@ public class SkdSelInsertNewScnrioController {
   @Autowired
   private InsertNewScnrioSvc insertNewScnrioSvc;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(SkdSelInsertNewScnrioController.class);
   
   /**
@@ -66,7 +63,7 @@ public class SkdSelInsertNewScnrioController {
 
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {
     if (request.getParameter("scnrio_nm") == null) {
-      throw systemException.systemException(3, "scnrio_nm");
+      throw new SystemException(3, "scnrio_nm");
     }
     return;
   }

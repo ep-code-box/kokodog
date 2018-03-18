@@ -38,9 +38,6 @@ public class SkdPpaMainGetMorphemeDetailController {
   @Autowired
   private DocNlpService docNlpService;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(SkdPpaMainGetMorphemeDetailController.class);
   
   /**
@@ -62,7 +59,7 @@ public class SkdPpaMainGetMorphemeDetailController {
 
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {
     if (request.getParameter("file_key") == null) {
-      throw systemException.systemException(3, "file_key");
+      throw new SystemException(3, "file_key");
     }
   }
 }

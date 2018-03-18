@@ -36,9 +36,6 @@ public class GetDBIOList {
   @Autowired
   private SqlSession sqlSession;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static int ROW_NUMBER_PER_PAGE = 20;
   
   private static Logger logger = LogManager.getLogger(GetDBIOList.class);
@@ -83,10 +80,10 @@ public class GetDBIOList {
       try {
         temp = Integer.parseInt(request.getParameter("page"));
       } catch (NumberFormatException e) {
-        throw systemException.systemException(9, "page", request.getParameter("page"));
+        throw new SystemException(9, "page", request.getParameter("page"));
       }
       if (temp < 1) {
-        throw systemException.systemException(9, "page", request.getParameter("page"));
+        throw new SystemException(9, "page", request.getParameter("page"));
       }
     }
   }

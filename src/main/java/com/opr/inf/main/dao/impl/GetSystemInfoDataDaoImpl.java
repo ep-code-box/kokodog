@@ -12,20 +12,12 @@ import org.springframework.stereotype.Repository;
 
 import org.apache.ibatis.session.SqlSession;
 
-import com.cmn.err.SystemException;
-import com.cmn.err.UserException;
 import com.opr.inf.main.dao.GetSystemInfoDataDao;
 
 @Repository("getSystemInfoDataDao")
 public class GetSystemInfoDataDaoImpl implements GetSystemInfoDataDao {
   @Autowired
   private SqlSession sqlSession;
-  
-  @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
   
   private static Logger logger = LogManager.getLogger(GetSystemInfoDataDaoImpl.class);
   

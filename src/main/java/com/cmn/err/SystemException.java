@@ -14,15 +14,30 @@ import org.springframework.web.context.request.RequestContextHolder;
 import com.cmn.err.KokodogException;
 
 @SuppressWarnings("serial")
-@Component
 public class SystemException extends KokodogException {
-  @Autowired
-  private SqlSession sqlSession;
-  
   private static Logger logger = LogManager.getLogger(SystemException.class);
+
+  public SystemException(int messageNum, String... msg) throws Exception {
+    systemException(messageNum, msg);
+  }
 
   public SystemException systemException(int messageNum, String... msg) throws Exception {
     logger.debug("Start method of SystemException.systemException");
+    ServletRequestAttributes sra = null;
+    HttpServletRequest request = null;
+    SqlSession sqlSession = null;
+    if (sqlSession == null) {
+      try {
+        sra = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
+        request = sra.getRequest();
+        if (request == null || request.getSession() == null || request.getSession().getAttribute("_SQL_SESSION_") == null) {
+          sqlSession = null;
+        } else {
+          sqlSession = (SqlSession)request.getAttribute("_SQL_SESSION_");
+        }
+      } catch (Exception e) {
+      }
+    }
     super.kokodogException(messageNum, sqlSession, msg);
     return this;
   }

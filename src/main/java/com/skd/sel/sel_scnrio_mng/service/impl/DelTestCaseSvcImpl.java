@@ -24,9 +24,6 @@ public class DelTestCaseSvcImpl implements DelTestCaseSvc {
   @Autowired
   private DelTestCaseDao delTestCaseDao;
   
-  @Autowired
-  private UserException userException;
-  
   public void delTestCase(int scnrioNum, int caseNum) throws Exception {
     Map<String, Object> inputMap = new HashMap<String, Object>();
     Map<String, Object> outputMap = null;
@@ -52,7 +49,7 @@ public class DelTestCaseSvcImpl implements DelTestCaseSvc {
     inputMap.put("case_num", caseNum);
     outputMap = delTestCaseDao.getCanBeDeletedCase(inputMap);
     if (outputMap != null && outputMap.get("can_be_deleted") != null && "Y".equals(outputMap.get("can_be_deleted")) == false) {
-      throw userException.userException(23, "1", "케이스");
+      throw new UserException(23, "1", "케이스");
     }
     inputMap.put("system_call_dtm", new Date(systemCallDtm));
     inputMap.put("user_num", userNum);

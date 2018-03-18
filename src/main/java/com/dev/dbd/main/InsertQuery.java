@@ -35,12 +35,6 @@ public class InsertQuery {
   @Autowired
   private SqlSession sqlSession;
   
-  @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-
   private static Logger logger = LogManager.getLogger(InsertQuery.class);
 
   /**
@@ -126,23 +120,23 @@ public class InsertQuery {
       try {
         tempQueryNum = Integer.parseInt(request.getParameter("query_num"));
       } catch (NumberFormatException e) {
-        throw systemException.systemException(9, "query_num", request.getParameter("query_num"));
+        throw new SystemException(9, "query_num", request.getParameter("query_num"));
       }
       if (tempQueryNum < 1) {
-        throw systemException.systemException(9, "query_num", request.getParameter("query_num"));      
+        throw new SystemException(9, "query_num", request.getParameter("query_num"));      
       }
     } else {
       if (request.getParameter("query_name") == null) {
-        throw systemException.systemException(3, "query_name");      
+        throw new SystemException(3, "query_name");      
       } else {
         checkQueryNameValidation(request.getParameter("query_name").trim());
       }
     }
     if (request.getParameter("query") == null) {
-      throw systemException.systemException(3, "query");
+      throw new SystemException(3, "query");
     }
     if (request.getParameter("query").trim().equals("") == true) {
-      throw systemException.systemException(9, "query", request.getParameter("query"));      
+      throw new SystemException(9, "query", request.getParameter("query"));      
     }
     if (request.getParameter("query_num") != null) {
       inputMap.put("query_num", Integer.parseInt(request.getParameter("query_num")));
@@ -151,7 +145,7 @@ public class InsertQuery {
       outputMap = sqlSession.selectOne("getDevDbdInsertQueryAuth", inputMap);
       logger.debug("Output map of SQL getDevDbdInsertQueryAuth - " + outputMap);
       if (outputMap.get("is_auth") == null || outputMap.get("is_auth").equals("N") == true) {
-        throw userException.userException(2);
+        throw new UserException(2);
       }
     }
     inputMap.clear();
@@ -160,7 +154,7 @@ public class InsertQuery {
     outputMap = sqlSession.selectOne("getDevDbdCheckQueryNameExist", inputMap);
     logger.debug("Output map of SQL getDevDbdCheckQueryNameExist - " + outputMap);
     if (outputMap == null || outputMap.get("query_name_exist") == null || outputMap.get("query_name_exist").equals("Y") == true) {
-      throw userException.userException(10);
+      throw new UserException(10);
     }
   }
   
@@ -171,11 +165,11 @@ public class InsertQuery {
     */
   private void checkQueryNameValidation(String queryName) throws Exception {
     if ((queryName.charAt(0) < 'a' || queryName.charAt(0) > 'z') && (queryName.charAt(0) < 'A' || queryName.charAt(0) > 'Z')) {
-      throw systemException.systemException(3, "query_name");       
+      throw new SystemException(3, "query_name");       
     }
     for (int i = 1; i < queryName.length(); i++) {
       if ((queryName.charAt(i) < '0' || queryName.charAt(i) > '9') && (queryName.charAt(i) < 'a' || queryName.charAt(i) > 'z') && (queryName.charAt(i) < 'A' || queryName.charAt(i) > 'Z') && queryName.charAt(i) != '-') {
-        throw systemException.systemException(3, "query_name"); 
+        throw new SystemException(3, "query_name"); 
       }
     }
   }

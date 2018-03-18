@@ -23,9 +23,6 @@ public class SkdSelDelTestCaseController {
   @Autowired
   private DelTestCaseSvc delTestCaseSvc;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(SkdSelDelTestCaseController.class);
   
   @RequestMapping(value="/skd/sel/sel_scnrio_mng/DelTestCase", method=RequestMethod.POST)
@@ -40,20 +37,20 @@ public class SkdSelDelTestCaseController {
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {
     int tempNum = 0;
     if (request.getParameter("scnrio_num") == null) {
-      throw systemException.systemException(3, "scnrio_num");
+      throw new SystemException(3, "scnrio_num");
     }
     try {
       tempNum = Integer.parseInt(request.getParameter("scnrio_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "scnrio_num", request.getParameter("scnrio_num"));
+      throw new SystemException(9, "scnrio_num", request.getParameter("scnrio_num"));
     }
     if (request.getParameter("case_num") == null) {
-      throw systemException.systemException(3, "case_num");
+      throw new SystemException(3, "case_num");
     }
     try {
       tempNum = Integer.parseInt(request.getParameter("case_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "case_num", request.getParameter("case_num"));
+      throw new SystemException(9, "case_num", request.getParameter("case_num"));
     }
     return;
   }

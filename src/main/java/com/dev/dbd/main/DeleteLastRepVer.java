@@ -26,7 +26,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.cmn.err.SystemException;
-import com.cmn.err.UserException;
 import com.dev.dbd.module.DevDbdModule;
 
 /**
@@ -36,12 +35,6 @@ import com.dev.dbd.module.DevDbdModule;
 public class DeleteLastRepVer {
   @Autowired
   private SqlSession sqlSession;
-  
-  @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
   
   @Autowired
   private DevDbdModule devDbdModule;
@@ -74,15 +67,15 @@ public class DeleteLastRepVer {
   private void validation(HttpServletRequest request, HttpServletResponse response) throws Exception {
     int tempQueryNum = 0;
     if (request.getParameter("query_num") == null) {
-      throw systemException.systemException(3, "query_num");
+      throw new SystemException(3, "query_num");
     }
     try {
       tempQueryNum = Integer.parseInt(request.getParameter("query_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "query_num", request.getParameter("query_num"));
+      throw new SystemException(9, "query_num", request.getParameter("query_num"));
     }
     if (tempQueryNum <= 0) {
-      throw systemException.systemException(9, "query_num", request.getParameter("query_num"));
+      throw new SystemException(9, "query_num", request.getParameter("query_num"));
     }
   }
 }

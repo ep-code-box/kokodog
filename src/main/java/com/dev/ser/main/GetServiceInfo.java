@@ -37,9 +37,6 @@ public class GetServiceInfo {
   @Autowired
   private SqlSession sqlSession;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(GetServiceInfo.class);
 
   /**
@@ -85,26 +82,26 @@ public class GetServiceInfo {
     */
   private void validation(HttpServletRequest request, HttpServletResponse response) throws Exception {
     if (request.getParameter("service_num") == null) {
-      throw systemException.systemException(3, "service_num");
+      throw new SystemException(3, "service_num");
     }
     int tmpSourceNum = 0;
     try {
       tmpSourceNum = Integer.parseInt(request.getParameter("service_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "service_num", request.getParameter("service_num"));
+      throw new SystemException(9, "service_num", request.getParameter("service_num"));
     }
     if (tmpSourceNum <= 0) {
-      throw systemException.systemException(9, "service_num", request.getParameter("service_num"));      
+      throw new SystemException(9, "service_num", request.getParameter("service_num"));      
     }
     int tmpRepNum = 0;
     if (request.getParameter("rep_ver") != null) {
       try {
         tmpRepNum = Integer.parseInt(request.getParameter("rep_ver"));
       } catch (NumberFormatException e) {
-        throw systemException.systemException(9, "rep_ver", request.getParameter("rep_ver"));
+        throw new SystemException(9, "rep_ver", request.getParameter("rep_ver"));
       }
       if (tmpRepNum <= 0) {
-        throw systemException.systemException(9, "rep_ver", request.getParameter("rep_ver"));      
+        throw new SystemException(9, "rep_ver", request.getParameter("rep_ver"));      
       }
     }
   }

@@ -35,9 +35,6 @@ public class GetServiceList {
   @Autowired
   private SqlSession sqlSession;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(GetServiceList.class);
 
   /**
@@ -73,40 +70,40 @@ public class GetServiceList {
     */
   private void validation(HttpServletRequest request, HttpServletResponse response) throws Exception {
     if (request.getParameter("pgm_num") == null) {
-      throw systemException.systemException(3, "pgm_num");
+      throw new SystemException(3, "pgm_num");
     }
     int tmpPgmNum = 0;
     try {
       tmpPgmNum = Integer.parseInt(request.getParameter("pgm_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "pgm_num", request.getParameter("pgm_num"));
+      throw new SystemException(9, "pgm_num", request.getParameter("pgm_num"));
     }
     if (tmpPgmNum <= 0) {
-      throw systemException.systemException(9, "pgm_num", request.getParameter("pgm_num"));      
+      throw new SystemException(9, "pgm_num", request.getParameter("pgm_num"));      
     }
     if (request.getParameter("task_num") == null) {
-      throw systemException.systemException(3, "task_num");
+      throw new SystemException(3, "task_num");
     }
     int tmpTaskNum = 0;
     try {
       tmpTaskNum = Integer.parseInt(request.getParameter("task_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "task_num", request.getParameter("task_num"));
+      throw new SystemException(9, "task_num", request.getParameter("task_num"));
     }
     if (tmpTaskNum <= 0) {
-      throw systemException.systemException(9, "task_num", request.getParameter("task_num"));      
+      throw new SystemException(9, "task_num", request.getParameter("task_num"));      
     }
     if (request.getParameter("page_num") == null) {
-      throw systemException.systemException(3, "page_num");
+      throw new SystemException(3, "page_num");
     }
     int tmpPageNum = 0;
     try {
       tmpPageNum = Integer.parseInt(request.getParameter("page_num"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "page_num", request.getParameter("page_num"));
+      throw new SystemException(9, "page_num", request.getParameter("page_num"));
     }
     if (tmpPageNum <= 0) {
-      throw systemException.systemException(9, "page_num", request.getParameter("page_num"));      
+      throw new SystemException(9, "page_num", request.getParameter("page_num"));      
     }
   }
 }

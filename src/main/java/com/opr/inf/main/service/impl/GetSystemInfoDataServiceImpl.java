@@ -14,19 +14,11 @@ import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cmn.err.SystemException;
-import com.cmn.err.UserException;
 import com.opr.inf.main.service.GetSystemInfoDataService;
 import com.opr.inf.main.dao.GetSystemInfoDataDao;
 
 @Service("getSystemInfoDataService")
 public class GetSystemInfoDataServiceImpl implements GetSystemInfoDataService {
-  @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-  
   @Autowired
   private GetSystemInfoDataDao getSystemInfoDataDao;
   

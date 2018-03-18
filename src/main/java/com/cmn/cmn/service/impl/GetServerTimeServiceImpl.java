@@ -22,7 +22,6 @@ import org.springframework.stereotype.Repository;
 
 import com.cmn.cmn.dao.GetServerTimeDao;
 import com.cmn.cmn.service.GetServerTimeService;
-import com.cmn.err.SystemException;
 
 /**
   *  이 객체는 현재 서버 시간을 리턴을 하는 역할을 수행한다.
@@ -33,9 +32,6 @@ public class GetServerTimeServiceImpl implements GetServerTimeService {
 
   @Autowired
   private GetServerTimeDao getServerTimeDao;
-  
-  @Autowired
-  private SystemException systemException;
   
   public long getServerTime() throws SQLException {
     logger.debug("============   Start method of GetServerTimeServiceImpl.getServerTime   ============");

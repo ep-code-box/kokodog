@@ -37,9 +37,6 @@ public class GetPgmList {
   @Autowired
   private SqlSession sqlSession;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(GetPgmList.class);
 
   /**

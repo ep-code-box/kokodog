@@ -25,6 +25,7 @@ public class KokodogException extends RuntimeException {
     String tempMsg = null;
     int index = 0;
     int pos = 0;
+    this.messageNum = messageNum;
     if (sqlSession != null) {
       outputMap = sqlSession.selectOne("com.cmn.cmn.getErrMessageByMessageNum", inputMap);
       logger.debug("Output Map of getCmnErrorMessage SQL Map - " + outputMap);
@@ -37,7 +38,6 @@ public class KokodogException extends RuntimeException {
     } else {
       tempMsg = "알 수 없는 오류로 인해 정상적인 결과를 도출하지 못했습니다.";
       this.errTyp = 500;
-      messageNum = 999;
     }
     logger.debug("Find ## character from message");
     while ((pos = tempMsg.indexOf("#", index)) >= 0) {
@@ -83,7 +83,6 @@ public class KokodogException extends RuntimeException {
         index = pos + msg[tempMessageNum - 1].length();
       }
     }
-    this.messageNum = messageNum;
     this.message = tempMsg;
     return this;
   }

@@ -41,9 +41,6 @@ public class DevDbdModuleImpl implements DevDbdModule {
   private SqlSession sqlSession;
   
   @Autowired
-  private UserException userException;
-  
-  @Autowired
   private DevCmnModule devCmnModule;
   
   private static Logger logger = LogManager.getLogger(DevDbdModuleImpl.class);
@@ -177,14 +174,14 @@ public class DevDbdModuleImpl implements DevDbdModule {
       }
       logger.debug("tempPos Min : " + min);
       if (tempPos[min] < 0) {
-        throw userException.userException(11, "쿼리");        
+        throw new UserException(11, "쿼리");        
       }
       if (min < tempStr.length) {
         return tempStr[min];
       } else {
         pos = strQueryLower.indexOf(tempBrace2[min - tempStr.length], tempPos[min] + 1) + 1;
         if (pos < 0) {
-          throw userException.userException(11, "쿼리");
+          throw new UserException(11, "쿼리");
         }
         continue;
       }

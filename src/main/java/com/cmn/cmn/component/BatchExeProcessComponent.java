@@ -30,7 +30,6 @@ import org.springframework.scheduling.annotation.Async;
 
 import com.cmn.cmn.batch.Batch;
 import com.cmn.cmn.dao.BatchExeProcessDao;
-import com.cmn.err.UserException;
 
 /** 
  *  이 객체는 실제로 할당받은 배치를 실행하는 객체이다.<br/>
@@ -55,9 +54,6 @@ public class BatchExeProcessComponent {
   
   @Autowired
   private BatchExeProcessDao batchExeProcessDao;
-  
-  @Autowired
-  private UserException userException;
   
   private static Logger logger = LogManager.getLogger(BatchExeProcessDao.class);
 

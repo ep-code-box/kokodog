@@ -63,7 +63,7 @@ public class KokodogExceptionResolver {
     */
   @ExceptionHandler(KokodogException.class)
   public Object kokodogException(HttpServletRequest request, HttpServletResponse response, KokodogException ex) throws Exception {
-    if (ex instanceof UserException == true || ex instanceof UserExceptionNew == true) {
+    if (ex instanceof UserException == true) {
       printLogForUserException(request, (UserException)ex);
     } else {
       printLogForSystemException(request, ex);

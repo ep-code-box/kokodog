@@ -27,12 +27,6 @@ public class GetAppLogListController {
   @Autowired
   private GetAppLogListService getAppLogListService;
   
-  @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-  
   private static Logger logger = LogManager.getLogger(GetAppLogListController.class);
   
   private static final long MAX_LOG_CNT = 1000L;
@@ -74,65 +68,65 @@ public class GetAppLogListController {
     long fromDatetime = 0L;
     long toDatetime = 0L;
     if (request.getParameter("from_datetime") == null) {
-      throw systemException.systemException(3, "from_datetime");
+      throw new SystemException(3, "from_datetime");
     }
     try {
       fromDatetime = Long.parseLong(request.getParameter("from_datetime"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "from_datetime", request.getParameter("from_datetime"));
+      throw new SystemException(9, "from_datetime", request.getParameter("from_datetime"));
     }
     if (fromDatetime > ((Long)request.getAttribute("system_call_dtm")).longValue()) {
-      throw systemException.systemException(9, "from_datetime", request.getParameter("from_datetime"));
+      throw new SystemException(9, "from_datetime", request.getParameter("from_datetime"));
     }
     if (request.getParameter("to_datetime") == null) {
-      throw systemException.systemException(3, "to_datetime");
+      throw new SystemException(3, "to_datetime");
     }
     try {
       toDatetime = Long.parseLong(request.getParameter("to_datetime"));
     } catch (NumberFormatException e) {
-      throw systemException.systemException(9, "to_datetime", request.getParameter("to_datetime"));
+      throw new SystemException(9, "to_datetime", request.getParameter("to_datetime"));
     }
     if (toDatetime > ((Long)request.getAttribute("system_call_dtm")).longValue()) {
-      throw systemException.systemException(9, "to_datetime", request.getParameter("to_datetime"));
+      throw new SystemException(9, "to_datetime", request.getParameter("to_datetime"));
     }
     if (toDatetime < fromDatetime) {
-      throw systemException.systemException(14, "종료시각이 시작시각보다 작습니다.");
+      throw new SystemException(14, "종료시각이 시작시각보다 작습니다.");
     }
     if (request.getParameter("seq") != null) {
       try {
         Long.parseLong(request.getParameter("seq"));
       } catch (NumberFormatException e) {
-        throw systemException.systemException(9, "seq", request.getParameter("seq"));
+        throw new SystemException(9, "seq", request.getParameter("seq"));
       }
     }
     if (request.getParameter("log_level_fatal") != null) {
       if (request.getParameter("log_level_fatal").equals("true") == false && request.getParameter("log_level_fatal").equals("false") == false) {
-        throw systemException.systemException(9, "log_level_fatal", request.getParameter("log_level_fatal"));
+        throw new SystemException(9, "log_level_fatal", request.getParameter("log_level_fatal"));
       }
     }
     if (request.getParameter("log_level_error") != null) {
       if (request.getParameter("log_level_error").equals("true") == false && request.getParameter("log_level_error").equals("false") == false) {
-        throw systemException.systemException(9, "log_level_error", request.getParameter("log_level_error"));
+        throw new SystemException(9, "log_level_error", request.getParameter("log_level_error"));
       }
     }
     if (request.getParameter("log_level_warn") != null) {
       if (request.getParameter("log_level_warn").equals("true") == false && request.getParameter("log_level_warn").equals("false") == false) {
-        throw systemException.systemException(9, "log_level_warn", request.getParameter("log_level_warn"));
+        throw new SystemException(9, "log_level_warn", request.getParameter("log_level_warn"));
       }
     }
     if (request.getParameter("log_level_info") != null) {
       if (request.getParameter("log_level_info").equals("true") == false && request.getParameter("log_level_info").equals("false") == false) {
-        throw systemException.systemException(9, "log_level_info", request.getParameter("log_level_info"));
+        throw new SystemException(9, "log_level_info", request.getParameter("log_level_info"));
       }
     }
     if (request.getParameter("log_level_debug") != null) {
       if (request.getParameter("log_level_debug").equals("true") == false && request.getParameter("log_level_debug").equals("false") == false) {
-        throw systemException.systemException(9, "log_level_debug", request.getParameter("log_level_debug"));
+        throw new SystemException(9, "log_level_debug", request.getParameter("log_level_debug"));
       }
     }
     if (request.getParameter("log_level_trace") != null) {
       if (request.getParameter("log_level_trace").equals("true") == false && request.getParameter("log_level_trace").equals("false") == false) {
-        throw systemException.systemException(9, "log_level_trace", request.getParameter("log_level_trace"));
+        throw new SystemException(9, "log_level_trace", request.getParameter("log_level_trace"));
       }
     }
     Map<String, Object> inputMap = new HashMap<String, Object>();
@@ -181,7 +175,7 @@ public class GetAppLogListController {
     }
     long cnt = getAppLogListService.getAppLogListCnt(inputMap);
     if (cnt > MAX_LOG_CNT) {
-      throw userException.userException(15, "출력 갯수 : " + cnt);
+      throw new UserException(15, "출력 갯수 : " + cnt);
     }
   }
 }

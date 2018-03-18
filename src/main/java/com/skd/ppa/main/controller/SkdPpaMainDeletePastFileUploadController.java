@@ -37,9 +37,6 @@ public class SkdPpaMainDeletePastFileUploadController {
   @Autowired
   private GetPastFileUploadService getPastFileUploadService;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(SkdPpaMainDeletePastFileUploadController.class);
   
   /**
@@ -62,7 +59,7 @@ public class SkdPpaMainDeletePastFileUploadController {
 
   private void validationCheck(HttpServletRequest request, HttpServletResponse response) throws Exception {
     if (request.getParameter("file_key") == null) {
-      throw systemException.systemException(3, "file_key");
+      throw new SystemException(3, "file_key");
     }
   }
 }

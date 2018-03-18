@@ -48,12 +48,6 @@ public class DocConvWithAibrilServiceImpl implements DocConvWithAibrilService {
   private static final String BOUNDARY = "dkjsei40f9844djs8dviwdf";
   
   @Autowired
-  private SystemException systemException;
-
-  @Autowired
-  private UserException userException;
-
-  @Autowired
   private GetDataFromURLService getDataFromURLService;
 
   /**
@@ -133,9 +127,9 @@ public class DocConvWithAibrilServiceImpl implements DocConvWithAibrilService {
         }
         JSONObject jsonObject = (JSONObject)JSONSerializer.toJSON(outputStr);;
         if (jsonObject.getInt("code") == 415) {
-          throw userException.userException(20, jsonObject.getString("error"));
+          throw new UserException(20, jsonObject.getString("error"));
         } else {
-          throw systemException.systemException(18, "" + jsonObject.getInt("code"), jsonObject.getString("error"));
+          throw new SystemException(18, "" + jsonObject.getInt("code"), jsonObject.getString("error"));
         }
       }
     }

@@ -40,12 +40,6 @@ public class ImageUpload {
   private SqlSession sqlSession;
   
   @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-  
-  @Autowired
   private FileControlService fileControlService;
   
   private static Logger logger = LogManager.getLogger(ImageUpload.class);
@@ -87,7 +81,7 @@ public class ImageUpload {
   private void validation(HttpServletRequest request, HttpServletResponse response) throws Exception {
     boolean isMultipart = ServletFileUpload.isMultipartContent(request);
     if (isMultipart == false) {
-      throw systemException.systemException(5);
+      throw new SystemException(5);
     }
   }
 }

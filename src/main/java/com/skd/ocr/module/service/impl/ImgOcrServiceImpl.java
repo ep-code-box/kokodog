@@ -45,9 +45,6 @@ import com.cmn.err.SystemException;
 @Service("imgOcrService")
 public class ImgOcrServiceImpl implements ImgOcrService {
   @Autowired
-  private SystemException systemException;
-  
-  @Autowired
   private ImgOcrDao imgOcrDao;
   
   private String imgOcrPythonStr = "ocr.py";
@@ -168,7 +165,7 @@ public class ImgOcrServiceImpl implements ImgOcrService {
       errorStr = errorStr + tmpStr;
     }
     if ("".equals(errorStr) == false) {
-      throw systemException.systemException(19, errorStr);
+      throw new SystemException(19, errorStr);
     }
     return (JSONArray)JSONSerializer.toJSON(stdOutStr);
   }

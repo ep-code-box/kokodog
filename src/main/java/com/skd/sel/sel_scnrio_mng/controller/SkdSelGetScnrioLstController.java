@@ -27,9 +27,6 @@ public class SkdSelGetScnrioLstController {
   @Autowired
   private GetScnrioLstSvc getScnrioLstSvc;
   
-  @Autowired
-  private SystemException systemException;
-  
   private static Logger logger = LogManager.getLogger(SkdSelGetScnrioLstController.class);
   
   /**
@@ -71,7 +68,7 @@ public class SkdSelGetScnrioLstController {
       try {
         tempNum = Integer.parseInt(request.getParameter("page_num"));
       } catch (NumberFormatException e) {
-        throw systemException.systemException(9, "page_num", request.getParameter("page_num"));
+        throw new SystemException(9, "page_num", request.getParameter("page_num"));
       }
     }
     return;

@@ -36,12 +36,6 @@ public class GetImgList {
   @Autowired
   private SqlSession sqlSession;
   
-  @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-  
   private static Logger logger = LogManager.getLogger(GetImgList.class);
   private static final int ROW_NUM = 20;
   
@@ -84,10 +78,10 @@ public class GetImgList {
       try {
         tempPage = Integer.parseInt(request.getParameter("page"));
       } catch (NumberFormatException e) {
-        throw systemException.systemException(9, "page", request.getParameter("page"));
+        throw new SystemException(9, "page", request.getParameter("page"));
       }
       if (tempPage <= 0) {
-        throw systemException.systemException(9, "page", request.getParameter("page"));
+        throw new SystemException(9, "page", request.getParameter("page"));
       }
     }
   }

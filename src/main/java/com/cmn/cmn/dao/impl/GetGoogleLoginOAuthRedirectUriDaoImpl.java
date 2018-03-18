@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.cmn.cmn.dao.GetGoogleLoginOAuthRedirectUriDao;
-import com.cmn.err.SystemException;
 
 /**
   *  이 객체는 Google OAuth Login 후 지정된 사이트로 리다이렉트 URL 가져오는 서비스로 정의된다.
@@ -33,9 +32,6 @@ import com.cmn.err.SystemException;
 public class GetGoogleLoginOAuthRedirectUriDaoImpl implements GetGoogleLoginOAuthRedirectUriDao {
   @Autowired
   private SqlSession sqlSession;
-  
-  @Autowired
-  private SystemException systemException;
   
   private static Logger logger = LogManager.getLogger(GetGoogleLoginOAuthRedirectUriDaoImpl.class);
 

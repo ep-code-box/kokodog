@@ -38,9 +38,6 @@ public class InsertNewScnrioSvcImpl implements InsertNewScnrioSvc {
   private InsertNewScnrioDao insertNewScnrioDao;
   
   @Autowired
-  private UserException userException;
-  
-  @Autowired
   private InsertNewCaseSvc insertNewCaseSvc;
 
   /**
@@ -60,7 +57,7 @@ public class InsertNewScnrioSvcImpl implements InsertNewScnrioSvc {
     methodInputMap.put("scnrio_nm", inputMap.get("scnrio_nm"));
     outputMap = insertNewScnrioDao.chkSameScnrioNm(methodInputMap);
     if (outputMap.get("is_exist_yn") != null && "Y".equals(outputMap.get("is_exist_yn")) == true) {
-      throw userException.userException(22, "시나리오명", (String)inputMap.get("scnrio_nm"));
+      throw new UserException(22, "시나리오명", (String)inputMap.get("scnrio_nm"));
     }
     methodInputMap.clear();
     try {

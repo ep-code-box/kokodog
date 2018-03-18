@@ -36,9 +36,6 @@ public class InsertNewCaseSvcImpl implements InsertNewCaseSvc {
   @Autowired
   private InsertNewCaseDao insertNewCaseDao;
   
-  @Autowired
-  private UserException userException;
-
   /**
    * 신규 케이스명과 케이스설명, 시나리오번호를 받아 채번된 케이스번호를 리턴한다.
    *
@@ -58,7 +55,7 @@ public class InsertNewCaseSvcImpl implements InsertNewCaseSvc {
     methodInputMap.put("scnrio_num", inputMap.get("scnrio_num"));
     outputMap = insertNewCaseDao.chkSameCaseNm(methodInputMap);
     if (outputMap.get("is_exist_yn") != null && "Y".equals(outputMap.get("is_exist_yn")) == true) {
-      throw userException.userException(22, "케이스명", (String)inputMap.get("case_nm"));
+      throw new UserException(22, "케이스명", (String)inputMap.get("case_nm"));
     }
     methodInputMap.clear();
     try {

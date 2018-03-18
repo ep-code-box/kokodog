@@ -14,18 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cmn.err.SystemException;
-import com.cmn.err.UserException;
 import com.cmn.cmn.service.GetServerTimeService;
 
 @Controller
 public class GetServerTimeController {
-  @Autowired
-  private SystemException systemException;
-  
-  @Autowired
-  private UserException userException;
-  
   @Autowired
   private GetServerTimeService getServerTimeService;
   

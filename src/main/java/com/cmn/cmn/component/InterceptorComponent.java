@@ -33,7 +33,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
 import com.cmn.err.KokodogException;
-import com.cmn.err.UserExceptionNew;
+import com.cmn.err.UserException;
 import com.cmn.cmn.component.AddoptInfoComponent;
 import com.cmn.cmn.service.GetServerTimeService;
 import com.cmn.cmn.service.OAuthLoginService;
@@ -123,7 +123,7 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
       return true;
     }
     if (isPageExists(pgmInfo.get("pgm"), pgmInfo.get("task"), pgmInfo.get("page")) == false) {
-      throw new UserExceptionNew(1);
+      throw new UserException(1);
     }
     if (isAuthExists((request.getSession().getAttribute("user_num") != null) ? ((Integer)(request.getSession().getAttribute("user_num"))).intValue() : 0, pgmInfo.get("pgm"), pgmInfo.get("task"), pgmInfo.get("page")) == false) {
       if (request.getSession().getAttribute("user_num") == null) {
@@ -136,10 +136,10 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
           afterCompletion(request, response, null, null);
           return false;
         } else {
-          throw new UserExceptionNew(4);
+          throw new UserException(4);
         }
       } else {
-        throw new UserExceptionNew(2);
+        throw new UserException(2);
       }
     } else if ("GET".equals(request.getMethod()) == true) {
       request.setAttribute("_VIEW_URL", returnView(request, pgmInfo));
@@ -233,9 +233,9 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     if (seperatedRequestUriTemp.length > 1) {
       seperatedRequestUri = Arrays.copyOfRange(seperatedRequestUriTemp, 1, seperatedRequestUriTemp.length);
       if (method.equals("GET") == true && seperatedRequestUri.length > 3) {
-        throw new UserExceptionNew(1);
+        throw new UserException(1);
       } else if (seperatedRequestUri.length > 4) {
-          throw new UserExceptionNew(1);
+          throw new UserException(1);
       }
       String pgm = null;
       if (seperatedRequestUri[0].equals("")) {

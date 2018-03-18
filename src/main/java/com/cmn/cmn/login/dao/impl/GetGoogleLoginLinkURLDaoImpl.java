@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.cmn.cmn.login.dao.GetGoogleLoginLinkURLDao;
-import com.cmn.err.SystemException;
 
 @Repository("getGoogleLoginLinkURLDao")
 public class GetGoogleLoginLinkURLDaoImpl implements GetGoogleLoginLinkURLDao {
@@ -31,9 +30,6 @@ public class GetGoogleLoginLinkURLDaoImpl implements GetGoogleLoginLinkURLDao {
 
   @Autowired
   private SqlSession sqlSession;
-  
-  @Autowired
-  private SystemException systemException;
   
   /**
     *  Google OAuth 로그인을 위하여 링크 정보를 가져오는 method
