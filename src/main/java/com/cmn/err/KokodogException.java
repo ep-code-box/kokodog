@@ -21,16 +21,24 @@ public class KokodogException extends RuntimeException {
     Map<String, Object> inputMap = new HashMap<String, Object>();
     inputMap.put("msg_num", messageNum);
     logger.debug("Input Map of getCmnErrorMessage SQL Map - " + inputMap);
-    Map<String, Object> outputMap = sqlSession.selectOne("com.cmn.cmn.getErrMessageByMessageNum", inputMap);
-    logger.debug("Output Map of getCmnErrorMessage SQL Map - " + outputMap);
-    String tempMsg = (String)outputMap.get("msg");
-    if (outputMap.get("err_typ") == null) {
-      this.errTyp = 500;
-    } else {
-      this.errTyp = ((Integer)outputMap.get("err_typ")).intValue();
-    }
+    Map<String, Object> outputMap = null;
+    String tempMsg = null;
     int index = 0;
     int pos = 0;
+    if (sqlSession != null) {
+      outputMap = sqlSession.selectOne("com.cmn.cmn.getErrMessageByMessageNum", inputMap);
+      logger.debug("Output Map of getCmnErrorMessage SQL Map - " + outputMap);
+      tempMsg = (String)outputMap.get("msg");
+      if (outputMap.get("err_typ") == null) {
+        this.errTyp = 500;
+      } else {
+        this.errTyp = ((Integer)outputMap.get("err_typ")).intValue();
+      }
+    } else {
+      tempMsg = "알 수 없는 오류로 인해 정상적인 결과를 도출하지 못했습니다.";
+      this.errTyp = 500;
+      messageNum = 999;
+    }
     logger.debug("Find ## character from message");
     while ((pos = tempMsg.indexOf("#", index)) >= 0) {
       if (tempMsg.charAt(pos + 1) == '#') {

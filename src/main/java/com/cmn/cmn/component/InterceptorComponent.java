@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.ibatis.session.SqlSession;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -32,6 +33,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
 import com.cmn.err.KokodogException;
+import com.cmn.err.UserExceptionNew;
 import com.cmn.err.UserException;
 import com.cmn.err.SystemException;
 import com.cmn.cmn.component.AddoptInfoComponent;
@@ -62,6 +64,8 @@ import com.cmn.cmn.service.PageAuthService;
 @Component
 @EnableAsync
 public class InterceptorComponent extends HandlerInterceptorAdapter {
+  @Autowired
+  private SqlSession sqlSession;
   @Autowired
   private UserException userException;
   
@@ -99,6 +103,7 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     String ip = null;
     Calendar calendar = new GregorianCalendar(TimeZone.getDefault());
     request.setAttribute("now_dtm", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
+    request.setAttribute("_SQL_SESSION_", sqlSession);
     ip = request.getHeader("X-Forwarded-For");
     if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
       ip = request.getHeader("Proxy-Client-IP");
@@ -138,10 +143,10 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
           afterCompletion(request, response, null, null);
           return false;
         } else {
-          throw userException.userException(4);
+          throw new UserExceptionNew(4);
         }
       } else {
-        throw userException.userException(2);
+        throw new UserExceptionNew(2);
       }
     } else if ("GET".equals(request.getMethod()) == true) {
       request.setAttribute("_VIEW_URL", returnView(request, pgmInfo));
