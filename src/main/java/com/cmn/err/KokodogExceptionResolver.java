@@ -206,6 +206,7 @@ public class KokodogExceptionResolver {
   @SuppressWarnings("unchecked")
   @ExceptionHandler(Exception.class)
   public Object exception(HttpServletRequest request, HttpServletResponse response, Exception ex) throws Exception {
+    logger.error("=================     Internal Exception Start    ==================");
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Enumeration<String> param = null;
     request.setAttribute("sytem_call_end_dtm", getServerTimeService.getServerTime());
@@ -238,7 +239,6 @@ public class KokodogExceptionResolver {
     if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
       ip = request.getRemoteAddr();
     }
-    logger.error("=================     Internal Exception Start    ==================");
     if (request.getAttribute("system_call_dtm") != null) {
       logger.error("Exception Start Dtm[" + format.format(new Date(((Long)request.getAttribute("system_call_dtm")).longValue())) + "]");
     } else {
