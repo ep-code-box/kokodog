@@ -31,6 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.http.ResponseEntity;
 
 import com.cmn.err.UserException;
+import com.cmn.err.UserExceptionNew;
 import com.cmn.err.KokodogException;
 import com.cmn.cmn.service.MessageService;
 import com.cmn.cmn.service.GetServerTimeService;
@@ -63,7 +64,7 @@ public class KokodogExceptionResolver {
     */
   @ExceptionHandler(KokodogException.class)
   public Object kokodogException(HttpServletRequest request, HttpServletResponse response, KokodogException ex) throws Exception {
-    if (ex instanceof UserException) {
+    if (ex instanceof UserException == true || ex instanceof UserExceptionNew == true) {
       printLogForUserException(request, (UserException)ex);
     } else {
       printLogForSystemException(request, ex);
@@ -103,6 +104,7 @@ public class KokodogExceptionResolver {
   private void printLogForUserException(HttpServletRequest request, UserException ex) throws Exception {
     Enumeration<String> param = null;
     String queryParam = "";
+    String ip = null;
     param = request.getParameterNames();
     while (param.hasMoreElements() == true) {
       String key = param.nextElement() + "";
@@ -111,12 +113,28 @@ public class KokodogExceptionResolver {
     if (queryParam.equals("") == false) {
       queryParam = queryParam.substring(0, queryParam.length() - 1);
     }
+    ip = request.getHeader("X-Forwarded-For");
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getHeader("Proxy-Client-IP");
+    }
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getHeader("WL-Proxy-Client-IP");
+    }
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getHeader("HTTP_CLIENT_IP");
+    }
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+    }
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getRemoteAddr();
+    }
     logger.debug("=================     User Exception Start    ==================");
     logger.debug("Exception Start Dtm[" + request.getAttribute("now_dtm") + "]");
     logger.debug("Request URI[" + request.getRequestURL().toString() + "]");
     logger.debug("Query String[" + queryParam + "]");
     logger.debug("UserNum[" + request.getSession().getAttribute("user_num") + "]");
-    logger.debug("Remote Address[" + request.getRemoteAddr() + "]");
+    logger.debug("Remote Address[" + ip + "]");
     logger.debug("Error Type[" + ex.getErrTyp() + "]");
     logger.debug("Exception End Dtm[" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "]");
     logger.debug("Error Trace!!");
@@ -137,6 +155,7 @@ public class KokodogExceptionResolver {
   private void printLogForSystemException(HttpServletRequest request, KokodogException ex) throws Exception {
     Enumeration<String> param = null;
     String queryParam = "";
+    String ip = null;
     param = request.getParameterNames();
     while (param.hasMoreElements() == true){
       String key = param.nextElement() + "";
@@ -145,12 +164,28 @@ public class KokodogExceptionResolver {
     if (queryParam.equals("") == false) {
       queryParam = queryParam.substring(0, queryParam.length() - 1);
     }
+    ip = request.getHeader("X-Forwarded-For");
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getHeader("Proxy-Client-IP");
+    }
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getHeader("WL-Proxy-Client-IP");
+    }
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getHeader("HTTP_CLIENT_IP");
+    }
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+    }
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getRemoteAddr();
+    }
     logger.warn("=================     User Exception Start    ==================");
     logger.warn("Exception Start Dtm[" + request.getAttribute("now_dtm") + "]");
     logger.warn("Request URI[" + request.getRequestURL().toString() + "]");
     logger.warn("Query String[" + queryParam + "]");
     logger.warn("UserNum[" + request.getSession().getAttribute("user_num") + "]");
-    logger.warn("Remote Address[" + request.getRemoteAddr() + "]");
+    logger.warn("Remote Address[" + ip + "]");
     logger.warn("Error Type[" + ex.getErrTyp() + "]");
     logger.warn("Exception End Dtm[" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "]");
     logger.warn("Error Trace!!");
@@ -180,12 +215,29 @@ public class KokodogExceptionResolver {
     request.setAttribute("_REQUEST_FINISH", "Y");
     param = request.getParameterNames();
     String queryParam = "";
+    String ip = null;
     while (param.hasMoreElements()){
       String key = param.nextElement() + "";
       queryParam = queryParam + URLEncoder.encode(key, "UTF-8") + "=" + URLEncoder.encode(request.getParameter(key), "UTF-8") + "&";
     }
     if (queryParam.equals("") == false) {
       queryParam = queryParam.substring(0, queryParam.length() - 1);
+    }
+    ip = request.getHeader("X-Forwarded-For");
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getHeader("Proxy-Client-IP");
+    }
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getHeader("WL-Proxy-Client-IP");
+    }
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getHeader("HTTP_CLIENT_IP");
+    }
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+    }
+    if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+      ip = request.getRemoteAddr();
     }
     logger.error("=================     Internal Exception Start    ==================");
     if (request.getAttribute("system_call_dtm") != null) {
@@ -196,7 +248,7 @@ public class KokodogExceptionResolver {
     logger.error("Request URI[" + request.getRequestURL().toString() + "]");
     logger.error("Query String[" + queryParam + "]");
     logger.error("UserNum[" + request.getSession().getAttribute("user_num") + "]");
-    logger.error("Remote Address[" + request.getRemoteAddr() + "]");
+    logger.error("Remote Address[" + ip + "]");
     logger.error("Exception End Dtm[" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "]");
     logger.error("Error Trace!!");
     logger.error(ex.getClass().getName() + ": " + ex.getMessage());
