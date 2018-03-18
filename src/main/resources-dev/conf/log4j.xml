@@ -14,9 +14,10 @@
        <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </RollingFile>
   </appenders>
-  <Loggers>
-    <Root level="info">
+  <loggers>
+    <root level="info">
       <appender-ref ref="databaseAppender"/>
-    </Root>
-  </Loggers>
+      <appender-ref ref="file"/>
+    </root>
+  </loggers>
 </configuration>
