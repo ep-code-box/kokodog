@@ -23,22 +23,7 @@ public class UserException extends KokodogException {
 
   public UserException userException(int messageNum, String... msg) throws Exception {
     logger.debug("Start method of UserException.systemException");
-    ServletRequestAttributes sra = null;
-    HttpServletRequest request = null;
-    SqlSession sqlSession = null;
-    if (sqlSession == null) {
-      try {
-        sra = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
-        request = sra.getRequest();
-        if (request == null || request.getSession() == null || request.getSession().getAttribute("_SQL_SESSION_") == null) {
-          sqlSession = null;
-        } else {
-          sqlSession = (SqlSession)request.getAttribute("_SQL_SESSION_");
-        }
-      } catch (Exception e) {
-      }
-    }
-    super.kokodogException(messageNum, sqlSession, msg);
+    super.kokodogException(messageNum, msg);
     return this;
   }
 }
