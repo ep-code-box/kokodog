@@ -208,18 +208,22 @@ public class KokodogExceptionResolver {
   public Object exception(HttpServletRequest request, HttpServletResponse response, Exception ex) throws Exception {
     logger.error("=================     Internal Exception Start    ==================");
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    logger.error("=================     Internal Exception Start1    ==================");
     Enumeration<String> param = null;
     request.setAttribute("sytem_call_end_dtm", getServerTimeService.getServerTime());
     request.setAttribute("_REQUEST_RESPONSE_STATUS", ((KokodogException)ex).getErrTyp());
     request.setAttribute("_REQUEST_ERR_MESSGE", ((KokodogException)ex).getMessage());
     request.setAttribute("_REQUEST_FINISH", "Y");
+    logger.error("=================     Internal Exception Start2    ==================");
     param = request.getParameterNames();
     String queryParam = "";
     String ip = null;
-    while (param.hasMoreElements()){
+     logger.error("=================     Internal Exception Start3    ==================");
+   while (param.hasMoreElements()){
       String key = param.nextElement() + "";
       queryParam = queryParam + URLEncoder.encode(key, "UTF-8") + "=" + URLEncoder.encode(request.getParameter(key), "UTF-8") + "&";
     }
+    logger.error("=================     Internal Exception Start4    ==================");
     if (queryParam.equals("") == false) {
       queryParam = queryParam.substring(0, queryParam.length() - 1);
     }
@@ -239,11 +243,13 @@ public class KokodogExceptionResolver {
     if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
       ip = request.getRemoteAddr();
     }
+    logger.error("=================     Internal Exception Start5    ==================");
     if (request.getAttribute("system_call_dtm") != null) {
       logger.error("Exception Start Dtm[" + format.format(new Date(((Long)request.getAttribute("system_call_dtm")).longValue())) + "]");
     } else {
       logger.error("Exception Start Dtm[" + format.format(new Date()) + "]");      
     }
+    logger.error("=================     Internal Exception Start6    ==================");
     logger.error("Request URI[" + request.getRequestURL().toString() + "]");
     logger.error("Query String[" + queryParam + "]");
     logger.error("UserNum[" + request.getSession().getAttribute("user_num") + "]");
