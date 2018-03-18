@@ -27,23 +27,40 @@ if (request.getHeader("Accept").indexOf("json") >= 0 && (request.getHeader("Acce
 } else {
 %>
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="UTF-8"/>
-    <title>404 Page Not Found</title>
-    <script>
-    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Untitled Document</title>
+    <link href="/css/cmn/err/err_404.css" rel="stylesheet" type="text/css"/>
   </head>
   <body>
-    <%=exception.getMessage()%>
-    <table id="404_err" align="center">
-      <tr>
-        <td>
-          <img align="absmiddle" style="width:800px;height:600px;" src="http://thumbs.dreamstime.com/z/page-not-found-error-sign-45238331.jpg"/>
-        </td>
-      </tr>
-    </table>
-  </body>
+    <div class="Wrap">
+	    <div class="errorBox">
+		    <div class="noneImg">
+			    <img src="/img/err_img01.gif" alt="Error Image"/>
+		    </div>
+		    <ul class="errorTxt">
+			    <li>
+			      <img src="/ciespp/images/error_img/err_img02.gif" alt="이용에 불편을 드려 죄송합니다."/>
+			    </li>			
+			    <li>
+			      <div class="block">
+			        <span class="txtBold">
+			          404
+			        </span>
+			        : 웹 서버가 요청한 URL 혹은 자원을 찾지 못하였습니다.
+			      </div>
+            NOT FOUND, 문서를 찾을 수 없습니다.
+        </li>
+			  <li>
+			    <a href="javascript:goHome();">
+			      <img src="/img/err_btn02.gif" alt="홈으로가기"/>
+			    </a>
+			  </li>
+		  </ul>
+	  </div>
+  </div>
+</body>
 </html>
 <%
 }

@@ -66,6 +66,23 @@
                 ELSE 'N'
            END AS is_exist
   </select>
+  <select id="getIsPrevContainerMonitorInfo" parameterType="HashMap" resultType="HashMap">
+    SELECT CASE WHEN EXISTS (SELECT *
+                             FROM   cmn_batch_exe_hst cbeh
+                             WHERE  cbeh.batch_num IN (SELECT CAST(ccd.cd_seq_name AS INTEGER) AS batch_num
+                                                       FROM   cmn_cd_dtl ccd 
+                                                       WHERE  ccd.cd_num = 30
+                                                       AND    CAST(ccd.cd_seq_name AS INTEGER) &lt;&gt; #{batch_num}
+                                                      )
+                           AND    cbeh.exe_dtm = #{exe_dtm}
+                           AND    cbeh.ap_num = #{ap_num}
+                           AND    cbeh.container_num = #{container_num}
+                           AND    cbeh.batch_exe_state = 1
+                          )
+                THEN 'Y'
+                ELSE 'N'
+           END AS is_exist
+  </select>
   <delete id="deleteBatchHist" parameterType="HashMap">
     DELETE
     FROM   cmn_batch_exe_hst
@@ -143,5 +160,87 @@
                 THEN 'Y'
                 ELSE 'N'
            END AS process_yn
+  </select>
+  <select id="getOprInfNextApInfo" parameterType="HashMap" resultType="HashMap">
+    SELECT CAST(ccd3.cd_seq_name AS unsigned) AS ap_num
+         , CAST(ccd4.cd_seq_name AS unsigned) AS container_num
+         , ccd8.cd_seq_name AS container_dir
+         , ccd9.cd_seq_name AS exe
+    FROM   cmn_cd_dtl ccd1
+         , cmn_cd_dtl ccd2
+         , cmn_cd_dtl ccd3
+         , cmn_cd_dtl ccd4
+         , cmn_cd_dtl ccd8
+    WHERE  ccd1.cd_num = 23
+    AND    ccd2.cd_num = 24
+    AND    ccd1.cd_seq = ccd2.cd_seq
+    AND    ccd3.cd_num = 23
+    AND    ccd4.cd_num = 24
+    AND    ccd3.cd_seq = ccd4.cd_seq
+    AND    ccd1.cd_seq_name = CAST(#{ap_num} AS CHAR)
+    AND    ccd2.cd_seq_name = CAST(#{container_num} AS CHAR)
+    AND    ccd8.cd_num = 25
+    AND    ccd8.cd_seq = ccd3.cd_seq
+    AND    ccd9.cd_num = 33
+    AND    ccd9.cd_seq = ccd3.cd_seq
+    AND    ((EXISTS (SELECT *
+                     FROM   cmn_cd_dtl ccd5
+                          , cmn_cd_dtl ccd6
+                     WHERE  ccd5.cd_num = 23
+                     AND    ccd6.cd_num = 24
+                     AND    ccd5.cd_seq = ccd6.cd_seq
+                     AND    CAST(ccd2.cd_seq_name AS UNSIGNED) + 1 = ccd6.cd_seq_name
+                     AND    ccd1.cd_seq_name = ccd5.cd_seq_name
+                     AND    NOW() BETWEEN ccd5.eff_sta_dtm AND ccd5.eff_end_dtm
+                     AND    NOW() BETWEEN ccd6.eff_sta_dtm AND ccd6.eff_end_dtm
+                    )
+             AND ccd1.cd_seq_name = ccd3.cd_seq_name
+             AND CAST(ccd2.cd_seq_name AS UNSIGNED) + 1 = CAST(ccd4.cd_seq_name AS UNSIGNED)
+            ) OR (NOT EXISTS (SELECT *
+                              FROM   cmn_cd_dtl ccd5
+                                       , cmn_cd_dtl ccd6
+                              WHERE  ccd5.cd_num = 23
+                              AND    ccd6.cd_num = 24
+                              AND    ccd5.cd_seq = ccd6.cd_seq
+                              AND    CAST(ccd2.cd_seq_name AS UNSIGNED) + 1 = ccd6.cd_seq_name
+                              AND    ccd1.cd_seq_name = ccd5.cd_seq_name
+                              AND    NOW() BETWEEN ccd5.eff_sta_dtm AND ccd5.eff_end_dtm
+                              AND    NOW() BETWEEN ccd6.eff_sta_dtm AND ccd6.eff_end_dtm
+                             )
+                  AND EXISTS (SELECT *
+                              FROM   cmn_cd_dtl ccd7
+                              WHERE  ccd7.cd_num = 23
+                              AND    CAST(ccd1.cd_seq_name AS UNSIGNED) + 1 = ccd7.cd_seq_name
+                              AND    NOW() BETWEEN ccd7.eff_sta_dtm AND ccd7.eff_end_dtm
+                             )
+                  AND CAST(ccd1.cd_seq_name AS UNSIGNED) + 1 = CAST(ccd3.cd_seq_name AS UNSIGNED)
+                  AND ccd4.cd_seq_name = '1'
+                 )
+              OR (NOT EXISTS (SELECT *
+                              FROM   cmn_cd_dtl ccd5
+                                   , cmn_cd_dtl ccd6
+                              WHERE  ccd5.cd_num = 23
+                              AND    ccd6.cd_num = 24
+                              AND    ccd5.cd_seq = ccd6.cd_seq
+                              AND    CAST(ccd2.cd_seq_name AS UNSIGNED) + 1 = ccd6.cd_seq_name
+                              AND    ccd1.cd_seq_name = ccd5.cd_seq_name
+                              AND    NOW() BETWEEN ccd5.eff_sta_dtm AND ccd5.eff_end_dtm
+                              AND    NOW() BETWEEN ccd6.eff_sta_dtm AND ccd6.eff_end_dtm
+                             )
+                  AND NOT EXISTS (SELECT *
+                                  FROM   cmn_cd_dtl ccd7
+                                  WHERE  ccd7.cd_num = 23
+                                  AND    CAST(ccd1.cd_seq_name AS UNSIGNED) + 1 = ccd7.cd_seq_name
+                                  AND    NOW() BETWEEN ccd7.eff_sta_dtm AND ccd7.eff_end_dtm
+                                 )
+                  AND ccd3.cd_seq_name = '1'
+                  AND ccd4.cd_seq_name = '1'
+                 )
+           )
+    AND NOW() BETWEEN ccd1.eff_sta_dtm AND ccd1.eff_end_dtm
+    AND NOW() BETWEEN ccd2.eff_sta_dtm AND ccd2.eff_end_dtm
+    AND NOW() BETWEEN ccd3.eff_sta_dtm AND ccd3.eff_end_dtm
+    AND NOW() BETWEEN ccd4.eff_sta_dtm AND ccd4.eff_end_dtm
+    AND NOW() BETWEEN ccd8.eff_sta_dtm AND ccd8.eff_end_dtm
   </select>
 </mapper>
