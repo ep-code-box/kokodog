@@ -11,11 +11,11 @@
       <Column name="log_msg" pattern="%message"/>
     </Jdbc>
     <RollingFile name="file" fileName="/home/leems83/logs/dev/applogs/kokodog.log" filePattern="/home/leems83/logs/dev/applogs/kokodog.%i.%d{yyyy-MM-dd}.log">
-       <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </RollingFile>
   </appenders>
   <loggers>
-    <root level="debug">
+    <root level="trace">
       <appender-ref ref="databaseAppender"/>
       <appender-ref ref="file"/>
     </root>
