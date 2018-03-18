@@ -34,8 +34,6 @@ import org.springframework.stereotype.Component;
 
 import com.cmn.err.KokodogException;
 import com.cmn.err.UserExceptionNew;
-import com.cmn.err.UserException;
-import com.cmn.err.SystemException;
 import com.cmn.cmn.component.AddoptInfoComponent;
 import com.cmn.cmn.service.GetServerTimeService;
 import com.cmn.cmn.service.OAuthLoginService;
@@ -66,12 +64,7 @@ import com.cmn.cmn.service.PageAuthService;
 public class InterceptorComponent extends HandlerInterceptorAdapter {
   @Autowired
   private SqlSession sqlSession;
-  @Autowired
-  private UserException userException;
-  
-  @Autowired
-  private SystemException systemException;
-  
+
   @Autowired
   private GetServerTimeService getServerTimeService;
   
@@ -130,7 +123,7 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
       return true;
     }
     if (isPageExists(pgmInfo.get("pgm"), pgmInfo.get("task"), pgmInfo.get("page")) == false) {
-      throw userException.userException(1);
+      throw new UserExceptionNew(1);
     }
     if (isAuthExists((request.getSession().getAttribute("user_num") != null) ? ((Integer)(request.getSession().getAttribute("user_num"))).intValue() : 0, pgmInfo.get("pgm"), pgmInfo.get("task"), pgmInfo.get("page")) == false) {
       if (request.getSession().getAttribute("user_num") == null) {
@@ -240,9 +233,9 @@ public class InterceptorComponent extends HandlerInterceptorAdapter {
     if (seperatedRequestUriTemp.length > 1) {
       seperatedRequestUri = Arrays.copyOfRange(seperatedRequestUriTemp, 1, seperatedRequestUriTemp.length);
       if (method.equals("GET") == true && seperatedRequestUri.length > 3) {
-        throw userException.userException(1);
+        throw new UserExceptionNew(1);
       } else if (seperatedRequestUri.length > 4) {
-          throw userException.userException(1);
+          throw new UserExceptionNew(1);
       }
       String pgm = null;
       if (seperatedRequestUri[0].equals("")) {
