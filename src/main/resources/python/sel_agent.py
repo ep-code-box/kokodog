@@ -3,6 +3,7 @@ from flask import Flask, request
 import threading
 import json
 import subprocess
+import re
 
 app = Flask(__name__)
 
@@ -54,10 +55,12 @@ def requestGetTestResult():
 
 @app.after_request
 def add_header(response):
-  response.headers['Access-Control-Allow-Origin'] = 'http://kokodogdev.fun25.co.kr'
-  response.headers['Access-Control-Allow-Methods'] = 'POST'
-  response.headers['Access-Control-Max-Age'] = '3600'
-  response.headers['Access-Control-Allow-Headers'] = 'Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization'
+  pattern = re.compile('://kokodog(dev){0,1}\.fun25\.co\.kr')
+  if pattern.search(request.headers['Origin']) != None :
+    response.headers['Access-Control-Allow-Origin'] = request.headers['Origin']
+    response.headers['Access-Control-Allow-Methods'] = 'POST'
+    response.headers['Access-Control-Max-Age'] = '3600'
+    response.headers['Access-Control-Allow-Headers'] = 'Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization'
   return response
   
 def fileCheck():
