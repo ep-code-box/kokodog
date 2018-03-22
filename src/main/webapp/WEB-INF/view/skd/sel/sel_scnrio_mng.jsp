@@ -33,6 +33,7 @@
       var editedExptRslt = new Array();
       var judgTypNm = [];
       var inetrvalFunc;
+      var getTestRsltFailNo = 0;
 
       $(document).ready(function() {
         contentInitLoad();
@@ -714,7 +715,7 @@
           $("div#new_rgst_window").jqxWindow("close");
         } else if (act == "GetImportedSrcCdByScnrioNum") {
           $.ajax({
-            url: "http://localhost:30710/test",
+            url: "http://localhost:30710/execute",
             type: "POST",
             data: {scnrio_num: input_param.scnrio_num, dtm: data.dtm, test_data: JSON.stringify(data.test_data)},
             async: true,
@@ -814,9 +815,6 @@
         for (var i = 0; i < $("div#test_step_pop_window_grid_component").jqxGrid("getrows").length; i++) {
           if ($("div#test_step_pop_window_grid_component").jqxGrid("getrows")[i].test_st_cd == 1) {
             nextTestResultCall(i);
-            if ($("div#test_step_pop_window").jqxWindow("isOpen") == true) {
-              setTimeout(periodicTestResultCall, 1000);
-            }
             return;
           }
         }
@@ -824,7 +822,7 @@
       
       function nextTestResultCall(row) {
         $.ajax({
-          url: "http://localhost:30710/getTestResult",
+          url: "http://localhost:30710/return",
           type: "POST",
           dataType : "json",
           data: {scnrio_num: $("div#test_step_pop_window_grid_component").jqxGrid("getrows")[row].scnrio_num
@@ -834,6 +832,7 @@
                 },
           async: true,
           success: function(data) {
+            getTestRsltFailNo = 0;
             if (data.test_st_cd == 2) {
               $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "test_st_cd", 2);
               if (data.test_rslt_cd == 1) {
@@ -846,16 +845,22 @@
               $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "log", data.log);
               if ($("div#test_step_pop_window_grid_component").jqxGrid("getrows").length > row + 1) {
                 nextTestResultCall(row + 1);
-              } else {
-                setTimeout(periodicTestResultCall, 1000);               
               }
             } else {
               $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "test_st_cd", 1);
               $("div#test_step_pop_window_grid_component").jqxGrid("setcellvalue", row, "test_st_nm", "<img width=\"24px\" height:\"24px\" src=\"http://kokodogdev.fun25.co.kr/FileDown?file_key=CG5jTwaR34Dv4CpuPhiBQtquRpRHAastPcxrvMgs\"/>");
+              if ($("div#test_step_pop_window").jqxWindow("isOpen") == true) {
+                setTimeout(periodicTestResultCall, 1000);
+              }
             }
           },
           error: function(request, status, error) {
-            cmnAlert("테스트 가져오기 오류가 발생했습니다.");
+            if (getTestRsltFailNo >= 3) {
+              cmnAlert("테스트 가져오기 오류가 발생했습니다.");
+            } else {
+              getTestRsltFailNo++;
+              setTimeout(periodicTestResultCall, 1000);
+            }
           }
         });
       }
